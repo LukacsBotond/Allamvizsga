@@ -1,6 +1,5 @@
 #pragma once
 
-
 class spiPorts
 {
 public:
@@ -22,4 +21,3 @@ public:
 
     ~spiPorts();
 };
-
