@@ -1,9 +1,10 @@
 #pragma once
 
+
 class spiPorts
 {
 public:
-    int sp1;
+    int spi;
     int miso;
     int cs;
     int sck;
@@ -11,7 +12,7 @@ public:
     int reset;
     int dc;
     spiPorts(
-        int sp1,
+        int spi,
         int miso,
         int cs,
         int sck,
@@ -21,3 +22,4 @@ public:
 
     ~spiPorts();
 };
+

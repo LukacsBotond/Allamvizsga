@@ -45,9 +45,14 @@ int64_t alarm_callback(alarm_id_t id, void *user_data) {
     return 0;
 }
 */
-int main() {
-    ili9341_init();
 
+ili9341 *ili9341::Disp_instance = 0;
+spi *ili9341::spi_instance = 0;
+int main() {
+    ili9341 *display = display->getInstance();
+    
+
+    
     return 0;
 }
 

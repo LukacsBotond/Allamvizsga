@@ -28,6 +28,7 @@ ili9341_config_t ili9341_config = {
 	.pin_dc = 9
 };
 */
+/*
 ili9341_config_t ili9341_config = {
     .port = spi1,
     .pin_miso = 10,
@@ -37,7 +38,8 @@ ili9341_config_t ili9341_config = {
     .pin_reset = 12,
     .pin_dc = 11
 };
-
+*/
+/*
 void ili9341::cs_select()
 {
     asm volatile("nop \n nop \n nop");
@@ -51,28 +53,96 @@ void ili9341::cs_deselect()
     gpio_put(ili9341_config.pin_cs, 1);
     asm volatile("nop \n nop \n nop");
 }
+*/
 
-void ili9341::ili9341_set_command(uint8_t cmd)
+ili9341::ili9341()
 {
-    cs_select();
-    gpio_put(ili9341_config.pin_dc, 0);
-    spi_write_blocking(ili9341_config.port, &cmd, 1);
-    gpio_put(ili9341_config.pin_dc, 1);
-    cs_deselect();
+    //spiPorts* tmp = new spiPorts(0, 10, 13, 14, 15, 12, 11);
+    spiPorts *tmpPorts = new spiPorts(0, 10, 13, 14, 15, 12, 11);
+    spi_instance = new spi(300, tmpPorts);
+
+    sleep_ms(10);
+    gpio_put(spi_instance->ports->reset, 0);
+    sleep_ms(10);
+    gpio_put(spi_instance->ports->reset, 1);
+
+    set_command(0x01); //soft reset
+    sleep_ms(100);
+
+    set_command(ILI9341_GAMMASET);
+    command_param(0x01);
+    uint8_t tmp[]{0x0f, 0x31, 0x2b, 0x0c, 0x0e, 0x08, 0x4e, 0xf1, 0x37, 0x07, 0x10, 0x03, 0x0e, 0x09, 0x00};
+
+    // positive gamma correction
+    set_command(ILI9341_GMCTRP1);
+    spi_instance->write_data(tmp, 15);
+    //write_data(tmp, 15);
+    uint8_t tmp1[]{0x00, 0x0e, 0x14, 0x03, 0x11, 0x07, 0x31, 0xc1, 0x48, 0x08, 0x0f, 0x0c, 0x31, 0x36, 0x0f};
+    // negative gamma correction
+    set_command(ILI9341_GMCTRN1);
+    spi_instance->write_data(tmp1, 15);
+
+    // memory access control
+    set_command(ILI9341_MADCTL);
+    command_param(0x48);
+
+    // pixel format
+    set_command(ILI9341_PIXFMT);
+    command_param(0x55); // 16-bit
+
+    // frame rate; default, 70 Hz
+    set_command(ILI9341_FRMCTR1);
+    command_param(0x00);
+    command_param(0x1B);
+
+    // exit sleep
+    set_command(ILI9341_SLPOUT);
+
+    // display on
+    set_command(ILI9341_DISPON);
+
+    //
+
+    // column address set
+    set_command(ILI9341_CASET);
+    command_param(0x00);
+    command_param(0x00); // start column
+    command_param(0x00);
+    command_param(0xef); // end column -> 239
+
+    // page address set
+    set_command(ILI9341_PASET);
+    command_param(0x00);
+    command_param(0x00); // start page
+    command_param(0x01);
+    command_param(0x3f); // end page -> 319
+
+    set_command(ILI9341_RAMWR);
 }
 
-void ili9341::ili9341_command_param(uint8_t data)
+void ili9341::set_command(uint8_t cmd)
 {
-    cs_select();
-    spi_write_blocking(ili9341_config.port, &data, 1);
-    cs_deselect();
+    spi_instance->cs_select();
+    gpio_put(spi_instance->ports->dc, 0);
+    spi_instance->write_data(&cmd, 1);
+    //spi_write_blocking(ili9341_config.port, &cmd, 1);
+    gpio_put(spi_instance->ports->dc, 1);
+    spi_instance->cs_deselect();
 }
 
+void ili9341::command_param(uint8_t data)
+{
+    spi_instance->cs_select();
+    spi_instance->write_data(&data, 1);
+    spi_instance->cs_deselect();
+}
+/*
 void ili9341::ili9341_start_writing()
 {
     cs_select();
 }
-
+*/
+/*
 void ili9341_write_data(uint8_t *buffer, int bytes)
 {
     cs_select();
@@ -84,15 +154,18 @@ void ili9341_write_data_continuous(uint8_t *buffer, int bytes)
 {
     spi_write_blocking(ili9341_config.port, buffer, bytes);
 }
-
+*/
+/*
 inline void ili9341_stop_writing()
 {
     cs_deselect();
 }
-
+*/
+/*
 void ili9341_init()
 {
     // This example will use SPI0 at 0.5MHz.
+    /*
     spi_init(ili9341_config.port, 500 * 1000);
     int baudrate = spi_set_baudrate(ili9341_config.port, 75000 * 1000);
 
@@ -177,3 +250,5 @@ uint16_t swap_bytes(uint16_t color)
 {
     return (color >> 8) | (color << 8);
 }
+
+*/

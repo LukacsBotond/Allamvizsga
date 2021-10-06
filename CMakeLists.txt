@@ -22,7 +22,9 @@ pico_sdk_init()
 # Add executable. Default name is the project name, version 0.1
 
 add_executable(src src.cpp
-        display/ili9341.cpp )
+        display/ili9341.cpp
+        controll/spi.cpp
+        controll/spiPorts.cpp )
 
 pico_set_program_name(src "src")
 pico_set_program_version(src "0.1")

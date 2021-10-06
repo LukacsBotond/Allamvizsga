@@ -3,6 +3,8 @@
 #include <stdint.h>
 #include "pico/stdlib.h"
 #include "hardware/spi.h"
+#include "../../controll/include/spi.h"
+#include "../../controll/include/spiPorts.h"
 
 /*
 #define SPI_PORT spi0
@@ -72,49 +74,51 @@
 #define ILI9341_RDID4 0xDD ///< Read ID 4
 
 #define ILI9341_GMCTRP1 0xE0 ///< Positive Gamma Correction
-#define ILI9341_GMCTRN1 0xE1 ///< Negative Gamma Correction
-//#define ILI9341_PWCTR6     0xFC
-
-  typedef struct
-  {
-    spi_inst_t *port;
-    uint pin_miso;
-    uint pin_cs;
-    uint pin_sck;
-    uint pin_mosi;
-    uint pin_reset;
-    uint pin_dc;
-  } ili9341_config_t;
-
+#define ILI9341_GMCTRN1 0xE1 ///< Negative Gamma Correction \
+                             //#define ILI9341_PWCTR6     0xFC
+/*
+typedef struct
+{
+  spi_inst_t *port;
+  uint pin_miso;
+  uint pin_cs;
+  uint pin_sck;
+  uint pin_mosi;
+  uint pin_reset;
+  uint pin_dc;
+} ili9341_config_t;
+*/
 class ili9341
 {
 private:
-  static ili9341 *instance;
-  //singleton constructor;
-  ili9341(){
-    instance = new ili9341;
-  }
+  static ili9341 *Disp_instance;
+  static spi *spi_instance;
+
+  //! singleton constructor;
+  ili9341();
 
 public:
   static ili9341 *getInstance()
   {
-    if (!instance)
-      instance = new ili9341;
-    return instance;
+    if (!Disp_instance)
+      Disp_instance = new ili9341;
+    return Disp_instance;
   }
 
   //void ili9341_init();
-  void cs_select();
-  void cs_deselect();
-  void ili9341_set_command(uint8_t cmd);
-  void ili9341_command_param(uint8_t data);
-  void ili9341_write_data(uint8_t *buffer, int bytes);
-  void ili9341_start_writing();
-  void ili9341_stop_writing();
-  void ili9341_write_data_continuous(uint8_t *biffer, int bytes);
+  void set_command(uint8_t cmd);
+  void command_param(uint8_t data);
+
+  uint16_t swap_bytes(uint16_t color)
+  {
+    return (color >> 8) | (color << 8);
+  }
+  //void ili9341_write_data(uint8_t *buffer, int bytes);
+  //void ili9341_start_writing();
+  //void ili9341_stop_writing();
+  //void ili9341_write_data_continuous(uint8_t *biffer, int bytes);
 };
 
 //extern ili9341_config_t ili9341_config;
 
 //extern const uint8_t font6x8[];
-
