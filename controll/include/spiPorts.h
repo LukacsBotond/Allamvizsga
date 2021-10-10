@@ -1,6 +1,6 @@
 #pragma once
 
-class spiPorts
+class SPIPORTS
 {
 public:
     int spi;
@@ -10,7 +10,7 @@ public:
     int mosi;
     int reset;
     int dc;
-    spiPorts(
+    SPIPORTS(
         int spi,
         int miso,
         int cs,
@@ -19,5 +19,5 @@ public:
         int reset,
         int dc);
 
-    ~spiPorts();
+    ~SPIPORTS(){}
 };

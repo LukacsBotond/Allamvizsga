@@ -67,28 +67,23 @@
 #define ILI9341_GMCTRN1 0xE1 ///< Negative Gamma Correction \
                              //#define ILI9341_PWCTR6     0xFC
 
-class ili9341
+class ILI9341
 {
 private:
-  static ili9341 *Disp_instance;
-  static spi *spi_instance;
-
+  static ILI9341 *Disp_instance;
   //! singleton constructor;
-  ili9341();
+  ILI9341();
 
 public:
-  static ili9341 *getInstance()
-  {
-    if (!Disp_instance)
-      Disp_instance = new ili9341;
-    return Disp_instance;
-  }
+  static SPI *spi_instance;
+  ~ILI9341();
+  static ILI9341 *getInstance();
 
   void set_command(uint8_t cmd);
   void command_param(uint8_t data);
+  //void command_param(uint16_t data);
+  void write_data(uint8_t *buffer, int bytes);
 
-  uint16_t swap_bytes(uint16_t color)
-  {
-    return (color >> 8) | (color << 8);
-  }
+
+  void readData(uint8_t cmd);
 };

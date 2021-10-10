@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <iostream>
 #include "pico/stdlib.h"
 #include "hardware/uart.h"
 #include "hardware/gpio.h"
@@ -10,8 +11,9 @@
 #include "hardware/timer.h"
 #include "hardware/watchdog.h"
 #include "hardware/clocks.h"
+#include "pico/multicore.h"
 #include "display/include/ili9341.h"
-
+#include "display/include/displayDriver.h"
 
 /*
 int64_t alarm_callback(alarm_id_t id, void *user_data) {
@@ -19,20 +21,52 @@ int64_t alarm_callback(alarm_id_t id, void *user_data) {
     return 0;
 }
 */
-
-ili9341 *ili9341::Disp_instance = 0;
-spi *ili9341::spi_instance = 0;
-int main() {
-    ili9341 *display = display->getInstance();
-    return 0;
+uint8_t counter = 0;
+void gpio_callback(uint gpio, uint32_t events)
+{
+    std::cout<<"miso: "<<gpio_get(4)<<" cs: "<<gpio_get(5)<<" mosi: "<<gpio_get(7)<<" dc "<<gpio_get(9)<<std::endl;
+    counter++;
+    if (counter == 8){
+        std::cout<<std::endl;
+        counter = 0;
+    }
 }
 
+void core1_entry()
+{
+    gpio_set_irq_enabled_with_callback(6, GPIO_IRQ_EDGE_RISE, true, &gpio_callback);
+    while (1)
+    {
+        sleep_ms(1000);
+    }
+}
 
+ILI9341 *ILI9341::Disp_instance = nullptr;
+SPI *ILI9341::spi_instance = nullptr;
+int main()
+{
+    stdio_init_all();
+    std::cout << "Test\n";
+    sleep_ms(3000);
+    std::cout << "Test\n";
+    multicore_launch_core1(core1_entry);
+    //ILI9341 *display = display->getInstance();
+    DISPLAYDRIVER *driver = new DISPLAYDRIVER();
+    std::cout << "Reading information\n";
+    driver->readDispInformation();
+    while (1)
+    {
+        sleep_ms(5000);
+        std::cout << "Sleeping\n";
+    }
+
+    return 0;
+}
 
 /*
 int main()
 {
-    stdio_init_all();
+    
 
     // Set up our UART
     uart_init(UART_ID, BAUD_RATE);

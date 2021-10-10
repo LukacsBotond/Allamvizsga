@@ -23,6 +23,7 @@ pico_sdk_init()
 
 add_executable(src src.cpp
         display/ili9341.cpp
+        display/displayDriver.cpp
         controll/spi.cpp
         controll/spiPorts.cpp )
 
@@ -44,6 +45,8 @@ target_link_libraries(src
         hardware_timer
         hardware_watchdog
         hardware_clocks
+        pico_multicore
+        pico_stdlib
         )
 
 #target_link_libraries(src
