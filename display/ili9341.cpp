@@ -30,16 +30,16 @@ ili9341_config_t ili9341_config = {
 };
 */
 
-ILI9341::ILI9341()
+ILI9341::ILI9341() : SPI(100, SPIPORTS(0, 4, 5, 6, 7, 8, 9))
 {
     //spiPorts* tmp = new spiPorts(0, 10, 13, 14, 15, 12, 11);
-    SPIPORTS *tmpPorts = new SPIPORTS(0, 4, 5, 6, 7, 8, 9);
-    spi_instance = new SPI(300, tmpPorts);
-    delete tmpPorts;
+    //SPIPORTS *tmpPorts = new SPIPORTS(0, 4, 5, 6, 7, 8, 9);
+    //spi_instance = new SPI(300, tmpPorts);
+    //delete tmpPorts;
     sleep_ms(10);
-    gpio_put(spi_instance->ports->reset, 0);
+    gpio_put(ports->reset, 0);
     sleep_ms(10);
-    gpio_put(spi_instance->ports->reset, 1);
+    gpio_put(ports->reset, 1);
 
     set_command(0x01); //soft reset
     sleep_ms(100);
@@ -48,12 +48,11 @@ ILI9341::ILI9341()
     uint8_t tmp[]{0x0f, 0x31, 0x2b, 0x0c, 0x0e, 0x08, 0x4e, 0xf1, 0x37, 0x07, 0x10, 0x03, 0x0e, 0x09, 0x00};
     // positive gamma correction
     set_command(ILI9341_GMCTRP1);
-    spi_instance->write_data(tmp, 15);
-
+    write_data(tmp, 15);
     uint8_t tmp1[]{0x00, 0x0e, 0x14, 0x03, 0x11, 0x07, 0x31, 0xc1, 0x48, 0x08, 0x0f, 0x0c, 0x31, 0x36, 0x0f};
     // negative gamma correction
     set_command(ILI9341_GMCTRN1);
-    spi_instance->write_data(tmp1, 15);
+    write_data(tmp1, 15);
     // memory access control
     set_command(ILI9341_MADCTL);
     command_param(0x48);
@@ -65,7 +64,6 @@ ILI9341::ILI9341()
     set_command(ILI9341_FRMCTR1);
     command_param(0x00);
     command_param(0x1B);
-
     // exit sleep
     set_command(ILI9341_SLPOUT);
     set_command(ILI9341_DISPOFF);
@@ -90,47 +88,31 @@ ILI9341::ILI9341()
     set_command(ILI9341_RAMWR);
 }
 
-ILI9341 *ILI9341::getInstance()
-{
-    if (Disp_instance == nullptr)
-    {
-        Disp_instance = new ILI9341;
-    }
-
-    return Disp_instance;
-}
-
 void ILI9341::set_command(uint8_t cmd)
 {
-    spi_instance->cs_select();
-    gpio_put(spi_instance->ports->dc, 0);
-    spi_instance->write_data(&cmd, 1);
-    gpio_put(spi_instance->ports->dc, 1);
-    spi_instance->cs_deselect();
+    gpio_put(ports->dc, 0);
+    write_data(&cmd, 1);
+    gpio_put(ports->dc, 1);
 }
 
 void ILI9341::command_param(uint8_t data)
 {
-    spi_instance->cs_select();
-    spi_instance->write_data(&data, 1);
-    spi_instance->cs_deselect();
+    //std::cout<<(int)data<<std::endl;
+    write_data(&data, 1);
 }
 
-void ILI9341::readData(uint8_t cmd){
+void ILI9341::readData(uint8_t cmd)
+{
     uint8_t tmp[5];
-    spi_instance->cs_select();
-    spi_instance->read_data(cmd,tmp,5);
-    spi_instance->cs_deselect();
+    cs_select();
+    read_data(cmd, tmp, 5);
+    cs_deselect();
 }
 /*
 void ILI9341::command_param(uint16_t data)
 {
-    spi_instance->cs_select();
-    spi_instance->write_data(&data, 1);
-    spi_instance->cs_deselect();
+    cs_select();
+    write_data(&data, 1);
+    cs_deselect();
 }
 */
-void ILI9341::write_data(uint8_t *buffer, int bytes)
-{
-    spi_instance->write_data(buffer, bytes);
-}

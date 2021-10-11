@@ -67,23 +67,15 @@
 #define ILI9341_GMCTRN1 0xE1 ///< Negative Gamma Correction \
                              //#define ILI9341_PWCTR6     0xFC
 
-class ILI9341
+class ILI9341 : public SPI
 {
-private:
-  static ILI9341 *Disp_instance;
-  //! singleton constructor;
-  ILI9341();
 
 public:
-  static SPI *spi_instance;
+  ILI9341();
   ~ILI9341();
-  static ILI9341 *getInstance();
 
   void set_command(uint8_t cmd);
   void command_param(uint8_t data);
   //void command_param(uint16_t data);
-  void write_data(uint8_t *buffer, int bytes);
-
-
   void readData(uint8_t cmd);
 };

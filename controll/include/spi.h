@@ -7,12 +7,12 @@
 
 class SPI
 {
-private:
+protected:
     spi_inst_t *spi_Hw_inst;
     
 public:
     SPIPORTS *ports;
-    SPI(int frekv, SPIPORTS *ports);
+    SPI(int frekv, SPIPORTS ports);
     ~SPI();
 
     void cs_select();

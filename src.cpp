@@ -41,8 +41,6 @@ void core1_entry()
     }
 }
 
-ILI9341 *ILI9341::Disp_instance = nullptr;
-SPI *ILI9341::spi_instance = nullptr;
 int main()
 {
     stdio_init_all();
@@ -53,7 +51,7 @@ int main()
     //ILI9341 *display = display->getInstance();
     DISPLAYDRIVER *driver = new DISPLAYDRIVER();
     std::cout << "Reading information\n";
-    driver->readDispInformation();
+    driver->demo();
     while (1)
     {
         sleep_ms(5000);

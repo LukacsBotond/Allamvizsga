@@ -11,5 +11,7 @@ public:
     ~DISPLAYDRIVER();
 
     void readDispInformation();
+
+    void demo();
 };
 
