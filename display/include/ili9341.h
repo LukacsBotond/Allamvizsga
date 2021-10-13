@@ -6,16 +6,6 @@
 #include "../../controll/include/spi.h"
 #include "../../controll/include/spiPorts.h"
 
-/*
-#define SPI_PORT spi0
-#define PIN_MISO 4
-#define PIN_CS   5
-#define PIN_SCK  6
-#define PIN_MOSI 7
-#define PIN_RESET 8
-#define PIN_DC 9  // data/command
-*/
-
 #define ILI9341_TFTWIDTH 240  ///< ILI9341 max TFT width
 #define ILI9341_TFTHEIGHT 320 ///< ILI9341 max TFT height
 
@@ -76,49 +66,16 @@
 #define ILI9341_GMCTRP1 0xE0 ///< Positive Gamma Correction
 #define ILI9341_GMCTRN1 0xE1 ///< Negative Gamma Correction \
                              //#define ILI9341_PWCTR6     0xFC
-/*
-typedef struct
-{
-  spi_inst_t *port;
-  uint pin_miso;
-  uint pin_cs;
-  uint pin_sck;
-  uint pin_mosi;
-  uint pin_reset;
-  uint pin_dc;
-} ili9341_config_t;
-*/
-class ili9341
-{
-private:
-  static ili9341 *Disp_instance;
-  static spi *spi_instance;
 
-  //! singleton constructor;
-  ili9341();
+class ILI9341 : public SPI
+{
 
 public:
-  static ili9341 *getInstance()
-  {
-    if (!Disp_instance)
-      Disp_instance = new ili9341;
-    return Disp_instance;
-  }
+  ILI9341();
+  ~ILI9341();
 
-  //void ili9341_init();
   void set_command(uint8_t cmd);
   void command_param(uint8_t data);
-
-  uint16_t swap_bytes(uint16_t color)
-  {
-    return (color >> 8) | (color << 8);
-  }
-  //void ili9341_write_data(uint8_t *buffer, int bytes);
-  //void ili9341_start_writing();
-  //void ili9341_stop_writing();
-  //void ili9341_write_data_continuous(uint8_t *biffer, int bytes);
+  //void command_param(uint16_t data);
+  void readData(uint8_t cmd);
 };
-
-//extern ili9341_config_t ili9341_config;
-
-//extern const uint8_t font6x8[];

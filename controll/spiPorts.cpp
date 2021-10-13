@@ -1,6 +1,6 @@
 #include "include/spiPorts.h"
 
-spiPorts::spiPorts(
+SPIPORTS::SPIPORTS(
     int sp1,
     int miso,
     int cs,
@@ -9,6 +9,3 @@ spiPorts::spiPorts(
     int reset,
     int dc) : spi(spi), miso(miso), cs(cs), sck(sck), mosi(mosi), reset(reset), dc(dc) {}
 
-spiPorts::~spiPorts()
-{
-}
