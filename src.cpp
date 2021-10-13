@@ -47,7 +47,7 @@ int main()
     std::cout << "Test\n";
     sleep_ms(3000);
     std::cout << "Test\n";
-    multicore_launch_core1(core1_entry);
+    //multicore_launch_core1(core1_entry);
     //ILI9341 *display = display->getInstance();
     DISPLAYDRIVER *driver = new DISPLAYDRIVER();
     std::cout << "Reading information\n";

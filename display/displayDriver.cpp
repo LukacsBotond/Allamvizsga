@@ -48,14 +48,11 @@ void DISPLAYDRIVER::demo()
 
     // start writing
     display->set_command(ILI9341_RAMWR);
-    cout << "HERE1" << endl;
-
     int screen_idx = 0;
-    cout << "HERE2" << endl;
     while(1)
     {
         uint8_t buff[1];
-        buff[0] = (uint8_t)0x0F;
+        buff[0] = (uint8_t)0x00;
         display->write_data(buff, 1);
     }
 }
