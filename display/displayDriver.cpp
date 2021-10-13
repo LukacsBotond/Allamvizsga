@@ -9,27 +9,6 @@ using namespace std;
 DISPLAYDRIVER::DISPLAYDRIVER(/* args */)
 {
     display = new ILI9341();
-    std::cout << "got ili9341 instance" << std::endl;
-}
-
-DISPLAYDRIVER::~DISPLAYDRIVER()
-{
-    delete display;
-}
-
-void DISPLAYDRIVER::readDispInformation()
-{
-    std::cout << "display adatai" << std::endl;
-    display->readData(0x04);
-    //display->set_command(0x28);
-    //sleep_ms(1000);
-    //display->set_command(0x29);
-    //sleep_ms(1000);
-
-}
-
-void DISPLAYDRIVER::demo()
-{
     // setup to draw the whole screen
 
     // column address set
@@ -48,11 +27,20 @@ void DISPLAYDRIVER::demo()
 
     // start writing
     display->set_command(ILI9341_RAMWR);
-    int screen_idx = 0;
-    while(1)
+}
+
+DISPLAYDRIVER::~DISPLAYDRIVER()
+{
+    delete display;
+}
+
+void DISPLAYDRIVER::fillColor(uint16_t color)
+{
+    display->changeFormat(true);
+    int pixels = 240*320;
+    for (int i = 0; i < pixels; i++)
     {
-        uint8_t buff[1];
-        buff[0] = (uint8_t)0x00;
-        display->write_data(buff, 1);
+        display->write_data(&color, 1);
     }
+    display->changeFormat(false);
 }

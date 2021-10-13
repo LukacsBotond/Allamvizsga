@@ -46,6 +46,26 @@ SPI::~SPI()
     delete ports;
 }
 
+void SPI::changeFormat(bool dub)
+{
+    if (dub)
+    {
+        spi_set_format(spi_Hw_inst,
+                       16,
+                       SPI_CPOL_0,
+                       SPI_CPHA_0,
+                       SPI_MSB_FIRST);
+    }
+    else
+    {
+        spi_set_format(spi_Hw_inst,
+                       8,
+                       SPI_CPOL_0,
+                       SPI_CPHA_0,
+                       SPI_MSB_FIRST);
+    }
+}
+
 void SPI::cs_select()
 {
     asm volatile("nop \n nop \n nop");
@@ -59,13 +79,13 @@ void SPI::cs_deselect()
     asm volatile("nop \n nop \n nop");
 }
 
-void SPI::write_data(uint8_t* buffer, int bytes)
+void SPI::write_data(uint8_t *buffer, int bytes)
 {
     cs_select();
     spi_write_blocking(spi_Hw_inst, buffer, bytes);
     cs_deselect();
 }
-void SPI::write_data_continuous(uint8_t* buffer, int bytes)
+void SPI::write_data_continuous(uint8_t *buffer, int bytes)
 {
     spi_write_blocking(spi_Hw_inst, buffer, bytes);
 }
@@ -79,26 +99,7 @@ void SPI::write_data(uint16_t *buffer, int bytes)
 
 void SPI::write_data_continuous(uint16_t *buffer, int bytes)
 {
-    spi_write16_blocking(spi_Hw_inst,buffer, bytes);
-}
-
-void SPI::read_data(uint8_t send, uint8_t *buf, int bytes)
-{
-    sleep_ms(10);
-    gpio_put(ports->dc, 0);
-    sleep_ms(10);
-    spi_write_blocking(spi_Hw_inst, &send, 1);
-    gpio_put(ports->dc, 1);
-    sleep_ms(10);
-    cout << "read" << spi_read_blocking(spi_Hw_inst, 0, buf, bytes);
-    sleep_ms(10);
-    cout << "\nAdat: ";
-    for (uint8_t i = 0; i < bytes; i++)
-    {
-        cout << (int)i << " " << (int)buf[i] << "\n";
-        sleep_ms(200);
-    }
-    cout << endl;
+    spi_write16_blocking(spi_Hw_inst, buffer, bytes);
 }
 
 //* DEBUG
@@ -106,7 +107,7 @@ void SPI::read_data(uint8_t send, uint8_t *buf, int bytes)
 void SPI::printer()
 {
     cout << "DEBUG" << endl;
-    std::cout << "spi: " << ports->spi<< std::endl;
+    std::cout << "spi: " << ports->spi << std::endl;
     std::cout << "cs: " << ports->cs << std::endl;
     std::cout << "dc: " << ports->dc << std::endl;
     std::cout << "miso: " << ports->miso << std::endl;

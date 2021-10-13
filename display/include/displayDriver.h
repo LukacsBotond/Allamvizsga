@@ -9,9 +9,6 @@ private:
 public:
     DISPLAYDRIVER(/* args */);
     ~DISPLAYDRIVER();
-
-    void readDispInformation();
-
-    void demo();
+    void fillColor(uint16_t color = 0x0000);
 };
 

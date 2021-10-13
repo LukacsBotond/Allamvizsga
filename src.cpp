@@ -24,10 +24,11 @@ int64_t alarm_callback(alarm_id_t id, void *user_data) {
 uint8_t counter = 0;
 void gpio_callback(uint gpio, uint32_t events)
 {
-    std::cout<<"miso: "<<gpio_get(4)<<" cs: "<<gpio_get(5)<<" mosi: "<<gpio_get(7)<<" dc "<<gpio_get(9)<<std::endl;
+    std::cout << "miso: " << gpio_get(4) << " cs: " << gpio_get(5) << " mosi: " << gpio_get(7) << " dc " << gpio_get(9) << std::endl;
     counter++;
-    if (counter == 8){
-        std::cout<<std::endl;
+    if (counter == 8)
+    {
+        std::cout << std::endl;
         counter = 0;
     }
 }
@@ -45,13 +46,23 @@ int main()
 {
     stdio_init_all();
     std::cout << "Test\n";
-    sleep_ms(3000);
+    sleep_ms(500);
     std::cout << "Test\n";
     //multicore_launch_core1(core1_entry);
     //ILI9341 *display = display->getInstance();
     DISPLAYDRIVER *driver = new DISPLAYDRIVER();
-    std::cout << "Reading information\n";
-    driver->demo();
+
+    driver->fillColor();
+    sleep_ms(1000);
+    driver->fillColor(0xFFFF);
+    sleep_ms(1000);
+    driver->fillColor(0x07FF);
+    sleep_ms(1000);
+    driver->fillColor(0x083F);
+    sleep_ms(1000);
+    driver->fillColor(0xDAFF);
+    sleep_ms(1000);
+    driver->fillColor(0xAC02);
     while (1)
     {
         sleep_ms(5000);
