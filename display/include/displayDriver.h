@@ -4,11 +4,14 @@
 
 class DISPLAYDRIVER
 {
-private:
+protected:
+    int rowHeight;
     ILI9341 *display;
+    uint16_t* row;
 public:
-    DISPLAYDRIVER(/* args */);
+    DISPLAYDRIVER();
     ~DISPLAYDRIVER();
+    //* crears the screen with a set color
     void fillColor(uint16_t color = 0x0000);
 };
 

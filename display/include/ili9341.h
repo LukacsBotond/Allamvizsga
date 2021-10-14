@@ -76,6 +76,4 @@ public:
 
   void set_command(uint8_t cmd);
   void command_param(uint8_t data);
-  //void command_param(uint16_t data);
-  void readData(uint8_t cmd);
 };

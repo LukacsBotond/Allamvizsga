@@ -27,6 +27,10 @@ DISPLAYDRIVER::DISPLAYDRIVER(/* args */)
 
     // start writing
     display->set_command(ILI9341_RAMWR);
+
+    
+
+
 }
 
 DISPLAYDRIVER::~DISPLAYDRIVER()
