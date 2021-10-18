@@ -30,7 +30,7 @@ ili9341_config_t ili9341_config = {
 };
 */
 
-ILI9341::ILI9341() : SPI(1000000, SPIPORTS(0, 4, 5, 6, 7, 8, 9))
+ILI9341::ILI9341() : SPI(100000, SPIPORTS(0, 4, 5, 6, 7, 8, 9))
 {
     //spiPorts* tmp = new spiPorts(0, 10, 13, 14, 15, 12, 11);
     //SPIPORTS *tmpPorts = new SPIPORTS(0, 4, 5, 6, 7, 8, 9);
@@ -73,18 +73,23 @@ ILI9341::ILI9341() : SPI(1000000, SPIPORTS(0, 4, 5, 6, 7, 8, 9))
     set_command(ILI9341_DISPON);
     //
 
+    set_command(ILI9341_MADCTL);
+    command_param(0b11110100);
+
     // column address set
     set_command(ILI9341_CASET);
-    command_param(0x00);
-    command_param(0x00); // start column
-    command_param(0x00);
-    command_param(0xef); // end column -> 239
-    // page address set
-    set_command(ILI9341_PASET);
     command_param(0x00);
     command_param(0x00); // start page
     command_param(0x01);
     command_param(0x3f); // end page -> 319
+
+    // page address set
+    set_command(ILI9341_PASET);
+    command_param(0x00);
+    command_param(0x00); // start column
+    command_param(0x00);
+    command_param(0xef); // end column -> 239
+
     set_command(ILI9341_RAMWR);
 }
 
@@ -99,4 +104,3 @@ void ILI9341::command_param(uint8_t data)
 {
     write_data(&data, 1);
 }
-

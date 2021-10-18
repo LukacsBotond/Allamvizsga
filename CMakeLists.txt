@@ -47,6 +47,8 @@ target_link_libraries(src
         hardware_clocks
         pico_multicore
         pico_stdlib
+        hardware_clocks
+        hardware_pll
         )
 
 #target_link_libraries(src
