@@ -11,6 +11,8 @@ protected:
 public:
     DISPLAYDRIVER();
     ~DISPLAYDRIVER();
+
+    void writeLine();
     //* crears the screen with a set color
     void fillColor(uint16_t color = 0x0000);
 };

@@ -37,7 +37,7 @@ void core1_entry()
         sleep_ms(1000);
     }
 }
-
+/*
 void resus_callback(void) {
     // Reconfigure PLL sys back to the default state of 1500 / 6 / 2 = 125MHz
     pll_init(pll_sys, 1, 400 * MHZ, 2, 1);
@@ -52,7 +52,7 @@ void resus_callback(void) {
     // Reconfigure uart as clocks have changed
     stdio_init_all();
 }
-
+*/
 
 
 int main()
@@ -60,11 +60,11 @@ int main()
 
     stdio_init_all();
     printf("Hello resus\n");
-
+/*
     clocks_enable_resus(&resus_callback);
     // Break PLL sys
     pll_deinit(pll_sys);
-
+*/
     std::cout << "Test\n";
     sleep_ms(500);
     std::cout << "Test\n";

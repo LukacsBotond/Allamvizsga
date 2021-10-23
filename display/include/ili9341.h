@@ -69,6 +69,9 @@
 
 class ILI9341 : public SPI
 {
+protected:
+  static const uint16_t height = 320;
+  static const uint16_t width = 240;
 
 public:
   ILI9341();

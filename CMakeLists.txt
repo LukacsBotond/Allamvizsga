@@ -24,6 +24,8 @@ pico_sdk_init()
 add_executable(src src.cpp
         display/ili9341.cpp
         display/displayDriver.cpp
+        display/characterDisplay.cpp
+        display/graphDisplay.cpp
         controll/spi.cpp
         controll/spiPorts.cpp )
 
