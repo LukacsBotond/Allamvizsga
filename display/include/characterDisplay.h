@@ -4,6 +4,10 @@
 
 class CHARACTERDISPLAY : public DISPLAYDRIVER
 {
+private:
+    void insertChar(uint8_t position,const uint8_t* charSet);
+    uint16_t bg_Color;
+    uint16_t fg_Color;
 protected:
     const uint8_t charset[95][8] =
         {{//
@@ -198,6 +202,7 @@ protected:
           0x08, 0x15, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00}};
 
 public:
+    CHARACTERDISPLAY(uint16_t bg_Color, uint16_t fg_Color);
     //translates char to a printable character
     const uint8_t* transChartoCharSet(char character);
     void printLine(std::string str);

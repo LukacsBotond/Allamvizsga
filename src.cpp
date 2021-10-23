@@ -10,6 +10,7 @@
 
 #include "display/include/ili9341.h"
 #include "display/include/displayDriver.h"
+#include "display/include/characterDisplay.h"
 
 #include "./common/include/common.h"
 
@@ -56,13 +57,12 @@ void resus_callback(void) {
 }
 */
 
-
 int main()
 {
 
     stdio_init_all();
     printf("Hello resus\n");
-/*
+    /*
     clocks_enable_resus(&resus_callback);
     // Break PLL sys
     pll_deinit(pll_sys);
@@ -70,11 +70,11 @@ int main()
     std::cout << "Test\n";
     sleep_ms(500);
     std::cout << "Test\n";
-    //multicore_launch_core1(core1_entry);
-    //ILI9341 *display = display->getInstance();
-    DISPLAYDRIVER *driver = new DISPLAYDRIVER();
     COMMON* common = new COMMON();
-
+    //multicore_launch_core1(core1_entry);
+    /*
+    DISPLAYDRIVER *driver = new DISPLAYDRIVER();
+    
     driver->fillColor();
     sleep_ms(1000);
     std::cout<<"fekete\n";
@@ -91,6 +91,17 @@ int main()
     sleep_ms(1000);
     std::cout<<"kek\n";
     driver->fillColor(common->swap_bytes(0x081F));
+    */
+    sleep_ms(1000);
+    CHARACTERDISPLAY *charDriver = new CHARACTERDISPLAY( 0x0000 , 0xFFFF );
+    charDriver->fillColor(common->swap_bytes(0x081F));
+    charDriver->printLine("!!!!");
+    charDriver->printLine("!!!!");
+    charDriver->printLine("!!!!");
+    charDriver->printLine("=");
+    charDriver->printLine("almafa");
+
+
     while (1)
     {
         sleep_ms(5000);

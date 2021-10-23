@@ -20,5 +20,9 @@ public:
     void fillRestScreen(uint16_t color = 0x0000);
     //* crears the screen with a set color
     void fillColor(uint16_t color = 0x0000);
+
+
+    //* DEBUG 
+    void dumpRow();
 };
 
