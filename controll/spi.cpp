@@ -46,6 +46,26 @@ SPI::~SPI()
     delete ports;
 }
 
+void SPI::changeFormat(bool dub)
+{
+    if (dub)
+    {
+        spi_set_format(spi_Hw_inst,
+                       16,
+                       SPI_CPOL_0,
+                       SPI_CPHA_0,
+                       SPI_MSB_FIRST);
+    }
+    else
+    {
+        spi_set_format(spi_Hw_inst,
+                       8,
+                       SPI_CPOL_0,
+                       SPI_CPHA_0,
+                       SPI_MSB_FIRST);
+    }
+}
+
 void SPI::cs_select()
 {
     asm volatile("nop \n nop \n nop");

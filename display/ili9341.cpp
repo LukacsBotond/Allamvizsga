@@ -40,6 +40,7 @@ ILI9341::ILI9341() : SPI(100000, SPIPORTS(0, 4, 5, 6, 7, 8, 9))
     gpio_put(ports->reset, 0);
     sleep_ms(10);
     gpio_put(ports->reset, 1);
+    changeFormat(false);
     set_command(0x01); //soft reset
     sleep_ms(100);
     set_command(ILI9341_GAMMASET);
@@ -72,6 +73,7 @@ ILI9341::ILI9341() : SPI(100000, SPIPORTS(0, 4, 5, 6, 7, 8, 9))
     set_command(ILI9341_DISPON);
     //
 
+    //landscape mode
     set_command(ILI9341_MADCTL);
     command_param(0b11110100);
 

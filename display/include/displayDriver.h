@@ -6,13 +6,18 @@ class DISPLAYDRIVER
 {
 protected:
     int rowHeight;
-    ILI9341 *display;
-    uint16_t* row;
+    static const uint8_t lineHeight = 8;
+    static uint8_t currentLine;
+    static ILI9341 *display;
+    static uint16_t rowSize;
+    static uint16_t* row;
 public:
     DISPLAYDRIVER();
     ~DISPLAYDRIVER();
 
     void writeLine();
+
+    void fillRestScreen(uint16_t color = 0x0000);
     //* crears the screen with a set color
     void fillColor(uint16_t color = 0x0000);
 };

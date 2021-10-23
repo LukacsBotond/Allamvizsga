@@ -11,6 +11,8 @@
 #include "display/include/ili9341.h"
 #include "display/include/displayDriver.h"
 
+#include "./common/include/common.h"
+
 /*
 int64_t alarm_callback(alarm_id_t id, void *user_data) {
     // Put your timeout handler code in here
@@ -71,18 +73,24 @@ int main()
     //multicore_launch_core1(core1_entry);
     //ILI9341 *display = display->getInstance();
     DISPLAYDRIVER *driver = new DISPLAYDRIVER();
+    COMMON* common = new COMMON();
 
     driver->fillColor();
     sleep_ms(1000);
-    driver->fillColor(0xFFFF);
+    std::cout<<"fekete\n";
+    driver->fillColor(common->swap_bytes(0x0000));
     sleep_ms(1000);
-    driver->fillColor(0x07FF);
+    std::cout<<"feher\n";
+    driver->fillColor(common->swap_bytes(0xFFFF));
     sleep_ms(1000);
-    driver->fillColor(0x083F);
+    std::cout<<"piros\n";
+    driver->fillColor(common->swap_bytes(0xF800));
     sleep_ms(1000);
-    driver->fillColor(0xDAFF);
+    std::cout<<"Sarga\n";
+    driver->fillColor(common->swap_bytes(0xFE60));
     sleep_ms(1000);
-    driver->fillColor(0xAC02);
+    std::cout<<"kek\n";
+    driver->fillColor(common->swap_bytes(0x081F));
     while (1)
     {
         sleep_ms(5000);

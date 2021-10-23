@@ -27,7 +27,9 @@ add_executable(src src.cpp
         display/characterDisplay.cpp
         display/graphDisplay.cpp
         controll/spi.cpp
-        controll/spiPorts.cpp )
+        controll/spiPorts.cpp
+        common/common.cpp
+        )
 
 pico_set_program_name(src "src")
 pico_set_program_version(src "0.1")

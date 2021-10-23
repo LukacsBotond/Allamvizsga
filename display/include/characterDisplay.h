@@ -1,5 +1,6 @@
 #pragma once
 #include "./displayDriver.h"
+#include <iostream>
 
 class CHARACTERDISPLAY : public DISPLAYDRIVER
 {
@@ -196,7 +197,8 @@ protected:
          {// ~
           0x08, 0x15, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00}};
 
+public:
     //translates char to a printable character
-    uint8_t transChartoCharSet(char character);
-    
+    const uint8_t* transChartoCharSet(char character);
+    void printLine(std::string str);
 };
