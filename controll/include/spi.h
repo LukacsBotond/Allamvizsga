@@ -9,7 +9,7 @@ class SPI
 {
 protected:
     spi_inst_t *spi_Hw_inst;
-    
+
 public:
     SPIPORTS *ports;
     SPI(int frekv, SPIPORTS ports);
@@ -18,7 +18,6 @@ public:
     //* if true then it sets SPI to write 16 bit
     //* else outputs 8 bit only
     void changeFormat(bool dub);
-
     void cs_select();
     void cs_deselect();
 
@@ -27,9 +26,6 @@ public:
 
     void write_data(uint16_t *buffer, int bytes);
     void write_data_continuous(uint16_t *buffer, int bytes);
-    //! cs selects needed before/after
-    void read_data(uint8_t send, uint8_t* buf, int bytes);
-
 
     //* DEBUG
     void printer();

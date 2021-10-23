@@ -24,8 +24,12 @@ pico_sdk_init()
 add_executable(src src.cpp
         display/ili9341.cpp
         display/displayDriver.cpp
+        display/characterDisplay.cpp
+        display/graphDisplay.cpp
         controll/spi.cpp
-        controll/spiPorts.cpp )
+        controll/spiPorts.cpp
+        common/common.cpp
+        )
 
 pico_set_program_name(src "src")
 pico_set_program_version(src "0.1")
@@ -47,6 +51,8 @@ target_link_libraries(src
         hardware_clocks
         pico_multicore
         pico_stdlib
+        hardware_clocks
+        hardware_pll
         )
 
 #target_link_libraries(src

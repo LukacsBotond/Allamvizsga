@@ -16,8 +16,8 @@ SPI::SPI(int frekv, SPIPORTS portsIn)
     {
         spi_Hw_inst = spi0;
     }
-    spi_init(spi_Hw_inst, 1000000000);
-    int baudrate = spi_set_baudrate(spi_Hw_inst, 1000000000);
+    spi_init(spi_Hw_inst, frekv);
+    int baudrate = spi_set_baudrate(spi_Hw_inst, UINT32_MAX);
     std::cout << "baudrate: " << baudrate << std::endl;
     gpio_set_function(ports->miso, GPIO_FUNC_SPI);
     gpio_set_function(ports->sck, GPIO_FUNC_SPI);

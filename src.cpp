@@ -1,19 +1,18 @@
 #include <stdio.h>
 #include <iostream>
 #include "pico/stdlib.h"
-#include "hardware/uart.h"
 #include "hardware/gpio.h"
-#include "hardware/divider.h"
 #include "hardware/spi.h"
-#include "hardware/dma.h"
-#include "hardware/pio.h"
-#include "hardware/interp.h"
-#include "hardware/timer.h"
-#include "hardware/watchdog.h"
 #include "hardware/clocks.h"
 #include "pico/multicore.h"
+#include "hardware/clocks.h"
+#include "hardware/pll.h"
+
 #include "display/include/ili9341.h"
 #include "display/include/displayDriver.h"
+#include "display/include/characterDisplay.h"
+
+#include "./common/include/common.h"
 
 /*
 int64_t alarm_callback(alarm_id_t id, void *user_data) {
@@ -41,28 +40,68 @@ void core1_entry()
         sleep_ms(1000);
     }
 }
+/*
+void resus_callback(void) {
+    // Reconfigure PLL sys back to the default state of 1500 / 6 / 2 = 125MHz
+    pll_init(pll_sys, 1, 400 * MHZ, 2, 1);
+
+    // CLK SYS = PLL SYS (125MHz) / 1 = 125MHz
+    clock_configure(clk_sys,
+                    CLOCKS_CLK_SYS_CTRL_SRC_VALUE_CLKSRC_CLK_SYS_AUX,
+                    CLOCKS_CLK_SYS_CTRL_AUXSRC_VALUE_CLKSRC_PLL_SYS,
+                    200 * MHZ,
+                    200 * MHZ);
+
+    // Reconfigure uart as clocks have changed
+    stdio_init_all();
+}
+*/
 
 int main()
 {
+
     stdio_init_all();
+    printf("Hello resus\n");
+    /*
+    clocks_enable_resus(&resus_callback);
+    // Break PLL sys
+    pll_deinit(pll_sys);
+*/
     std::cout << "Test\n";
     sleep_ms(500);
     std::cout << "Test\n";
+    COMMON* common = new COMMON();
     //multicore_launch_core1(core1_entry);
-    //ILI9341 *display = display->getInstance();
+    /*
     DISPLAYDRIVER *driver = new DISPLAYDRIVER();
-
+    
     driver->fillColor();
     sleep_ms(1000);
-    driver->fillColor(0xFFFF);
+    std::cout<<"fekete\n";
+    driver->fillColor(common->swap_bytes(0x0000));
     sleep_ms(1000);
-    driver->fillColor(0x07FF);
+    std::cout<<"feher\n";
+    driver->fillColor(common->swap_bytes(0xFFFF));
     sleep_ms(1000);
-    driver->fillColor(0x083F);
+    std::cout<<"piros\n";
+    driver->fillColor(common->swap_bytes(0xF800));
     sleep_ms(1000);
-    driver->fillColor(0xDAFF);
+    std::cout<<"Sarga\n";
+    driver->fillColor(common->swap_bytes(0xFE60));
     sleep_ms(1000);
-    driver->fillColor(0xAC02);
+    std::cout<<"kek\n";
+    driver->fillColor(common->swap_bytes(0x081F));
+    */
+    sleep_ms(1000);
+    CHARACTERDISPLAY *charDriver = new CHARACTERDISPLAY( 0x0000 , 0xFFFF );
+    charDriver->fillColor(common->swap_bytes(0x081F));
+    charDriver->printLine("!!!!");
+    charDriver->printLine("!!!!");
+    charDriver->printLine("!!!!");
+    charDriver->printLine("=");
+    charDriver->printLine("almafa");
+
+
     while (1)
     {
         sleep_ms(5000);

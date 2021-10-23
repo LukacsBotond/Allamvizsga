@@ -69,13 +69,13 @@
 
 class ILI9341 : public SPI
 {
-
 public:
+  static const uint16_t height = 240;
+  static const uint16_t width = 320;
+
   ILI9341();
   ~ILI9341();
 
   void set_command(uint8_t cmd);
   void command_param(uint8_t data);
-  //void command_param(uint16_t data);
-  void readData(uint8_t cmd);
 };
