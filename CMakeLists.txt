@@ -22,6 +22,7 @@ pico_sdk_init()
 # Add executable. Default name is the project name, version 0.1
 
 add_executable(src src.cpp
+        ADC/ADC.cpp
         display/ili9341.cpp
         display/displayDriver.cpp
         display/characterDisplay.cpp
@@ -43,12 +44,13 @@ target_link_libraries(src pico_stdlib)
 # Add any user requested libraries
 target_link_libraries(src
         hardware_spi
-        hardware_dma
         hardware_pio
         hardware_interp
         hardware_timer
         hardware_watchdog
         hardware_clocks
+        hardware_adc
+        hardware_dma
         pico_multicore
         pico_stdlib
         hardware_clocks

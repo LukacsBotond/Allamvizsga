@@ -1,14 +1,23 @@
 #pragma once
-#include <stdio.h>
-#include "pico/stdlib.h"
-#include "hardware/gpio.h"
-#include "hardware/adc.h"
+#include "./IADC.h"
 
-class ADC{
-    public:
+class ADC : public IADC
+{
+private:
+    uint dma_chan;
+    uint16_t CAPTURE_DEPTH = 255;
+    uint16_t* capture_buf;
 
-        ADC();
-        ~ADC();
+public:
+    ADC();
+    ~ADC();
 
-        void adcSelect(int chanel);
+    void setupFIFO() override;
+    void waitDMAFull() override;
+    void adcSelect(int chanel) override;
+    void start_freeRunning() override;
+    void stop_freeRunning() override;
+
+    //! debug
+    void printSamples() override;
 };
