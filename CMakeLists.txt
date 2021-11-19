@@ -29,6 +29,7 @@ add_executable(src src.cpp
         display/graphDisplay.cpp
         controll/spi.cpp
         controll/spiPorts.cpp
+        controll/Aswitch.cpp
         common/common.cpp
         )
 
@@ -52,6 +53,7 @@ target_link_libraries(src
         hardware_adc
         hardware_dma
         pico_multicore
+ #       pico_sem
         pico_stdlib
         hardware_clocks
         hardware_pll

@@ -14,10 +14,12 @@ public:
 
     void setupFIFO() override;
     void waitDMAFull() override;
+
+    //* can throw exception
     void adcSelect(int chanel) override;
     void start_freeRunning() override;
     void stop_freeRunning() override;
-
+    void set_clkDiv(uint div);
     //! debug
     void printSamples() override;
 };

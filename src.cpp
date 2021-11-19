@@ -7,20 +7,20 @@
 #include "pico/multicore.h"
 #include "hardware/clocks.h"
 #include "hardware/pll.h"
+#include "pico/sem.h"
 
 #include "display/include/ili9341.h"
 #include "display/include/displayDriver.h"
 #include "display/include/characterDisplay.h"
 #include "ADC/include/ADC.h"
+#include "controll/include/Aswitch.h"
 
-#include "./common/include/common.h"
+#include "common/include/common.h"
+
+static struct semaphore startSemaphore;
+static struct semaphore doneSemaphore;
 
 /*
-int64_t alarm_callback(alarm_id_t id, void *user_data) {
-    // Put your timeout handler code in here
-    return 0;
-}
-*/
 uint8_t counter = 0;
 void gpio_callback(uint gpio, uint32_t events)
 {
@@ -32,10 +32,28 @@ void gpio_callback(uint gpio, uint32_t events)
         counter = 0;
     }
 }
+*/
 
+int channel = 0;
+
+//when main core starts the semaphore it prints
 void core1_entry()
 {
-    gpio_set_irq_enabled_with_callback(6, GPIO_IRQ_EDGE_RISE, true, &gpio_callback);
+    IADC *adc = new ADC();
+    
+    while (1)
+    {
+        adc->setupFIFO();
+        sem_acquire_blocking(&startSemaphore);
+        adc->adcSelect(channel);
+        adc->start_freeRunning();
+        adc->waitDMAFull();
+        adc->stop_freeRunning();
+        adc->printSamples();
+        sem_release(&doneSemaphore);
+    }
+    //gpio_set_irq_enabled_with_callback(6, GPIO_IRQ_EDGE_RISE, true, &gpio_callback);
+
     while (1)
     {
         sleep_ms(1000);
@@ -65,15 +83,72 @@ int main()
     std::cout << "Test\n";
     sleep_ms(3000);
     std::cout << "Test\n";
-    COMMON* common = new COMMON();
-    IADC* adc = new ADC();
-    adc->adcSelect(0);
-    adc->setupFIFO();
-    adc->start_freeRunning();
-    adc->waitDMAFull();
-    adc->stop_freeRunning();
-    adc->printSamples();
-    //multicore_launch_core1(core1_entry);
+    //COMMON *common = new COMMON();
+    IASWITCH *aswitch1 = new ASWITHCH(330, 4600, 0, 16, 17);
+    IASWITCH *aswitch2 = new ASWITHCH(330, 4600, 0, 18, 19);
+    IASWITCH *aswitch3 = new ASWITHCH(330, 4600, 0, 20, 21);
+    sem_init(&startSemaphore, 0, 1);
+    sem_init(&doneSemaphore, 0, 1);
+
+    multicore_launch_core1(core1_entry);
+    channel = 0;
+    aswitch1->selectOutput(0);
+    aswitch2->selectOutput(0);
+    aswitch3->selectOutput(0);
+    sem_release(&startSemaphore);
+    sem_acquire_blocking(&doneSemaphore);
+    sleep_ms(5000);
+    aswitch1->selectOutput(1);
+    aswitch2->selectOutput(0);
+    aswitch3->selectOutput(0);
+    sem_release(&startSemaphore);
+    sem_acquire_blocking(&doneSemaphore);
+    sleep_ms(5000);
+    aswitch1->selectOutput(0);
+    aswitch2->selectOutput(1);
+    aswitch3->selectOutput(0);
+    sem_release(&startSemaphore);
+    sem_acquire_blocking(&doneSemaphore);
+    sleep_ms(5000);
+    channel = 1;
+    aswitch1->selectOutput(0);
+    aswitch2->selectOutput(0);
+    aswitch3->selectOutput(0);
+    sem_release(&startSemaphore);
+    sem_acquire_blocking(&doneSemaphore);
+    sleep_ms(5000);
+    aswitch1->selectOutput(1);
+    aswitch2->selectOutput(0);
+    aswitch3->selectOutput(0);
+    sem_release(&startSemaphore);
+    sem_acquire_blocking(&doneSemaphore);
+    sleep_ms(5000);
+    aswitch1->selectOutput(0);
+    aswitch2->selectOutput(1);
+    aswitch3->selectOutput(0);
+    sem_release(&startSemaphore);
+    sem_acquire_blocking(&doneSemaphore);
+    sleep_ms(5000);
+    channel = 2;
+    aswitch1->selectOutput(0);
+    aswitch2->selectOutput(0);
+    aswitch3->selectOutput(0);
+    sem_release(&startSemaphore);
+    sem_acquire_blocking(&doneSemaphore);
+    sleep_ms(5000);
+    aswitch1->selectOutput(1);
+    aswitch2->selectOutput(0);
+    aswitch3->selectOutput(0);
+    sem_release(&startSemaphore);
+    sem_acquire_blocking(&doneSemaphore);
+    sleep_ms(5000);
+    aswitch1->selectOutput(0);
+    aswitch2->selectOutput(1);
+    aswitch3->selectOutput(0);
+    sem_release(&startSemaphore);
+    sem_acquire_blocking(&doneSemaphore);
+    sleep_ms(5000);
+
     /*
     DISPLAYDRIVER *driver = new DISPLAYDRIVER();
     
@@ -94,7 +169,7 @@ int main()
     std::cout<<"kek\n";
     driver->fillColor(common->swap_bytes(0x081F));
     */
-   /*
+    /*
     sleep_ms(1000);
     CHARACTERDISPLAY *charDriver = new CHARACTERDISPLAY( 0x0000 , 0xFFFF );
     charDriver->fillColor(common->swap_bytes(0x081F));
@@ -104,7 +179,6 @@ int main()
     charDriver->printLine("=");
     charDriver->printLine("almafa");
 */
-
     while (1)
     {
         sleep_ms(5000);

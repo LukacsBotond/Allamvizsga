@@ -1,4 +1,5 @@
 #include "./include/ADC.h"
+#include "../Exceptions/include/NoSuchPort.h"
 
 ADC::ADC()
 {
@@ -50,13 +51,14 @@ void ADC::waitDMAFull()
     dma_channel_wait_for_finish_blocking(dma_chan);
 }
 
+
 void ADC::adcSelect(int chanel)
 {
     if (chanel > 3 || chanel < 0)
     {
         std::cout << "Wrong channel selected, 0 will be selected\n";
         adc_select_input(26);
-        return;
+        throw NOSUCHPORT("port must be 0/1/2");
     }
     adc_select_input(26 + chanel);
 }
@@ -68,6 +70,10 @@ void ADC::start_freeRunning()
 void ADC::stop_freeRunning()
 {
     adc_run(false);
+}
+
+void ADC::set_clkDiv(uint div){
+    adc_set_clkdiv(div);
 }
 
 void ADC::printSamples()

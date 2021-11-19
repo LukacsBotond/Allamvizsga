@@ -6,6 +6,7 @@
 #include "hardware/adc.h"
 #include "hardware/dma.h"
 
+#include "../../Exceptions/include/NoSuchPort.h"
 class IADC
 {
 public:
@@ -14,7 +15,7 @@ public:
     virtual void adcSelect(int chanel) = 0;
     virtual void start_freeRunning() = 0;
     virtual void stop_freeRunning() = 0;
-
+    virtual void set_clkDiv(uint div) = 0;
     //! debug
     virtual void printSamples() = 0;
 };
