@@ -20,6 +20,8 @@ public:
     void start_freeRunning() override;
     void stop_freeRunning() override;
     void set_clkDiv(uint div);
+    uint16_t getCaptureDepth();
+    uint16_t* getCaptureBuff();
     //! debug
     void printSamples() override;
 };

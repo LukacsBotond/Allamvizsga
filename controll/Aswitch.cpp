@@ -4,11 +4,10 @@
 ASWITHCH::ASWITHCH(uint outRes1, uint outRes2, uint outRes3, uint gpio1, uint gpio2)
     : outRes1(outRes1), outRes2(outRes2), outRes3(outRes3), gpio1(gpio1), gpio2(gpio2)
 {
-
+    gpio_set_dir(gpio1, GPIO_IN);
+    gpio_set_dir(gpio2, GPIO_IN);
     gpio_init(gpio1);
-    gpio_set_dir(gpio1, GPIO_OUT);
     gpio_init(gpio2);
-    gpio_set_dir(gpio2, GPIO_OUT);
 }
 //! change later
 void ASWITHCH::selectOutput(uint port)

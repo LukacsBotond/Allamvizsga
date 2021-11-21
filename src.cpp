@@ -13,7 +13,7 @@
 #include "display/include/displayDriver.h"
 #include "display/include/characterDisplay.h"
 #include "ADC/include/ADC.h"
-#include "controll/include/Aswitch.h"
+#include "controll/include/BaseSwitch.h"
 
 #include "common/include/common.h"
 
@@ -40,7 +40,7 @@ int channel = 0;
 void core1_entry()
 {
     IADC *adc = new ADC();
-    
+
     while (1)
     {
         adc->setupFIFO();
@@ -84,70 +84,79 @@ int main()
     sleep_ms(3000);
     std::cout << "Test\n";
     //COMMON *common = new COMMON();
-    IASWITCH *aswitch1 = new ASWITHCH(330, 4600, 0, 16, 17);
-    IASWITCH *aswitch2 = new ASWITHCH(330, 4600, 0, 18, 19);
-    IASWITCH *aswitch3 = new ASWITHCH(330, 4600, 0, 20, 21);
+    IASWITCH *aswitch1 = new BASESWITCH(330, 4600, 0, 16, 17);
+    //IASWITCH *aswitch2 = new BASESWITCH(330, 4600, 0, 18, 19);
+    IASWITCH *aswitch3 = new BASESWITCH(330, 4600, 0, 20, 21);
     sem_init(&startSemaphore, 0, 1);
     sem_init(&doneSemaphore, 0, 1);
 
     multicore_launch_core1(core1_entry);
     channel = 0;
-    aswitch1->selectOutput(0);
-    aswitch2->selectOutput(0);
-    aswitch3->selectOutput(0);
+    sleep_ms(3000);
+    //drain
+    aswitch1->selectOutput(5);
+    aswitch3->selectOutput(5);
     sem_release(&startSemaphore);
     sem_acquire_blocking(&doneSemaphore);
-    sleep_ms(5000);
-    aswitch1->selectOutput(1);
-    aswitch2->selectOutput(0);
-    aswitch3->selectOutput(0);
+    sleep_ms(3000);
+    //charge
+    aswitch1->selectOutput(2);
+    aswitch3->selectOutput(5);
     sem_release(&startSemaphore);
     sem_acquire_blocking(&doneSemaphore);
-    sleep_ms(5000);
-    aswitch1->selectOutput(0);
-    aswitch2->selectOutput(1);
-    aswitch3->selectOutput(0);
+    sleep_ms(3000);
+    //drain
+    aswitch1->selectOutput(5);
+    aswitch3->selectOutput(5);
     sem_release(&startSemaphore);
     sem_acquire_blocking(&doneSemaphore);
-    sleep_ms(5000);
-    channel = 1;
-    aswitch1->selectOutput(0);
-    aswitch2->selectOutput(0);
-    aswitch3->selectOutput(0);
+    sleep_ms(3000);
+    //charge
+    aswitch1->selectOutput(5);
+    aswitch3->selectOutput(2);
     sem_release(&startSemaphore);
     sem_acquire_blocking(&doneSemaphore);
-    sleep_ms(5000);
-    aswitch1->selectOutput(1);
-    aswitch2->selectOutput(0);
-    aswitch3->selectOutput(0);
+    sleep_ms(3000);
+    //drain
+    aswitch1->selectOutput(5);
+    aswitch3->selectOutput(5);
     sem_release(&startSemaphore);
     sem_acquire_blocking(&doneSemaphore);
-    sleep_ms(5000);
-    aswitch1->selectOutput(0);
-    aswitch2->selectOutput(1);
-    aswitch3->selectOutput(0);
-    sem_release(&startSemaphore);
-    sem_acquire_blocking(&doneSemaphore);
-    sleep_ms(5000);
+    sleep_ms(3000);
+
+    std::cout<<"channel 2\n";
+
     channel = 2;
-    aswitch1->selectOutput(0);
-    aswitch2->selectOutput(0);
-    aswitch3->selectOutput(0);
+    //drain
+    aswitch1->selectOutput(5);
+    aswitch3->selectOutput(5);
     sem_release(&startSemaphore);
     sem_acquire_blocking(&doneSemaphore);
-    sleep_ms(5000);
-    aswitch1->selectOutput(1);
-    aswitch2->selectOutput(0);
-    aswitch3->selectOutput(0);
+    sleep_ms(3000);
+    //charge
+    aswitch1->selectOutput(2);
+    aswitch3->selectOutput(5);
     sem_release(&startSemaphore);
     sem_acquire_blocking(&doneSemaphore);
-    sleep_ms(5000);
-    aswitch1->selectOutput(0);
-    aswitch2->selectOutput(1);
-    aswitch3->selectOutput(0);
+    sleep_ms(3000);
+    //drain
+    aswitch1->selectOutput(5);
+    aswitch3->selectOutput(5);
     sem_release(&startSemaphore);
     sem_acquire_blocking(&doneSemaphore);
-    sleep_ms(5000);
+    sleep_ms(3000);
+    //charge
+    aswitch1->selectOutput(5);
+    aswitch3->selectOutput(2);
+    sem_release(&startSemaphore);
+    sem_acquire_blocking(&doneSemaphore);
+    sleep_ms(3000);
+    //drain
+    aswitch1->selectOutput(5);
+    aswitch3->selectOutput(5);
+    sem_release(&startSemaphore);
+    sem_acquire_blocking(&doneSemaphore);
+    sleep_ms(3000);
 
     /*
     DISPLAYDRIVER *driver = new DISPLAYDRIVER();

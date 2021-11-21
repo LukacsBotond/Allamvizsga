@@ -9,6 +9,7 @@ class ASWITHCH : public IASWITCH
     uint gpio1;
     uint gpio2;
 public:
+    //initialize high Z
     ASWITHCH(uint outRes1,uint outRes2,uint outRes3, uint gpio1, uint gpio2);
 
     void selectOutput(uint port) override;

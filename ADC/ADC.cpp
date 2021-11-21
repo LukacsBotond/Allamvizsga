@@ -8,7 +8,7 @@ ADC::ADC()
     adc_gpio_init(27);
     adc_gpio_init(28);
     adc_init();
-    adc_select_input(26);
+    adc_select_input(0);
 
     adc_set_clkdiv(0);
     adc_set_temp_sensor_enabled(false);
@@ -60,7 +60,7 @@ void ADC::adcSelect(int chanel)
         adc_select_input(26);
         throw NOSUCHPORT("port must be 0/1/2");
     }
-    adc_select_input(26 + chanel);
+    adc_select_input(chanel);
 }
 
 void ADC::start_freeRunning()
@@ -75,6 +75,11 @@ void ADC::stop_freeRunning()
 void ADC::set_clkDiv(uint div){
     adc_set_clkdiv(div);
 }
+
+uint16_t* ADC::getCaptureBuff(){
+
+}
+
 
 void ADC::printSamples()
 {

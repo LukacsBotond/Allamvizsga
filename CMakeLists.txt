@@ -29,7 +29,10 @@ add_executable(src src.cpp
         display/graphDisplay.cpp
         controll/spi.cpp
         controll/spiPorts.cpp
-        controll/Aswitch.cpp
+
+#        controll/Aswitch.cpp
+        controll/BaseSwitch.cpp
+
         common/common.cpp
         )
 
