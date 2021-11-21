@@ -23,10 +23,16 @@ pico_sdk_init()
 
 add_executable(src src.cpp
         ADC/ADC.cpp
+
+        Calculate/BaseCalculate.cpp
+        Calculate/BaseValues.cpp
+        Calculate/BaseCleanInput.cpp
+
         display/ili9341.cpp
         display/displayDriver.cpp
         display/characterDisplay.cpp
         display/graphDisplay.cpp
+
         controll/spi.cpp
         controll/spiPorts.cpp
 

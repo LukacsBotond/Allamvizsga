@@ -14,7 +14,8 @@ ADC::ADC()
     adc_set_temp_sensor_enabled(false);
 }
 
-ADC::~ADC(){
+ADC::~ADC()
+{
     delete capture_buf;
 }
 
@@ -51,7 +52,6 @@ void ADC::waitDMAFull()
     dma_channel_wait_for_finish_blocking(dma_chan);
 }
 
-
 void ADC::adcSelect(int chanel)
 {
     if (chanel > 3 || chanel < 0)
@@ -72,14 +72,20 @@ void ADC::stop_freeRunning()
     adc_run(false);
 }
 
-void ADC::set_clkDiv(uint div){
+void ADC::set_clkDiv(uint div)
+{
     adc_set_clkdiv(div);
 }
 
-uint16_t* ADC::getCaptureBuff(){
-
+uint16_t ADC::getCaptureDepth()
+{
+    return CAPTURE_DEPTH;
 }
 
+uint16_t *ADC::getCaptureBuff()
+{
+    return capture_buf;
+}
 
 void ADC::printSamples()
 {

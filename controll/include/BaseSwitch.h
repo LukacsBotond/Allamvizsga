@@ -10,8 +10,13 @@ private:
     uint outRes3;
     uint gpio1;
     uint gpio2;
+    uint outPort;
 public:
     BASESWITCH(uint outRes1, uint outRes2, uint outRes3, uint gpio1, uint gpio2);
 
-    virtual void selectOutput(uint port);
+    //give values to the output resistors
+    virtual void selectOutput(uint8_t port);
+
+    uint8_t getOutput() override;
+    uint getResistor(uint8_t nr) override;
 };

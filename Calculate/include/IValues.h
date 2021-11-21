@@ -1,9 +1,10 @@
 #pragma once
 
-class IVALUES{
+class IVALUES
+{
 
-    public:
-        virtual void setResistance(double res) = 0;
-        virtual double getResistance() = 0;
-
+public:
+     ~IVALUES() {};
+    virtual void setResistance(double res) = 0;
+    virtual double getResistance() = 0;
 };
