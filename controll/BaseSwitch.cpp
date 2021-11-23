@@ -28,8 +28,8 @@ BASESWITCH::BASESWITCH(uint outRes1, uint outRes2, uint outRes3, uint gpio1, uin
 void BASESWITCH::selectOutput(uint8_t port)
 {
     this->outPort = port;
-    if (port > 8)
-        throw NOSUCHPORT("port must between 0-8");
+    if (port > 5)
+        throw NOSUCHPORT("port must between 0-5");
 
     switch (port)
     {
@@ -64,6 +64,7 @@ void BASESWITCH::selectOutput(uint8_t port)
         gpio_put(gpio1, 0);
         gpio_put(gpio2, 0);
         break;
+    /*
     case 6:
         gpio_set_dir(gpio1, GPIO_OUT);
         gpio_set_dir(gpio2, GPIO_OUT);
@@ -82,6 +83,7 @@ void BASESWITCH::selectOutput(uint8_t port)
         gpio_put(gpio1, 1);
         gpio_put(gpio2, 1);
         break;
+    */
     default:
         gpio_set_dir(gpio1, GPIO_IN);
         gpio_set_dir(gpio2, GPIO_IN);
@@ -97,13 +99,12 @@ uint BASESWITCH::getResistor(uint8_t nr)
 {
     if (nr > 1)
         throw NOSUCHPORT("only 2 resistor 0/1 is used");
-
     switch (nr)
     {
     case 0:
-        return outRes1;
-    case 1:
         return outRes2;
+    case 1:
+        return outRes1;
     default:
         throw NOTSUPPOSEDTOREACHTHIS("getResistor, not supposed to reach this");
     }

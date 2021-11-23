@@ -35,7 +35,7 @@ add_executable(src src.cpp
 
         controll/spi.cpp
         controll/spiPorts.cpp
-
+        controll/BaseSwitchController.cpp
 #        controll/Aswitch.cpp
         controll/BaseSwitch.cpp
 

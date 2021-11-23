@@ -1,9 +1,13 @@
+#include "pico/multicore.h"
 #include "./include/ADC.h"
 #include "../Exceptions/include/NoSuchPort.h"
+#include "../Exceptions/include/NotSupposedToReachThis.h"
 
 ADC::ADC()
 {
-    capture_buf = new uint16_t[CAPTURE_DEPTH];
+    capture_buf = new uint16_t *[2];
+    capture_buf[0] = new uint16_t[CAPTURE_DEPTH];
+    capture_buf[1] = new uint16_t[CAPTURE_DEPTH];
     adc_gpio_init(26);
     adc_gpio_init(27);
     adc_gpio_init(28);
@@ -16,6 +20,8 @@ ADC::ADC()
 
 ADC::~ADC()
 {
+    delete capture_buf[0];
+    delete capture_buf[1];
     delete capture_buf;
 }
 
@@ -32,27 +38,48 @@ void ADC::setupFIFO()
     dma_chan = dma_claim_unused_channel(true);
     dma_channel_config cfg = dma_channel_get_default_config(dma_chan);
 
+    dma_chan1 = dma_claim_unused_channel(true);
+    dma_channel_config cfg1 = dma_channel_get_default_config(dma_chan1);
+
     channel_config_set_transfer_data_size(&cfg, DMA_SIZE_16);
     channel_config_set_read_increment(&cfg, false);
     channel_config_set_write_increment(&cfg, true);
 
+    channel_config_set_transfer_data_size(&cfg1, DMA_SIZE_16);
+    channel_config_set_read_increment(&cfg1, false);
+    channel_config_set_write_increment(&cfg1, true);
+
     // Pace transfers based on availability of ADC samples
     channel_config_set_dreq(&cfg, DREQ_ADC);
+    channel_config_set_dreq(&cfg1, DREQ_ADC);
 
     dma_channel_configure(dma_chan, &cfg,
-                          capture_buf,   // dst
-                          &adc_hw->fifo, // src
-                          CAPTURE_DEPTH, // transfer count
-                          true           // start immediately
+                          capture_buf[0], // dst
+                          &adc_hw->fifo,  // src
+                          CAPTURE_DEPTH,  // transfer count
+                          true            // start immediately
+    );
+
+    dma_channel_configure(dma_chan1, &cfg1,
+                          capture_buf[1], // dst
+                          &adc_hw->fifo,  // src
+                          CAPTURE_DEPTH,  // transfer count
+                          true            // start immediately
     );
 }
 
 void ADC::waitDMAFull()
 {
-    dma_channel_wait_for_finish_blocking(dma_chan);
+    if (!usedIndex)
+        dma_channel_wait_for_finish_blocking(dma_chan);
+    else
+        dma_channel_wait_for_finish_blocking(dma_chan1);
+
+    //buffer full, now it can be read
+    usedIndex != usedIndex;
 }
 
-void ADC::adcSelect(int chanel)
+void ADC::setADCSelect(int chanel)
 {
     if (chanel > 3 || chanel < 0)
     {
@@ -63,8 +90,18 @@ void ADC::adcSelect(int chanel)
     adc_select_input(chanel);
 }
 
+uint ADC::getADCSelect()
+{
+    return adc_get_selected_input();
+}
+
 void ADC::start_freeRunning()
 {
+    int channel;
+    if (multicore_fifo_rvalid())
+    {
+        setADCSelect(multicore_fifo_pop_blocking());
+    }
     adc_run(true);
 }
 void ADC::stop_freeRunning()
@@ -84,7 +121,7 @@ uint16_t ADC::getCaptureDepth()
 
 uint16_t *ADC::getCaptureBuff()
 {
-    return capture_buf;
+    return capture_buf[!usedIndex];
 }
 
 void ADC::printSamples()

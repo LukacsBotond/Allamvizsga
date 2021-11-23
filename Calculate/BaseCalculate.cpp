@@ -12,9 +12,20 @@ IVALUES *BASECALCULATE::calculateRes()
 {
     uint16_t *capture_buf = adc->getCaptureBuff();
     uint16_t CAPTURE_DEPTH = adc->getCaptureDepth();
+    int actRes1, actRes2, actRes3;
+    std::cout << cleanup->AVGVoltage(capture_buf, CAPTURE_DEPTH) << std::endl;
+    uint8_t sw1Out = sw1->getOutput();
+    uint8_t sw2Out = sw2->getOutput();
+    uint8_t sw3Out = sw3->getOutput();
+    uint res1 = GetOutResitance(sw1->getOutput());
+    uint res2 = GetOutResitance(sw2->getOutput());
+    uint res3 = GetOutResitance(sw3->getOutput());
+
+    std::cout << "ActiveResistances: sw1: " << res1 << " sw2: " << res2 << " sw3: " << res3 << std::endl;
+
+    
 
 
-    std::cout<<cleanup->AVGVoltage(capture_buf,CAPTURE_DEPTH)<<std::endl;
     /*
     std::cout << "BASECALCULATE test\n";
 
@@ -26,4 +37,28 @@ IVALUES *BASECALCULATE::calculateRes()
     }
     */
     return values;
+}
+
+//* --------------------- Private functions -------------
+
+int BASECALCULATE::GetOutResitance(uint8_t OutPort)
+{
+    if (OutPort == 0)
+    {
+        return -1;
+    }
+    else if (OutPort <= 2)
+    {
+        return sw1->getResistor(0);
+    }
+    else if (OutPort <= 4)
+    {
+        return sw1->getResistor(1);
+    }
+    else
+    {
+        uint res1 = sw1->getResistor(0);
+        uint res2 = sw1->getResistor(1);
+        return (res1 * res2) / (res1 + res2);
+    }
 }

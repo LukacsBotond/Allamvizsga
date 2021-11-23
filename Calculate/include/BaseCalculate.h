@@ -15,6 +15,9 @@ private:
     IASWITCH *sw3;
     ICLEANINPUT* cleanup;
 
+    //resistors values are the same for all switch, so I take the 1st one
+    int GetOutResitance(uint8_t OutPort);
+
 public:
     BASECALCULATE(IVALUES *values, IADC *adc, ICLEANINPUT* cleanup, IASWITCH *sw1, IASWITCH *sw2, IASWITCH *sw3);
     ~BASECALCULATE();
