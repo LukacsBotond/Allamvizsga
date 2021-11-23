@@ -20,8 +20,8 @@
 
 #include "common/include/common.h"
 
-struct semaphore *startSemaphore1;
-struct semaphore *doneSemaphore1;
+static struct semaphore startSemaphore1;
+static struct semaphore doneSemaphore1;
 
 /*
 uint8_t counter = 0;
@@ -37,30 +37,72 @@ void gpio_callback(uint gpio, uint32_t events)
 }
 */
 
+void BASESWITCHCONTROLLER::SameOut3ChannelRepeat(uint8_t sw1P, uint8_t sw2P, uint8_t sw3P)
+{
+    //todo input chech, no short circuits
+    for (int i = 0; i < 3; i++)
+    {
+        //std::cout << "queeBase" << queue_get_level(&ADCSelect_queue);
+        //queue_try_add(&ADCSelect_queue, &i);
+        multicore_fifo_push_blocking(i);
+        //std::cout << "start BaseController1\n";
+        aswitch1->selectOutput(sw1P);
+        //std::cout << "start BaseController2\n";
+        aswitch2->selectOutput(sw2P);
+        //std::cout << "start BaseController3\n";
+        aswitch3->selectOutput(sw3P);
+        //std::cout << "start BaseController4\n";
+        //std::cout << &startSemaphore1 << std::endl;
+        //std::cout << &doneSemaphore1 << std::endl;
+        //startSemaphore1 -= 1;
+        //doneSemaphore1 -= 1;
+        //std::cout << &startSemaphore1 << std::endl;
+        //std::cout << &doneSemaphore1 << std::endl;
+        //std::cout << "Sem Base avebile: "<<sem_available(&startSemaphore1)<<std::endl;
+        sem_release(&startSemaphore1);
+        //std::cout << "Sem Base avebile: "<<sem_available(&startSemaphore1)<<std::endl;
+        //std::cout << "start BaseController5\n";
+        sem_acquire_blocking(&doneSemaphore1);
+
+        calc->calculateRes();
+        //std::cout << "start BaseController6\n";
+        //drain
+        aswitch1->selectOutput(5);
+        //std::cout << "start BaseController7\n";
+        aswitch2->selectOutput(5);
+        //std::cout << "start BaseController8\n";
+        aswitch3->selectOutput(5);
+        //std::cout << "start BaseController\n";
+        sleep_ms(3000);
+    }
+}
+
 IADC *adc = new ADC();
 //when main core starts the semaphore it prints
 void core1_entry()
 {
+    sleep_ms(3000);
     adc->setupFIFO();
-    std::cout << "ADC1\n";
+    //std::cout << "ADC1\n";
     while (1)
     {
-        std::cout << &startSemaphore1 << std::endl;
-        std::cout << &doneSemaphore1 << std::endl;
-        std::cout << sem_available(startSemaphore1);
-        std::cout << sem_available(doneSemaphore1);
-        std::cout << "ADC2\n";
-        sem_acquire_blocking(startSemaphore1);
-        std::cout << "ADC3\n";
+        adc->setupFIFO();
+        //std::cout << &startSemaphore1 << std::endl;
+        //std::cout << &doneSemaphore1 << std::endl;
+        //std::cout << sem_available(&startSemaphore1);
+        //std::cout << sem_available(&doneSemaphore1);
+        //std::cout << "ADC2\n";
+        sem_acquire_blocking(&startSemaphore1);
+        //std::cout << "ADC3\n";
         adc->start_freeRunning();
-        std::cout << "ADC4\n";
+        //std::cout << "ADC4\n";
         adc->waitDMAFull();
-        std::cout << "ADC5\n";
+        //std::cout << "ADC5\n";
         adc->stop_freeRunning();
-        std::cout << "ADC6\n";
+        //std::cout << "ADC6\n";
         //adc->printSamples();
-        sem_release(doneSemaphore1);
-        std::cout << "ADC7\n";
+        sem_release(&doneSemaphore1);
+        //std::cout << "ADC7\n";
     }
     //gpio_set_irq_enabled_with_callback(6, GPIO_IRQ_EDGE_RISE, true, &gpio_callback);
 
@@ -93,11 +135,8 @@ int main()
     std::cout << "Test\n";
     sleep_ms(3000);
     std::cout << "Test\n";
-    sem_init(startSemaphore1, 0, 1);
-    sem_init(doneSemaphore1, 0, 1);
-    std::cout << "real\n";
-    std::cout << &startSemaphore1 << std::endl;
-    std::cout << &doneSemaphore1 << std::endl;
+    sem_init(&startSemaphore1, 0, 1);
+    sem_init(&doneSemaphore1, 0, 1);
     //COMMON *common = new COMMON();
     IVALUES *val = new BASEVALUES();
     ICLEANINPUT *cleanup = new BASECLEANINPUT();
@@ -109,10 +148,12 @@ int main()
     //int spinL = spin_lock_claim_unused(true);
     //queue_init_with_spinlock(&ADCSelect_queue, sizeof(int), 2, spinL);
     //std::cout << "quee" << queue_get_level(&ADCSelect_queue);
-    ISWITCHCONTROLLER *controller = new BASESWITCHCONTROLLER(aswitch1, aswitch2, aswitch3);
+    ISWITCHCONTROLLER *controller = new BASESWITCHCONTROLLER(aswitch1, aswitch2, aswitch3, calc);
+
+    multicore_launch_core1(core1_entry);
+
     controller->SameOut3ChannelRepeat(4, 0, 5);
     sleep_ms(3000);
-    multicore_launch_core1(core1_entry);
 
     /*
     sleep_ms(3000);

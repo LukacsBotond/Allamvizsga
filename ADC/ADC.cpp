@@ -76,7 +76,9 @@ void ADC::waitDMAFull()
         dma_channel_wait_for_finish_blocking(dma_chan1);
 
     //buffer full, now it can be read
-    usedIndex != usedIndex;
+    std::cout << "usedIndex:" << usedIndex << std::endl;
+    usedIndex = !usedIndex;
+    std::cout << "usedIndex:" << usedIndex << std::endl;
 }
 
 void ADC::setADCSelect(int chanel)
@@ -100,7 +102,10 @@ void ADC::start_freeRunning()
     int channel;
     if (multicore_fifo_rvalid())
     {
-        setADCSelect(multicore_fifo_pop_blocking());
+        int chan = multicore_fifo_pop_blocking();
+        std::cout << "New channel!" << chan << std::endl;
+        std::cout << "usedIndex:" << usedIndex << std::endl;
+        setADCSelect(chan);
     }
     adc_run(true);
 }
@@ -121,6 +126,7 @@ uint16_t ADC::getCaptureDepth()
 
 uint16_t *ADC::getCaptureBuff()
 {
+    std::cout << "getCaptureBuff usedIndex:" << !usedIndex << std::endl;
     return capture_buf[!usedIndex];
 }
 
