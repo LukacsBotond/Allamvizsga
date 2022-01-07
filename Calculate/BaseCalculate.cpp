@@ -43,19 +43,20 @@ IVALUES *BASECALCULATE::calculateRes()
 
 int BASECALCULATE::GetOutResitance(uint8_t OutPort)
 {
+    //high impedance is connected
     if (OutPort == 0)
     {
         return -1;
-    }
+    }//low high resistor is connected
     else if (OutPort <= 2)
     {
         return sw1->getResistor(0);
-    }
+    }//low reseistor is connected
     else if (OutPort <= 4)
     {
         return sw1->getResistor(1);
     }
-    else
+    else //both connected in parallel
     {
         uint res1 = sw1->getResistor(0);
         uint res2 = sw1->getResistor(1);

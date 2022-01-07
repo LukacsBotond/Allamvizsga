@@ -140,9 +140,9 @@ int main()
     //COMMON *common = new COMMON();
     IVALUES *val = new BASEVALUES();
     ICLEANINPUT *cleanup = new BASECLEANINPUT();
-    IASWITCH *aswitch1 = new BASESWITCH(330, 4600, 0, 16, 17);
-    IASWITCH *aswitch2 = new BASESWITCH(330, 4600, 0, 18, 19);
-    IASWITCH *aswitch3 = new BASESWITCH(330, 4600, 0, 20, 21);
+    IASWITCH *aswitch1 = new BASESWITCH(RESISTOR_LOW, RESISTOR_MID, RESISTOR_HIGH, SWITHCH1_LOW, SWITHCH1_HIGH);
+    IASWITCH *aswitch2 = new BASESWITCH(RESISTOR_LOW, RESISTOR_MID, RESISTOR_HIGH, SWITHCH2_LOW, SWITHCH2_HIGH);
+    IASWITCH *aswitch3 = new BASESWITCH(RESISTOR_LOW, RESISTOR_MID, RESISTOR_HIGH, SWITHCH3_LOW, SWITHCH3_HIGH);
 
     ICALCULATE *calc = new BASECALCULATE(val, adc, cleanup, aswitch1, aswitch2, aswitch3);
     //int spinL = spin_lock_claim_unused(true);

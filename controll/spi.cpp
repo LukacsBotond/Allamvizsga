@@ -1,4 +1,5 @@
 #include "./include/spi.h"
+#include "../Global.h"
 #include <iostream>
 using namespace std;
 
@@ -17,7 +18,7 @@ SPI::SPI(int frekv, SPIPORTS portsIn)
         spi_Hw_inst = spi0;
     }
     spi_init(spi_Hw_inst, frekv);
-    int baudrate = spi_set_baudrate(spi_Hw_inst, UINT32_MAX);
+    int baudrate = spi_set_baudrate(spi_Hw_inst, frekv);
     std::cout << "baudrate: " << baudrate << std::endl;
     gpio_set_function(ports->miso, GPIO_FUNC_SPI);
     gpio_set_function(ports->sck, GPIO_FUNC_SPI);
@@ -26,17 +27,17 @@ SPI::SPI(int frekv, SPIPORTS portsIn)
     // Chip select is active-low, so we'll initialise it to a driven-high state
     gpio_init(ports->cs);
     gpio_set_dir(ports->cs, GPIO_OUT);
-    gpio_put(ports->cs, 0);
+    gpio_put(ports->cs, LOW);
 
     // high = command, low = data
     gpio_init(ports->dc);
     gpio_set_dir(ports->dc, GPIO_OUT);
-    gpio_put(ports->dc, 0);
+    gpio_put(ports->dc, LOW);
 
     // Reset is active-low
     gpio_init(ports->reset);
     gpio_set_dir(ports->reset, GPIO_OUT);
-    gpio_put(ports->cs, 1);
+    gpio_put(ports->reset, HIGH);
 
     printer();
 }
@@ -69,13 +70,13 @@ void SPI::changeFormat(bool dub)
 void SPI::cs_select()
 {
     asm volatile("nop \n nop \n nop");
-    gpio_put(ports->cs, 0); // Active low
+    gpio_put(ports->cs, LOW); // Active low
     asm volatile("nop \n nop \n nop");
 }
 void SPI::cs_deselect()
 {
     asm volatile("nop \n nop \n nop");
-    gpio_put(ports->cs, 1);
+    gpio_put(ports->cs, HIGH);
     asm volatile("nop \n nop \n nop");
 }
 
