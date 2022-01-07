@@ -6,8 +6,8 @@
 #include "../../controll/include/spi.h"
 #include "../../controll/include/spiPorts.h"
 
-#define ILI9341_TFTWIDTH 240  ///< ILI9341 max TFT width
-#define ILI9341_TFTHEIGHT 320 ///< ILI9341 max TFT height
+#define ILI9341_TFTWIDTH 320  ///< ILI9341 max TFT width
+#define ILI9341_TFTHEIGHT 240 ///< ILI9341 max TFT height
 
 #define ILI9341_NOP 0x00     ///< No-op register
 #define ILI9341_SWRESET 0x01 ///< Software reset register
@@ -70,9 +70,6 @@
 class ILI9341 : public SPI
 {
 public:
-  static const uint16_t height = 240;
-  static const uint16_t width = 320;
-
   ILI9341();
   ~ILI9341();
 

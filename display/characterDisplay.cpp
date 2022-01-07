@@ -15,7 +15,7 @@ void CHARACTERDISPLAY::insertChar(uint8_t position, const uint8_t *charSet)
         std::cout << "mask" << (int)mask << std::endl;
         for (uint16_t i = 0; i < lineHeight; i++)
         {
-            int id = i * display->width + position*8 + bit;
+            int id = i * 240 + position * 8 + bit;
             if (charSet[i] & mask)
                 row[id] = fg_Color;
             std::cout << "pos: " << (int)id << "color :" << (int)row[id] << std::endl;
@@ -31,7 +31,7 @@ const uint8_t *CHARACTERDISPLAY::transChartoCharSet(char character)
 void CHARACTERDISPLAY::printLine(std::string str)
 {
     //clean row*
-    std::fill_n(row,rowSize,bg_Color);
+    std::fill_n(row, rowSize, bg_Color);
     int size = str.size();
     const uint8_t *charset;
     //put string in a line
@@ -46,16 +46,17 @@ void CHARACTERDISPLAY::printLine(std::string str)
         }
         std::cout << std::endl;
     }
-    dumpRow();
+    //dumpRow();
     writeLine();
 }
 
-
-
 //* DEBUG
-void DISPLAYDRIVER::dumpRow(){
-    for(int i=0;i<rowSize;i++){
-        std::cout<<row[i]<<"\n";
+void DISPLAYDRIVER::dumpRow()
+{
+    std::cout << "character write dump row\n";
+    for (int i = 0; i < rowSize; i++)
+    {
+        std::cout << row[i] << " ";
         sleep_ms(1);
     }
 }

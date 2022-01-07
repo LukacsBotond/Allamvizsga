@@ -4,6 +4,7 @@
 #include <iostream>
 #include "pico/stdlib.h"
 #include "include/ili9341.h"
+#include "../Global.h"
 
 /*
  
@@ -30,16 +31,16 @@ ili9341_config_t ili9341_config = {
 };
 */
 
-ILI9341::ILI9341() : SPI(100000, SPIPORTS(0, 4, 5, 6, 7, 8, 9))
+ILI9341::ILI9341() : SPI(DISP_FREQ, SPIPORTS(DISP_SPI_CHANNEL, DISP_MISO, DISP_CS, DISP_SCK, DISP_MOSI, DISP_RESET, DISP_DC))
 {
     //spiPorts* tmp = new spiPorts(0, 10, 13, 14, 15, 12, 11);
     //SPIPORTS *tmpPorts = new SPIPORTS(0, 4, 5, 6, 7, 8, 9);
     //spi_instance = new SPI(300, tmpPorts);
     //delete tmpPorts;
     sleep_ms(10);
-    gpio_put(ports->reset, 0);
+    gpio_put(ports->reset, LOW);
     sleep_ms(10);
-    gpio_put(ports->reset, 1);
+    gpio_put(ports->reset, HIGH);
     changeFormat(false);
     set_command(0x01); //soft reset
     sleep_ms(100);
@@ -67,7 +68,7 @@ ILI9341::ILI9341() : SPI(100000, SPIPORTS(0, 4, 5, 6, 7, 8, 9))
     // exit sleep
     set_command(ILI9341_SLPOUT);
     set_command(ILI9341_DISPOFF);
-    sleep_ms(1000);
+    sleep_ms(100);
 
     // display on
     set_command(ILI9341_DISPON);
@@ -96,9 +97,9 @@ ILI9341::ILI9341() : SPI(100000, SPIPORTS(0, 4, 5, 6, 7, 8, 9))
 
 void ILI9341::set_command(uint8_t cmd)
 {
-    gpio_put(ports->dc, 0);
+    gpio_put(ports->dc, LOW);
     write_data(&cmd, 1);
-    gpio_put(ports->dc, 1);
+    gpio_put(ports->dc, HIGH);
 }
 
 void ILI9341::command_param(uint8_t data)

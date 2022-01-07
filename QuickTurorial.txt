@@ -1,0 +1,7 @@
+core 0 jobs
+    Selects the output resistors
+    Calculate the previous measurement, bu using 2 buffer,
+    one is used by the ADC for writing, the other for reading
+    
+
+
