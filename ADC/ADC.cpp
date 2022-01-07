@@ -4,7 +4,6 @@
 #include "../Exceptions/include/NotSupposedToReachThis.h"
 #include "../Global.h"
 
-
 ADC::ADC()
 {
     capture_buf = new uint16_t *[2];
@@ -45,8 +44,6 @@ void ADC::setupFIFO()
         std::cout << "usedIndex start freeRunning:" << usedIndex << std::endl;
         setADCSelect(chan);
     }
-
-
 
     dma_chan = dma_claim_unused_channel(true);
     dma_channel_config cfg = dma_channel_get_default_config(dma_chan);
@@ -136,10 +133,11 @@ uint16_t *ADC::getCaptureBuff()
 
 void ADC::printSamples()
 {
+    std::cout << "Print Samples\n";
     for (int i = 0; i < CAPTURE_DEPTH; ++i)
     {
-        printf("%-3d, ", capture_buf[i]);
-        if (i % 10 == 9)
-            printf("\n");
+        std::cout << capture_buf[i] << " ";
+        if (i % 10 == 0)
+            std::cout << std::endl;
     }
 }

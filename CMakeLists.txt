@@ -40,6 +40,11 @@ add_executable(src src.cpp
         controll/BaseSwitch.cpp
 
         common/common.cpp
+
+
+
+        # test cases
+        Tests/BaseCleanInputTests/BaseCleanInputTest.cpp
         )
 
 pico_set_program_name(src "src")
