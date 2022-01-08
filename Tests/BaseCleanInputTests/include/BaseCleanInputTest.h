@@ -8,6 +8,7 @@ class BaseCleanInputTest
 private:
     BASECLEANINPUT *inputTest;
     void errorPrinter(std::string functionName, double calculatedValue, double correctValue);
+    void errorPrinter(std::string functionName, std::string description);
     void succesPrinter(std::string functionName, std::string description = "");
 
 public:
@@ -16,7 +17,4 @@ public:
 
     void AVGVoltage();
     void IsAnythingConnected();
-
-
-    
 };

@@ -13,15 +13,15 @@ double BASECLEANINPUT::AVGVoltage(uint16_t *samples, uint16_t samplesSize)
     return (((double)sum / samplesSize) * 3.3) / 4096.0;
 }
 
-bool BASECLEANINPUT::IsAnythingConnected(double avgVoltage, uint8_t port)
+bool BASECLEANINPUT::IsAnythingConnected(double avgVoltage, uint8_t portMode)
 {
     //port sends 3.3V on a pin, if it passes through a resistor without volate
     //drop then there is nothing connected or high impedance as trying
     //to send voltage on a diode backwards
-    if (port == 2 || port == 4)
+    if (portMode == 2 || portMode == 4)
     {
         return (avgVoltage < 3.1);
     }
     //
-    return (avgVoltage > 0.2);
+    return (avgVoltage > 0.02);
 }

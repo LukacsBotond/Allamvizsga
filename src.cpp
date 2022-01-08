@@ -21,6 +21,7 @@
 #include "common/include/common.h"
 
 //! Test classes
+/*
 #include "./Tests/BaseCleanInputTests/include/BaseCleanInputTest.h"
 
 void testCasesCaller()
@@ -29,7 +30,7 @@ void testCasesCaller()
     BaseCleanInputTest testCleanup(cleanup);
     //delete cleanup;
 }
-
+*/
 //! END test cases
 
 static struct semaphore startSemaphore1;
@@ -69,7 +70,7 @@ void BASESWITCHCONTROLLER::SameOut3ChannelRepeat(uint8_t sw1P, uint8_t sw2P, uin
         sem_release(&startSemaphore1);
         //WAIT for ADC
         sem_acquire_blocking(&doneSemaphore1);
-        sleep_ms(5000);
+        sleep_ms(500);
         calc->calculateRes();
         //std::cout << "start BaseController6\n";
         //drain
@@ -79,7 +80,7 @@ void BASESWITCHCONTROLLER::SameOut3ChannelRepeat(uint8_t sw1P, uint8_t sw2P, uin
         //std::cout << "start BaseController8\n";
         aswitch3->selectOutput(5);
         //std::cout << "start BaseController\n";
-        sleep_ms(3000);
+        sleep_ms(500);
     }
 }
 
@@ -136,13 +137,12 @@ int main()
 
     //! TEST case callers
 
-    testCasesCaller();
+    //testCasesCaller();
 
     //! end test case callers
 
     //COMMON *common = new COMMON();
 
-    /*
     IVALUES *val = new BASEVALUES();
     ICLEANINPUT *cleanup = new BASECLEANINPUT();
     IASWITCH *aswitch1 = new BASESWITCH(RESISTOR_LOW, RESISTOR_MID, RESISTOR_HIGH, SWITHCH1_LOW, SWITHCH1_HIGH);
@@ -156,10 +156,19 @@ int main()
     ISWITCHCONTROLLER *controller = new BASESWITCHCONTROLLER(aswitch1, aswitch2, aswitch3, calc);
 
     multicore_launch_core1(core1_entry);
-
+    std::cout << "4 out 5 gnd\n\n";
     controller->SameOut3ChannelRepeat(4, 0, 5);
+    sleep_ms(1000);
+    std::cout << "5 gnd 4 out\n\n";
+    controller->SameOut3ChannelRepeat(5, 0, 4);
+    sleep_ms(1000);
+    std::cout << "2 out 5 gnd\n\n";
+    controller->SameOut3ChannelRepeat(2, 0, 5);
     sleep_ms(3000);
-*/
+    std::cout << "5 gnd 2 out\n\n";
+    controller->SameOut3ChannelRepeat(5, 0, 2);
+    sleep_ms(3000);
+
     /*
     sleep_ms(3000);
     controller->SameOut3ChannelRepeat(2, 0, 5);
