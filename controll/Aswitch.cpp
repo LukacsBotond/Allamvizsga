@@ -11,6 +11,11 @@ ASWITHCH::ASWITHCH(uint outRes1, uint outRes2, uint outRes3, uint gpio1, uint gp
 //! change later
 void ASWITHCH::selectOutput(uint port)
 {
+    //TODO implement this
+    throw NOSUCHPORT("this thing not exist");
+
+
+
     if (port > 3)
         throw NOSUCHPORT("port must be 0/1");
 

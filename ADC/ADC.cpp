@@ -2,15 +2,16 @@
 #include "./include/ADC.h"
 #include "../Exceptions/include/NoSuchPort.h"
 #include "../Exceptions/include/NotSupposedToReachThis.h"
+#include "../Global.h"
 
 ADC::ADC()
 {
     capture_buf = new uint16_t *[2];
     capture_buf[0] = new uint16_t[CAPTURE_DEPTH];
     capture_buf[1] = new uint16_t[CAPTURE_DEPTH];
-    adc_gpio_init(26);
-    adc_gpio_init(27);
-    adc_gpio_init(28);
+    adc_gpio_init(ACD_CHANNEL_0);
+    adc_gpio_init(ACD_CHANNEL_1);
+    adc_gpio_init(ACD_CHANNEL_2);
     adc_init();
     adc_select_input(0);
 
@@ -34,6 +35,15 @@ void ADC::setupFIFO()
         true, // Set sample error bit on error
         false // Keep full 12 bits of each sample
     );
+
+    //set channel to what core 0 requires
+    if (multicore_fifo_rvalid())
+    {
+        int chan = multicore_fifo_pop_blocking();
+        std::cout << "New channel!" << chan << std::endl;
+        std::cout << "usedIndex start freeRunning:" << usedIndex << std::endl;
+        setADCSelect(chan);
+    }
 
     dma_chan = dma_claim_unused_channel(true);
     dma_channel_config cfg = dma_channel_get_default_config(dma_chan);
@@ -76,7 +86,6 @@ void ADC::waitDMAFull()
         dma_channel_wait_for_finish_blocking(dma_chan1);
 
     //buffer full, now it can be read
-    std::cout << "usedIndex:" << usedIndex << std::endl;
     usedIndex = !usedIndex;
     std::cout << "usedIndex:" << usedIndex << std::endl;
 }
@@ -86,7 +95,7 @@ void ADC::setADCSelect(int chanel)
     if (chanel > 3 || chanel < 0)
     {
         std::cout << "Wrong channel selected, 0 will be selected\n";
-        adc_select_input(26);
+        adc_select_input(ACD_CHANNEL_0);
         throw NOSUCHPORT("port must be 0/1/2");
     }
     adc_select_input(chanel);
@@ -99,14 +108,6 @@ uint ADC::getADCSelect()
 
 void ADC::start_freeRunning()
 {
-    int channel;
-    if (multicore_fifo_rvalid())
-    {
-        int chan = multicore_fifo_pop_blocking();
-        std::cout << "New channel!" << chan << std::endl;
-        std::cout << "usedIndex:" << usedIndex << std::endl;
-        setADCSelect(chan);
-    }
     adc_run(true);
 }
 void ADC::stop_freeRunning()
@@ -132,10 +133,11 @@ uint16_t *ADC::getCaptureBuff()
 
 void ADC::printSamples()
 {
+    std::cout << "Print Samples\n";
     for (int i = 0; i < CAPTURE_DEPTH; ++i)
     {
-        printf("%-3d, ", capture_buf[i]);
-        if (i % 10 == 9)
-            printf("\n");
+        std::cout << capture_buf[i] << " ";
+        if (i % 10 == 0)
+            std::cout << std::endl;
     }
 }

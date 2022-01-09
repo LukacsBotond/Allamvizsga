@@ -20,6 +20,18 @@
 
 #include "common/include/common.h"
 
+//! Test classes
+#include "./Tests/BaseCleanInputTests/include/BaseCleanInputTest.h"
+
+void testCasesCaller()
+{
+    BASECLEANINPUT *cleanup = new BASECLEANINPUT();
+    BaseCleanInputTest testCleanup(cleanup);
+    //delete cleanup;
+}
+
+//! END test cases
+
 static struct semaphore startSemaphore1;
 static struct semaphore doneSemaphore1;
 
@@ -42,8 +54,6 @@ void BASESWITCHCONTROLLER::SameOut3ChannelRepeat(uint8_t sw1P, uint8_t sw2P, uin
     //todo input chech, no short circuits
     for (int i = 0; i < 3; i++)
     {
-        //std::cout << "queeBase" << queue_get_level(&ADCSelect_queue);
-        //queue_try_add(&ADCSelect_queue, &i);
         multicore_fifo_push_blocking(i);
         //std::cout << "start BaseController1\n";
         aswitch1->selectOutput(sw1P);
@@ -51,19 +61,15 @@ void BASESWITCHCONTROLLER::SameOut3ChannelRepeat(uint8_t sw1P, uint8_t sw2P, uin
         aswitch2->selectOutput(sw2P);
         //std::cout << "start BaseController3\n";
         aswitch3->selectOutput(sw3P);
-        //std::cout << "start BaseController4\n";
-        //std::cout << &startSemaphore1 << std::endl;
-        //std::cout << &doneSemaphore1 << std::endl;
-        //startSemaphore1 -= 1;
-        //doneSemaphore1 -= 1;
         //std::cout << &startSemaphore1 << std::endl;
         //std::cout << &doneSemaphore1 << std::endl;
         //std::cout << "Sem Base avebile: "<<sem_available(&startSemaphore1)<<std::endl;
-        sem_release(&startSemaphore1);
-        //std::cout << "Sem Base avebile: "<<sem_available(&startSemaphore1)<<std::endl;
-        //std::cout << "start BaseController5\n";
-        sem_acquire_blocking(&doneSemaphore1);
 
+        //start ADC
+        sem_release(&startSemaphore1);
+        //WAIT for ADC
+        sem_acquire_blocking(&doneSemaphore1);
+        sleep_ms(5000);
         calc->calculateRes();
         //std::cout << "start BaseController6\n";
         //drain
@@ -83,26 +89,16 @@ void core1_entry()
 {
     sleep_ms(3000);
     adc->setupFIFO();
-    //std::cout << "ADC1\n";
+    std::cout << "ADC start! \n";
     while (1)
     {
-        adc->setupFIFO();
-        //std::cout << &startSemaphore1 << std::endl;
-        //std::cout << &doneSemaphore1 << std::endl;
-        //std::cout << sem_available(&startSemaphore1);
-        //std::cout << sem_available(&doneSemaphore1);
-        //std::cout << "ADC2\n";
         sem_acquire_blocking(&startSemaphore1);
-        //std::cout << "ADC3\n";
+        adc->setupFIFO();
         adc->start_freeRunning();
-        //std::cout << "ADC4\n";
         adc->waitDMAFull();
-        //std::cout << "ADC5\n";
         adc->stop_freeRunning();
-        //std::cout << "ADC6\n";
         //adc->printSamples();
         sem_release(&doneSemaphore1);
-        //std::cout << "ADC7\n";
     }
     //gpio_set_irq_enabled_with_callback(6, GPIO_IRQ_EDGE_RISE, true, &gpio_callback);
 
@@ -137,12 +133,21 @@ int main()
     std::cout << "Test\n";
     sem_init(&startSemaphore1, 0, 1);
     sem_init(&doneSemaphore1, 0, 1);
+
+    //! TEST case callers
+
+    testCasesCaller();
+
+    //! end test case callers
+
     //COMMON *common = new COMMON();
+
+    /*
     IVALUES *val = new BASEVALUES();
     ICLEANINPUT *cleanup = new BASECLEANINPUT();
-    IASWITCH *aswitch1 = new BASESWITCH(330, 4600, 0, 16, 17);
-    IASWITCH *aswitch2 = new BASESWITCH(330, 4600, 0, 18, 19);
-    IASWITCH *aswitch3 = new BASESWITCH(330, 4600, 0, 20, 21);
+    IASWITCH *aswitch1 = new BASESWITCH(RESISTOR_LOW, RESISTOR_MID, RESISTOR_HIGH, SWITHCH1_LOW, SWITHCH1_HIGH);
+    IASWITCH *aswitch2 = new BASESWITCH(RESISTOR_LOW, RESISTOR_MID, RESISTOR_HIGH, SWITHCH2_LOW, SWITHCH2_HIGH);
+    IASWITCH *aswitch3 = new BASESWITCH(RESISTOR_LOW, RESISTOR_MID, RESISTOR_HIGH, SWITHCH3_LOW, SWITHCH3_HIGH);
 
     ICALCULATE *calc = new BASECALCULATE(val, adc, cleanup, aswitch1, aswitch2, aswitch3);
     //int spinL = spin_lock_claim_unused(true);
@@ -154,7 +159,7 @@ int main()
 
     controller->SameOut3ChannelRepeat(4, 0, 5);
     sleep_ms(3000);
-
+*/
     /*
     sleep_ms(3000);
     controller->SameOut3ChannelRepeat(2, 0, 5);
@@ -198,6 +203,8 @@ int main()
     charDriver->printLine("=");
     charDriver->printLine("almafa");
 */
+
+    //delete adc;
     while (1)
     {
         std::cout << "Sleeping\n";
