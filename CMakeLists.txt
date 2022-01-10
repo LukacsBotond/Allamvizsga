@@ -27,6 +27,7 @@ add_executable(src src.cpp
         Calculate/BaseCalculate.cpp
         Calculate/BaseValues.cpp
         Calculate/BaseCleanInput.cpp
+        Calculate/ICleanInput.cpp
 
         display/ili9341.cpp
         display/displayDriver.cpp

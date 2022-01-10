@@ -41,7 +41,6 @@ void ADC::setupFIFO()
         true, // Set sample error bit on error
         false // Keep full 12 bits of each sample
     );
-
     //set channel to what core 0 requires
     if (multicore_fifo_rvalid())
     {
@@ -90,7 +89,7 @@ void ADC::waitDMAFull()
     //std::cout << "usedIndex:" << usedIndex << std::endl;
 }
 
-void ADC::setADCSelect(int chanel)
+void ADC::setADCSelect(uint8_t chanel)
 {
     if (chanel > 3 || chanel < 0)
     {

@@ -1,4 +1,7 @@
 #pragma once
+#include "ADC/include/IADC.h"
+#include "ADC/include/ADC.h"
+#include "controll/include/IAswitch.h"
 
 //* power level
 #define HIGH 1
@@ -29,14 +32,12 @@
 #define SWITHCH3_LOW 20
 #define SWITHCH3_HIGH 21
 
-
-
-
 //* resistors
 
 #define RESISTOR_LOW 330
 #define RESISTOR_MID 4600
 #define RESISTOR_HIGH 0
 
-
+class IADC;
+extern IADC *adc;
 //static queue_t ADCSelect_queue;

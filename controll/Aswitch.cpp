@@ -1,6 +1,6 @@
 #include "./include/Aswitch.h"
 
-ASWITHCH::ASWITHCH(uint outRes1, uint outRes2, uint outRes3, uint gpio1, uint gpio2)
+ASWITCH::ASWITHCH(uint outRes1, uint outRes2, uint outRes3, uint gpio1, uint gpio2)
     : outRes1(outRes1), outRes2(outRes2), outRes3(outRes3), gpio1(gpio1), gpio2(gpio2)
 {
     gpio_set_dir(gpio1, GPIO_IN);
@@ -9,13 +9,11 @@ ASWITHCH::ASWITHCH(uint outRes1, uint outRes2, uint outRes3, uint gpio1, uint gp
     gpio_init(gpio2);
 }
 //! change later
-void ASWITHCH::selectOutput(uint port)
+void ASWITCH::selectOutput(uint port)
 {
     //TODO implement this
     throw NOSUCHPORT("this thing not exist");
-
-
-
+    
     if (port > 3)
         throw NOSUCHPORT("port must be 0/1");
 

@@ -6,6 +6,7 @@
 #include "hardware/clocks.h"
 #include "pico/multicore.h"
 #include "hardware/pll.h"
+#include <vector>
 
 #include "Global.h"
 #include "display/include/ili9341.h"
@@ -50,8 +51,25 @@ void gpio_callback(uint gpio, uint32_t events)
 }
 */
 
+void ICALCULATE::startSemaphoreRelease()
+{
+    sem_release(&startSemaphore1);
+}
+
+void ICALCULATE::doneSemaphoreAquire()
+{
+    sem_acquire_blocking(&doneSemaphore1);
+}
+
+/*
 void BASESWITCHCONTROLLER::SameOut3ChannelRepeat(uint8_t sw1P, uint8_t sw2P, uint8_t sw3P)
 {
+    std::vector<double> values;
+    std::string measurement;
+    measurement = std::to_string(sw1P);
+    measurement += std::to_string(sw2P);
+    measurement += std::to_string(sw3P);
+    std::cout << "test measurement: " << measurement << "\n";
     //todo input chech, no short circuits
     for (int i = 0; i < 3; i++)
     {
@@ -67,11 +85,11 @@ void BASESWITCHCONTROLLER::SameOut3ChannelRepeat(uint8_t sw1P, uint8_t sw2P, uin
         //std::cout << "Sem Base avebile: "<<sem_available(&startSemaphore1)<<std::endl;
 
         //start ADC
-        sem_release(&startSemaphore1);
+
         //WAIT for ADC
-        sem_acquire_blocking(&doneSemaphore1);
+
         sleep_ms(500);
-        calc->calculateRes();
+        //calc->calculateRes();
         //std::cout << "start BaseController6\n";
         //drain
         aswitch1->selectOutput(5);
@@ -83,12 +101,10 @@ void BASESWITCHCONTROLLER::SameOut3ChannelRepeat(uint8_t sw1P, uint8_t sw2P, uin
         sleep_ms(500);
     }
 }
-
-IADC *adc = new ADC();
+*/
 //when main core starts the semaphore it prints
 void core1_entry()
 {
-    sleep_ms(3000);
     adc->setupFIFO();
     std::cout << "ADC start! \n";
     while (1)
@@ -125,6 +141,7 @@ void resus_callback(void) {
 }
 */
 
+IADC *adc = new ADC();
 int main()
 {
 
@@ -142,32 +159,15 @@ int main()
     //! end test case callers
 
     //COMMON *common = new COMMON();
-
-    IVALUES *val = new BASEVALUES();
-    ICLEANINPUT *cleanup = new BASECLEANINPUT();
     IASWITCH *aswitch1 = new BASESWITCH(RESISTOR_LOW, RESISTOR_MID, RESISTOR_HIGH, SWITHCH1_LOW, SWITHCH1_HIGH);
     IASWITCH *aswitch2 = new BASESWITCH(RESISTOR_LOW, RESISTOR_MID, RESISTOR_HIGH, SWITHCH2_LOW, SWITHCH2_HIGH);
     IASWITCH *aswitch3 = new BASESWITCH(RESISTOR_LOW, RESISTOR_MID, RESISTOR_HIGH, SWITHCH3_LOW, SWITHCH3_HIGH);
-
-    ICALCULATE *calc = new BASECALCULATE(val, adc, cleanup, aswitch1, aswitch2, aswitch3);
-    //int spinL = spin_lock_claim_unused(true);
-    //queue_init_with_spinlock(&ADCSelect_queue, sizeof(int), 2, spinL);
-    //std::cout << "quee" << queue_get_level(&ADCSelect_queue);
-    ISWITCHCONTROLLER *controller = new BASESWITCHCONTROLLER(aswitch1, aswitch2, aswitch3, calc);
-
+    IVALUES *val = new BASEVALUES();
+    ICLEANINPUT *cleanup = new BASECLEANINPUT();
+    ISWITCHCONTROLLER *controller = new BASESWITCHCONTROLLER(aswitch1, aswitch2, aswitch3);
+    ICALCULATE *calc = new BASECALCULATE(val, cleanup, controller);
     multicore_launch_core1(core1_entry);
-    std::cout << "4 out 5 gnd\n\n";
-    controller->SameOut3ChannelRepeat(4, 0, 5);
-    sleep_ms(1000);
-    std::cout << "5 gnd 4 out\n\n";
-    controller->SameOut3ChannelRepeat(5, 0, 4);
-    sleep_ms(1000);
-    std::cout << "2 out 5 gnd\n\n";
-    controller->SameOut3ChannelRepeat(2, 0, 5);
-    sleep_ms(3000);
-    std::cout << "5 gnd 2 out\n\n";
-    controller->SameOut3ChannelRepeat(5, 0, 2);
-    sleep_ms(3000);
+
 
     /*
     sleep_ms(3000);

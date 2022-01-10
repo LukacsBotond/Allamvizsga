@@ -1,5 +1,24 @@
 #pragma once
 #include "./IADC.h"
+
+class IADC
+{
+public:
+    //check for new data on FIFO 
+    virtual void setupFIFO() = 0;
+    virtual void waitDMAFull() = 0;
+    virtual void setADCSelect(uint8_t chanel) = 0;
+    virtual uint getADCSelect() = 0;
+    virtual void start_freeRunning() = 0;
+    virtual void stop_freeRunning() = 0;
+    virtual void set_clkDiv(uint div) = 0;
+    virtual uint16_t getCaptureDepth() = 0;
+    virtual uint16_t *getCaptureBuff() = 0;
+
+    //! debug
+    virtual void printSamples() = 0;
+};
+
 class ADC : public IADC
 {
 private:
@@ -15,6 +34,9 @@ private:
     dma_channel_config cfg1;
 
 public:
+    //setup the DMA channels
+    //allocate the storage arrays
+    //inicialize the ADC
     ADC();
     ~ADC();
 
@@ -22,7 +44,7 @@ public:
     void waitDMAFull() override;
 
     //* can throw exception
-    void setADCSelect(int chanel) override;
+    void setADCSelect(uint8_t chanel) override;
     uint getADCSelect() override;
     void start_freeRunning() override;
     void stop_freeRunning() override;
