@@ -5,3 +5,15 @@ core 0 jobs
     
 
 
+dióda/ellenállás megkülönböztetése
+    a diodák esetében a feszültségesés konstans, függetlenül, hogy milyen ellenállás van
+    használva, vagyis a 330 ohmos és 4.7K ellenállással táplálva is hasonló feszültségesés
+    mérhető a dióda lábain, míg az ellenállás esetében a feszültségesés csökken nagyobb
+    amikor nagyobb ellenállással tesztelünk.
+
+    2 inverz diódát is így lehet megkülönböztetni az ellenállástól, mivel az mindkét
+    irányban vezet, viszont a feszültségesés attól konstans marad
+
+
+
+

@@ -4,7 +4,6 @@
 #include "../Exceptions/include/NotSupposedToReachThis.h"
 #include "../Global.h"
 
-
 ADC::ADC()
 {
     capture_buf = new uint16_t *[2];
@@ -18,6 +17,12 @@ ADC::ADC()
 
     adc_set_clkdiv(0);
     adc_set_temp_sensor_enabled(false);
+
+    dma_chan = dma_claim_unused_channel(true);
+    cfg = dma_channel_get_default_config(dma_chan);
+
+    dma_chan1 = dma_claim_unused_channel(true);
+    cfg1 = dma_channel_get_default_config(dma_chan1);
 }
 
 ADC::~ADC()
@@ -36,23 +41,14 @@ void ADC::setupFIFO()
         true, // Set sample error bit on error
         false // Keep full 12 bits of each sample
     );
-
     //set channel to what core 0 requires
     if (multicore_fifo_rvalid())
     {
         int chan = multicore_fifo_pop_blocking();
         std::cout << "New channel!" << chan << std::endl;
-        std::cout << "usedIndex start freeRunning:" << usedIndex << std::endl;
+        //std::cout << "usedIndex start freeRunning:" << usedIndex << std::endl;
         setADCSelect(chan);
     }
-
-
-
-    dma_chan = dma_claim_unused_channel(true);
-    dma_channel_config cfg = dma_channel_get_default_config(dma_chan);
-
-    dma_chan1 = dma_claim_unused_channel(true);
-    dma_channel_config cfg1 = dma_channel_get_default_config(dma_chan1);
 
     channel_config_set_transfer_data_size(&cfg, DMA_SIZE_16);
     channel_config_set_read_increment(&cfg, false);
@@ -90,10 +86,10 @@ void ADC::waitDMAFull()
 
     //buffer full, now it can be read
     usedIndex = !usedIndex;
-    std::cout << "usedIndex:" << usedIndex << std::endl;
+    //std::cout << "usedIndex:" << usedIndex << std::endl;
 }
 
-void ADC::setADCSelect(int chanel)
+void ADC::setADCSelect(uint8_t chanel)
 {
     if (chanel > 3 || chanel < 0)
     {
@@ -112,9 +108,7 @@ uint ADC::getADCSelect()
 void ADC::start_freeRunning()
 {
     adc_run(true);
-}
-void ADC::stop_freeRunning()
-{
+    waitDMAFull();
     adc_run(false);
 }
 
@@ -130,16 +124,17 @@ uint16_t ADC::getCaptureDepth()
 
 uint16_t *ADC::getCaptureBuff()
 {
-    std::cout << "getCaptureBuff usedIndex:" << !usedIndex << std::endl;
+    //std::cout << "getCaptureBuff usedIndex:" << !usedIndex << std::endl;
     return capture_buf[!usedIndex];
 }
 
 void ADC::printSamples()
 {
+    std::cout << "Print Samples\n";
     for (int i = 0; i < CAPTURE_DEPTH; ++i)
     {
-        printf("%-3d, ", capture_buf[i]);
-        if (i % 10 == 9)
-            printf("\n");
+        std::cout << capture_buf[i] << " ";
+        if (i % 10 == 0)
+            std::cout << std::endl;
     }
 }

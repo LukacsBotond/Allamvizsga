@@ -2,6 +2,7 @@
 
 #include "./ISwitchController.h"
 #include "../../Calculate/include/ICalculate.h"
+#include "../../Exceptions/include/NotSupposedToReachThis.h"
 #include "pico/sem.h"
 #include "pico/util/queue.h"
 
@@ -11,12 +12,14 @@ private:
     IASWITCH *aswitch1;
     IASWITCH *aswitch2;
     IASWITCH *aswitch3;
-    ICALCULATE *calc;
-    //struct semaphore *startSemaphore;
-    //struct semaphore *doneSemaphore;
-
 public:
-    BASESWITCHCONTROLLER(IASWITCH *sw1, IASWITCH *sw2, IASWITCH *sw3, ICALCULATE* calc);
+    BASESWITCHCONTROLLER(IASWITCH *sw1, IASWITCH *sw2, IASWITCH *sw3);
     ~BASESWITCHCONTROLLER();
-    void SameOut3ChannelRepeat(uint8_t sw1P, uint8_t sw2P, uint8_t sw3P) override;
+
+    //! TODO implement this in CALCULATE class
+    //void SameOut3ChannelRepeat(uint8_t sw1P, uint8_t sw2P, uint8_t sw3P) override;
+
+    void setSwithcSetting(uint8_t swNum, uint8_t mode) override;
+    uint8_t getSwithcSetting(uint8_t swNum) override;
+    uint getResistorSetting(uint8_t swNum, uint8_t resistorNr) override;
 };
