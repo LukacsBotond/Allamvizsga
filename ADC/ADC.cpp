@@ -108,9 +108,7 @@ uint ADC::getADCSelect()
 void ADC::start_freeRunning()
 {
     adc_run(true);
-}
-void ADC::stop_freeRunning()
-{
+    waitDMAFull();
     adc_run(false);
 }
 

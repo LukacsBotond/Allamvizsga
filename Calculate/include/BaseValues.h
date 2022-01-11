@@ -16,4 +16,5 @@ public:
     double getResistance() override;
 
     bool addMeasurement(std::string measurement, std::vector<double> values) override;
+    void printMeasurements() override;
 };

@@ -112,8 +112,6 @@ void core1_entry()
         sem_acquire_blocking(&startSemaphore1);
         adc->setupFIFO();
         adc->start_freeRunning();
-        adc->waitDMAFull();
-        adc->stop_freeRunning();
         //adc->printSamples();
         sem_release(&doneSemaphore1);
     }
@@ -168,7 +166,7 @@ int main()
     ICALCULATE *calc = new BASECALCULATE(val, cleanup, controller);
     multicore_launch_core1(core1_entry);
 
-
+    calc->startMeasurements();
     /*
     sleep_ms(3000);
     controller->SameOut3ChannelRepeat(2, 0, 5);

@@ -39,6 +39,10 @@ void BASECALCULATE::startMeasurements()
     sleep_ms(500);
     std::cout << "5 gnd 2 out\n\n";
     SameOut3ChannelRepeat(5, 0, 2);
+
+
+    values->printMeasurements();
+
 }
 
 //* --------------------- Private functions -------------
