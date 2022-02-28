@@ -121,3 +121,26 @@ uint BASESWITCH::getResistor(uint8_t nr)
         throw NOTSUPPOSEDTOREACHTHIS("getResistor, not supposed to reach this");
     }
 }
+
+double BASESWITCH::getTotSwitchResistance()
+{
+    // high impedance is connected
+    if (this->outPort == 0)
+    {
+        return INT32_MAX;
+    } // low high resistor is connected
+    else if (this->outPort <= 2)
+    {
+        return getResistor(0);
+    }                                                // low reseistor is connected
+    else if (this->outPort <= 4)
+    {
+        return getResistor(1); // aswitch1->getResistor(1);
+    }
+    else // both connected in parallel
+    {
+        uint res1 = getResistor(0); // aswitch1->getResistor(0);
+        uint res2 = getResistor(1); // aswitch1->getResistor(1);
+        return (res1 * res2) / (res1 + res2);
+    }
+}

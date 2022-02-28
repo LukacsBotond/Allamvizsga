@@ -15,9 +15,10 @@ private:
     ICLEANINPUT *cleanup;
     ISWITCHCONTROLLER *controller;
 
+/*
     //resistors values are the same for all switch, so I take the 1st one
     int GetOutResitance(uint8_t OutPort);
-
+*/
     void calculateResult() override;
 
 public:

@@ -19,5 +19,5 @@ public:
     //value sent to the analog switch
     uint8_t getOutput() override;
     uint getResistor(uint8_t nr) override;
-    double getTotSwitchResistance(uint8_t swNr) override;
+    double getTotSwitchResistance() override;
 };

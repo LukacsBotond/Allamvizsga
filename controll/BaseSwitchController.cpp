@@ -61,3 +61,20 @@ uint BASESWITCHCONTROLLER::getResistorSetting(uint8_t swNum, uint8_t resistorNr)
         throw NOTSUPPOSEDTOREACHTHIS("BaseSwitch getSwitchSetting out of range 0-3 only, got" + swNum);
     }
 }
+
+double BASESWITCHCONTROLLER::getswTotResistorSetting(uint8_t swNum)
+{
+    switch (swNum)
+    {
+    case 1:
+        return this->aswitch1->getTotSwitchResistance();
+    case 2:
+        return this->aswitch2->getTotSwitchResistance();
+    case 3:
+        return this->aswitch3->getTotSwitchResistance();
+    default:
+        std::string swNumstr = std::to_string(swNum);
+        throw NOTSUPPOSEDTOREACHTHIS("BaseSwitch getSwitchSetting out of range 0-3 only, got" + swNum);
+    }
+}
+
