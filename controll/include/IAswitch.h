@@ -13,4 +13,5 @@ public:
     virtual uint8_t getOutput() = 0;
     //get resistor values
     virtual uint getResistor(uint8_t nr) = 0;
+    virtual double getTotSwitchResistance(uint8_t swNr) = 0;
 };
