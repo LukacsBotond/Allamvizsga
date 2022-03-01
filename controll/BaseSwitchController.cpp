@@ -78,3 +78,7 @@ double BASESWITCHCONTROLLER::getswTotResistorSetting(uint8_t swNum)
     }
 }
 
+double BASESWITCHCONTROLLER::getTotResistorFromMode(uint8_t mode){
+    return this->aswitch1->getTotSwitchResistanceFromMode(mode);
+}
+

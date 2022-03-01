@@ -2,7 +2,7 @@
 #include <iostream>
 #include <exception>
 
-class NOTSUPPOSEDTOREACHTHIS : virtual public std::exception
+class NOSUCHMEASUREMENT : virtual public std::exception
 {
 
 protected:
@@ -11,7 +11,7 @@ protected:
     std::string error_message; ///< Error message
 
 public:
-    NOTSUPPOSEDTOREACHTHIS(const std::string &msg) : error_message(msg)
+    NOSUCHMEASUREMENT(const std::string &msg) : error_message(msg)
     {
     }
     virtual const char *what() const throw()

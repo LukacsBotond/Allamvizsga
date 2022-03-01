@@ -61,47 +61,6 @@ void ICALCULATE::doneSemaphoreAquire()
     sem_acquire_blocking(&doneSemaphore1);
 }
 
-/*
-void BASESWITCHCONTROLLER::SameOut3ChannelRepeat(uint8_t sw1P, uint8_t sw2P, uint8_t sw3P)
-{
-    std::vector<double> values;
-    std::string measurement;
-    measurement = std::to_string(sw1P);
-    measurement += std::to_string(sw2P);
-    measurement += std::to_string(sw3P);
-    std::cout << "test measurement: " << measurement << "\n";
-    //todo input chech, no short circuits
-    for (int i = 0; i < 3; i++)
-    {
-        multicore_fifo_push_blocking(i);
-        //std::cout << "start BaseController1\n";
-        aswitch1->selectOutput(sw1P);
-        //std::cout << "start BaseController2\n";
-        aswitch2->selectOutput(sw2P);
-        //std::cout << "start BaseController3\n";
-        aswitch3->selectOutput(sw3P);
-        //std::cout << &startSemaphore1 << std::endl;
-        //std::cout << &doneSemaphore1 << std::endl;
-        //std::cout << "Sem Base avebile: "<<sem_available(&startSemaphore1)<<std::endl;
-
-        //start ADC
-
-        //WAIT for ADC
-
-        sleep_ms(500);
-        //calc->calculateRes();
-        //std::cout << "start BaseController6\n";
-        //drain
-        aswitch1->selectOutput(5);
-        //std::cout << "start BaseController7\n";
-        aswitch2->selectOutput(5);
-        //std::cout << "start BaseController8\n";
-        aswitch3->selectOutput(5);
-        //std::cout << "start BaseController\n";
-        sleep_ms(500);
-    }
-}
-*/
 //when main core starts the semaphore it prints
 void core1_entry()
 {

@@ -23,4 +23,5 @@ public:
     uint8_t getSwithcSetting(uint8_t swNum) override;
     uint getResistorSetting(uint8_t swNum, uint8_t resistorNr) override;
     double getswTotResistorSetting(uint8_t swNum) override;
+    double getTotResistorFromMode(uint8_t mode) override;
 };

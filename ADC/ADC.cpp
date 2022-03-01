@@ -45,7 +45,6 @@ void ADC::setupFIFO()
     if (multicore_fifo_rvalid())
     {
         int chan = multicore_fifo_pop_blocking();
-        std::cout << "New channel!" << chan << std::endl;
         //std::cout << "usedIndex start freeRunning:" << usedIndex << std::endl;
         setADCSelect(chan);
     }

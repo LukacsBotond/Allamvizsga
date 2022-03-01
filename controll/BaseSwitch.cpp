@@ -144,3 +144,26 @@ double BASESWITCH::getTotSwitchResistance()
         return (res1 * res2) / (res1 + res2);
     }
 }
+
+double BASESWITCH::getTotSwitchResistanceFromMode(uint8_t mode)
+{
+    // high impedance is connected
+    if (mode == 0)
+    {
+        return INT32_MAX;
+    } // low high resistor is connected
+    else if (mode <= 2)
+    {
+        return getResistor(0);
+    }                                                // low reseistor is connected
+    else if (mode <= 4)
+    {
+        return getResistor(1); // aswitch1->getResistor(1);
+    }
+    else // both connected in parallel
+    {
+        uint res1 = getResistor(0); // aswitch1->getResistor(0);
+        uint res2 = getResistor(1); // aswitch1->getResistor(1);
+        return (res1 * res2) / (res1 + res2);
+    }
+}

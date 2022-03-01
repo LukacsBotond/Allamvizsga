@@ -23,6 +23,16 @@ bool BASEVALUES::addMeasurement(std::string measurement, std::vector<double> val
     return true;
 }
 
+std::vector<double> BASEVALUES::getMeasurement(std::string measurement)
+{
+    auto pos = this->measurements.find(measurement);
+    if (pos == this->measurements.end())
+    {
+        throw NOSUCHMEASUREMENT("BASEVALUES no such saved measurement:" + measurement);
+    }
+    return pos->second;
+}
+
 //* DEBUG
 
 void BASEVALUES::printMeasurements()

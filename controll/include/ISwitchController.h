@@ -30,4 +30,9 @@ public:
     // return the selecter resistor value in Ohm
     //* if incorrect value was given it van generate a NOTSUPPOSEDTOREACHTHIS exception
     virtual double getswTotResistorSetting(uint8_t swNum) = 0;
+
+
+    //@param swMode mode in which the switch was used
+    //@return returns the port resistance in that mode
+    virtual double getTotResistorFromMode(uint8_t mode) = 0;
 };
