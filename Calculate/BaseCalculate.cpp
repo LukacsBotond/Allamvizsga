@@ -12,6 +12,7 @@ BASECALCULATE::~BASECALCULATE()
 
 void BASECALCULATE::startMeasurements()
 {
+    /*
     sleep_ms(100);
     SameOut3ChannelRepeat(4, 0, 5);
     sleep_ms(100);
@@ -20,9 +21,10 @@ void BASECALCULATE::startMeasurements()
     SameOut3ChannelRepeat(2, 0, 5);
     sleep_ms(100);
     SameOut3ChannelRepeat(5, 0, 2);
-    values->printMeasurements();
+    //values->printMeasurements();
     std::cout << "resitor: " << calcResistance("405") << std::endl;
     std::cout << "resitor: " << calcResistance("205") << std::endl;
+    */
 }
 
 void BASECALCULATE::SameOut3ChannelRepeat(uint8_t sw1, uint8_t sw2, uint8_t sw3)
@@ -38,25 +40,27 @@ void BASECALCULATE::SameOut3ChannelRepeat(uint8_t sw1, uint8_t sw2, uint8_t sw3)
     {
         // chose which ADC channel to read from
         multicore_fifo_push_blocking(i);
+
+        this->startSemaphoreRelease();
         controller->setSwithcSetting(1, sw1);
         controller->setSwithcSetting(2, sw2);
         controller->setSwithcSetting(3, sw3);
         // start ADC
-        this->startSemaphoreRelease();
+
         // WAIT for ADC
         this->doneSemaphoreAquire();
 
         uint16_t *capture_buf = adc->getCaptureBuff();
         uint16_t CAPTURE_DEPTH = adc->getCaptureDepth();
         valuesVector.push_back(cleanup->AVGVoltage(capture_buf, CAPTURE_DEPTH));
-        calculateResult();
+        // calculateResult();
+        //adc->printSamples();
         // drain
         controller->setSwithcSetting(1, 5);
         controller->setSwithcSetting(2, 5);
         controller->setSwithcSetting(3, 5);
         sleep_ms(100);
     }
-
     if (!this->values->addMeasurement(measurement, valuesVector))
         std::cerr << "BaseCalculate addMeasurement fail" << std::endl;
 }
@@ -117,6 +121,15 @@ double BASECALCULATE::calcResistance(std::string measurement)
             return ((measurementData[0] - measurementData[1]) / mAmper);
         }
     }
+}
+
+std::vector<double> BASECALCULATE::getMeasurement(std::string measurement)
+{
+    return this->values->getMeasurement(measurement);
+}
+
+bool BASECALCULATE::IsAnythingConnected(double avgVoltage, uint8_t portMode){
+    return this->cleanup->IsAnythingConnected(avgVoltage,portMode);
 }
 
 //* --------------------- Private functions -------------

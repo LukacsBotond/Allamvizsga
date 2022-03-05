@@ -21,6 +21,9 @@
 
 #include "common/include/common.h"
 
+#include "stateMachine/include/Machine.h"
+#include "stateMachine/include/Resistor.h"
+
 //! Test classes
 /*
 #include "./Tests/BaseCleanInputTests/include/BaseCleanInputTest.h"
@@ -66,6 +69,7 @@ void core1_entry()
 {
     adc->setupFIFO();
     std::cout << "ADC start! \n";
+    adc->set_clkDiv(100);
     while (1)
     {
         sem_acquire_blocking(&startSemaphore1);
@@ -125,7 +129,12 @@ int main()
     ICALCULATE *calc = new BASECALCULATE(val, cleanup, controller);
     multicore_launch_core1(core1_entry);
 
-    calc->startMeasurements();
+    MACHINE* machine = new MACHINE();
+    machine->setState(new RESISTOR(calc));
+    machine->check();
+
+
+    //calc->startMeasurements();
     /*
     sleep_ms(3000);
     controller->SameOut3ChannelRepeat(2, 0, 5);

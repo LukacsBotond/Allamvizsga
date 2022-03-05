@@ -36,8 +36,8 @@ void BASESWITCH::selectOutput(uint8_t port)
     case 0:
         gpio_set_dir(gpio1, GPIO_IN);
         gpio_set_dir(gpio2, GPIO_IN);
-        gpio_pull_down(gpio1);
-        gpio_pull_down(gpio2);
+        //gpio_pull_down(gpio1);
+        //gpio_pull_down(gpio2);
         break;
     case 1:
         gpio_disable_pulls(gpio1);

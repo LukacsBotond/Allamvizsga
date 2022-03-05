@@ -5,6 +5,7 @@ void BASEVALUES::setResistance(double res)
 {
     resistance = res;
 }
+
 double BASEVALUES::getResistance()
 {
     return resistance;

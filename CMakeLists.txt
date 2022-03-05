@@ -42,7 +42,7 @@ add_executable(src src.cpp
 
         common/common.cpp
 
-
+        stateMachine/machineStates.cpp
 
         # test cases
         Tests/BaseCleanInputTests/BaseCleanInputTest.cpp

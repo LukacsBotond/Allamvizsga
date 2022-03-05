@@ -131,7 +131,7 @@ void ADC::printSamples()
     std::cout << "Print Samples\n";
     for (int i = 0; i < CAPTURE_DEPTH; ++i)
     {
-        std::cout << capture_buf[i] << " ";
+        std::cout << (uint16_t)capture_buf[usedIndex][i] << " ";
         if (i % 10 == 0)
             std::cout << std::endl;
     }
