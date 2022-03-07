@@ -64,7 +64,7 @@ void ICALCULATE::doneSemaphoreAquire()
     sem_acquire_blocking(&doneSemaphore1);
 }
 
-//when main core starts the semaphore it prints
+// when main core starts the semaphore it prints
 void core1_entry()
 {
     adc->setupFIFO();
@@ -75,10 +75,10 @@ void core1_entry()
         sem_acquire_blocking(&startSemaphore1);
         adc->setupFIFO();
         adc->start_freeRunning();
-        //adc->printSamples();
+        // adc->printSamples();
         sem_release(&doneSemaphore1);
     }
-    //gpio_set_irq_enabled_with_callback(6, GPIO_IRQ_EDGE_RISE, true, &gpio_callback);
+    // gpio_set_irq_enabled_with_callback(6, GPIO_IRQ_EDGE_RISE, true, &gpio_callback);
 
     while (1)
     {
@@ -115,11 +115,11 @@ int main()
 
     //! TEST case callers
 
-    //testCasesCaller();
+    // testCasesCaller();
 
     //! end test case callers
 
-    //COMMON *common = new COMMON();
+    // COMMON *common = new COMMON();
     IASWITCH *aswitch1 = new BASESWITCH(RESISTOR_LOW, RESISTOR_MID, RESISTOR_HIGH, SWITHCH1_LOW, SWITHCH1_HIGH);
     IASWITCH *aswitch2 = new BASESWITCH(RESISTOR_LOW, RESISTOR_MID, RESISTOR_HIGH, SWITHCH2_LOW, SWITHCH2_HIGH);
     IASWITCH *aswitch3 = new BASESWITCH(RESISTOR_LOW, RESISTOR_MID, RESISTOR_HIGH, SWITHCH3_LOW, SWITHCH3_HIGH);
@@ -129,12 +129,11 @@ int main()
     ICALCULATE *calc = new BASECALCULATE(val, cleanup, controller);
     multicore_launch_core1(core1_entry);
 
-    MACHINE* machine = new MACHINE();
+    MACHINE *machine = new MACHINE();
     machine->setState(new RESISTOR(calc));
-    machine->check();
+    machine->calculate();
 
-
-    //calc->startMeasurements();
+    // calc->startMeasurements();
     /*
     sleep_ms(3000);
     controller->SameOut3ChannelRepeat(2, 0, 5);
@@ -150,7 +149,7 @@ int main()
 */
     /*
     DISPLAYDRIVER *driver = new DISPLAYDRIVER();
-    
+
     driver->fillColor();
     sleep_ms(1000);
     std::cout<<"fekete\n";
@@ -179,10 +178,10 @@ int main()
     charDriver->printLine("almafa");
 */
 
-    //delete adc;
+    // delete adc;
+    std::cout << "Sleeping\n";
     while (1)
     {
-        std::cout << "Sleeping\n";
         sleep_ms(5000);
     }
 

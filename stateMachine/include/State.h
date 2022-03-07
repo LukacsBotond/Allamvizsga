@@ -7,7 +7,7 @@ class STATE
 {
 protected:
     static ICALCULATE *icalculate;
-
+    static std::vector<std::string> usedModes;
 public:
     STATE(/* args */)
     {
@@ -35,4 +35,6 @@ std::vector<double> STATE::getMeasurement(std::string measurement)
     }
     return measurementData;
 }
-ICALCULATE * STATE::icalculate = nullptr;
+ICALCULATE *STATE::icalculate = nullptr;
+std::vector<std::string> STATE::usedModes = {};
+

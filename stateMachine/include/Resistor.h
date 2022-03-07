@@ -1,6 +1,9 @@
 #pragma once
 #include "State.h"
+#include "../../Exceptions/include/NothingConnected.h"
 #include <vector>
+#include <iostream>
+#include <string>
 
 class RESISTOR : public STATE
 {
@@ -33,21 +36,40 @@ RESISTOR::~RESISTOR()
 
 bool RESISTOR::check()
 {
-    std::vector<double> measurement;
+    bool flag = false;
     std::string modes[] = {"250", "450", "205", "405", "025", "045"};
     std::string modesRev[] = {"520", "540", "502", "504", "052", "054"};
     for (int8_t i = 0; i < 6; i++)
     {
-        std::cout << "reverseCheck: mode" << modes[i] << " " << modesRev[i] << " " << checkReverse(modes[i], modesRev[i]) << std::endl;
+        try
+        {
+            std::cout << "reverseCheck: mode" << modes[i] << " " << modesRev[i] << " " << checkReverse(modes[i], modesRev[i]) << std::endl;
+            usedModes.push_back(modes[i]);
+            usedModes.push_back(modesRev[i]);
+            flag = true;
+        }
+        catch (NOTHINGCONNECTED &e)
+        {
+            std::cout << e.what() << std::endl;
+        }
     }
 
-    //! do a proper check
-    return false;
+    return flag;
 }
 
 void RESISTOR::calculate()
 {
+    std::cout << "RESISTOR CALCULATE\n";
     // TODO implement
+    if (check())
+    {
+        std::cout << "RESISTANCE: " << icalculate->calcResistance(this->usedModes) << std::endl;
+    }
+    else
+    {
+        std::cout << "NO resistor found\n";
+        throw NOTARESISTOR("NO PIN IS USED");
+    }
     return;
 }
 
@@ -59,19 +81,41 @@ bool RESISTOR::checkReverse(std::string measurement1, std::string measurement2)
     // first port is not used
     if (measurement1[0] - '0' == 0)
     {
-        std::cout << (measurementData1.at(1) - measurementData1.at(2)) << " " << (measurementData2.at(1) - measurementData2.at(2)) << std::endl;
+        if (!icalculate->IsAnythingConnected(measurementData1.at(1), measurement1[1] - '0') ||
+            !icalculate->IsAnythingConnected(measurementData1.at(2), measurement1[2] - '0') ||
+            !icalculate->IsAnythingConnected(measurementData2.at(1), measurement2[1] - '0') ||
+            !icalculate->IsAnythingConnected(measurementData2.at(2), measurement2[2] - '0'))
+        {
+            throw NOTHINGCONNECTED("1-2 is not used");
+        }
+        std::cout << " 2-3 " << (measurementData1.at(1) - measurementData1.at(2)) << " " << (measurementData2.at(1) - measurementData2.at(2)) << std::endl;
         return icalculate->roughlyEqual((measurementData1.at(1) - measurementData1.at(2)), (measurementData2.at(1) - measurementData2.at(2)));
     }
     else
-    {                                   // 2. or 3. is not used
+    {
+        if (!icalculate->IsAnythingConnected(measurementData1.at(0), measurement1[0] - '0') ||
+            !icalculate->IsAnythingConnected(measurementData2.at(0), measurement2[0] - '0'))
+        {
+            throw NOTHINGCONNECTED("0 is not used");
+        }                               // 2. or 3. is not used
         if (measurement1[1] - '0' == 0) // 2. is not used
         {
-            std::cout << (measurementData1.at(0) - measurementData1.at(2)) << " " << (measurementData2.at(0) - measurementData2.at(2)) << std::endl;
+            if (!icalculate->IsAnythingConnected(measurementData1.at(2), measurement1[2] - '0') ||
+                !icalculate->IsAnythingConnected(measurementData2.at(2), measurement2[2] - '0'))
+            {
+                throw NOTHINGCONNECTED("0-2 is not used");
+            }
+            std::cout << " 1-3 " << (measurementData1.at(0) - measurementData1.at(2)) << " " << (measurementData2.at(0) - measurementData2.at(2)) << std::endl;
             return icalculate->roughlyEqual((measurementData1.at(0) - measurementData1.at(2)), (measurementData2.at(0) - measurementData2.at(2)));
         }
         else // 3. is not used
         {
-            std::cout << (measurementData1.at(1) - measurementData1.at(0)) << " " << (measurementData2.at(0) - measurementData2.at(1)) << std::endl;
+            if (!icalculate->IsAnythingConnected(measurementData1.at(1), measurement1[1] - '0') ||
+                !icalculate->IsAnythingConnected(measurementData2.at(1), measurement2[1] - '0'))
+            {
+                throw NOTHINGCONNECTED("0-1 is not used");
+            }
+            std::cout << " 1-2 " << (measurementData1.at(0) - measurementData1.at(1)) << " " << (measurementData2.at(0) - measurementData2.at(1)) << std::endl;
             return icalculate->roughlyEqual((measurementData1.at(0) - measurementData1.at(1)), (measurementData2.at(0) - measurementData2.at(1)));
         }
     }

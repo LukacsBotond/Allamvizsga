@@ -34,9 +34,7 @@ bool MACHINE::check()
 }
 
 void MACHINE::calculate(){
-
-  //TODO IMPLEMENT
-  return;
+  state->calculate();
 }
 
 void MACHINE::setState(STATE *state)

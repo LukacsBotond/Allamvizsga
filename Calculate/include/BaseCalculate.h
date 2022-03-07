@@ -24,7 +24,7 @@ public:
     void SameOut3ChannelRepeat(uint8_t sw1, uint8_t sw2, uint8_t sw3) override;
 
     //* Throw a NOTARESISTOR exception if it is not a resistor
-    double calcResistance(std::string measurement) override;
+    double calcResistance(std::vector<std::string> &measurements) override;
 
     std::vector<double> getMeasurement(std::string measurement) override;
 

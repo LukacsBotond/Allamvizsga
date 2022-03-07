@@ -41,11 +41,11 @@ void BASECALCULATE::SameOut3ChannelRepeat(uint8_t sw1, uint8_t sw2, uint8_t sw3)
         // chose which ADC channel to read from
         multicore_fifo_push_blocking(i);
 
-        this->startSemaphoreRelease();
         controller->setSwithcSetting(1, sw1);
         controller->setSwithcSetting(2, sw2);
         controller->setSwithcSetting(3, sw3);
         // start ADC
+        this->startSemaphoreRelease();
 
         // WAIT for ADC
         this->doneSemaphoreAquire();
@@ -54,7 +54,7 @@ void BASECALCULATE::SameOut3ChannelRepeat(uint8_t sw1, uint8_t sw2, uint8_t sw3)
         uint16_t CAPTURE_DEPTH = adc->getCaptureDepth();
         valuesVector.push_back(cleanup->AVGVoltage(capture_buf, CAPTURE_DEPTH));
         // calculateResult();
-        //adc->printSamples();
+        // adc->printSamples();
         // drain
         controller->setSwithcSetting(1, 5);
         controller->setSwithcSetting(2, 5);
@@ -63,62 +63,62 @@ void BASECALCULATE::SameOut3ChannelRepeat(uint8_t sw1, uint8_t sw2, uint8_t sw3)
     }
     if (!this->values->addMeasurement(measurement, valuesVector))
         std::cerr << "BaseCalculate addMeasurement fail" << std::endl;
+
+    // values->printMeasurements();
 }
 
-double BASECALCULATE::calcResistance(std::string measurement)
+double BASECALCULATE::calcResistance(std::vector<std::string> &measurements)
 {
-    std::vector<double> measurementData;
-    std::vector<double> measurementData2;
-    double voltageDrop = 0;
-    // TODO check if resistor, not blindly calculate resistance
-    try
-    {
-        measurementData = this->values->getMeasurement(measurement);
-    }
-    catch (NOSUCHMEASUREMENT &err)
-    {
-        std::cout << err.what() << std::endl;
-        SameOut3ChannelRepeat(measurement[0] - '0', measurement[1] - '0', measurement[2] - '0');
-        calcResistance(measurement);
-    }
-    // there is values from one side, check reverse side
-    /*
-    try
-    {
-        measurementData2 = this->values->getMeasurement(measurement);
-    }
-    catch (NOSUCHMEASUREMENT &err)
-    {
-        std::cout << err.what() << std::endl;
-        SameOut3ChannelRepeat(measurement[2] - '0', measurement[1] - '0', measurement[0] - '0');
-        calcResistance(measurement);
-    }
-    */
-    double mAmper = 0;
-    // first port is not used
-    if (measurement[0] - '0' == 0)
-    {
 
-        mAmper = (3.3 - measurementData[1]) / this->controller->getTotResistorFromMode(measurement[1] - '0');
-        return ((measurementData[1] - measurementData[2]) / mAmper);
+    std::vector<double> measurementData;
+    double voltageDrop = 0;
+    double mAmper = 0;
+    double bestmAmper = 0;
+    std::string bestMeasurement;
+    for (int i = 0; i < measurements.size(); i += 2)
+    {
+        measurementData = this->values->getMeasurement(measurements[i]);
+        // first port is not used
+        if (measurements[i][0] - '0' == 0)
+        {
+            mAmper = (3.3 - measurementData[1]) / this->controller->getTotResistorFromMode(measurements[i][1] - '0');
+        }
+        else
+        { // 2. or 3. is not used
+            mAmper = (3.3 - measurementData[0]) / this->controller->getTotResistorFromMode(measurements[i][0] - '0');
+        }
+
+        if (mAmper > bestmAmper)
+        {
+            bestmAmper = mAmper;
+            bestMeasurement = measurements[i];
+        }
+    }
+
+    measurementData = this->values->getMeasurement(bestMeasurement);
+    // first port is not used
+    if (bestMeasurement[0] - '0' == 0)
+    {
+        std::cout << "voltage drop on 1. resistor:" << 3.3 - measurementData[1] << std::endl;
+        std::cout << "voltage drop on unkown resistor:" << measurementData[1] - measurementData[2] << std::endl;
+        std::cout << "voltage drop on 2. resistor:" << measurementData[2] << std::endl;
+        return ((measurementData[1] - measurementData[2]) / bestmAmper);
     }
     else
-    { // 2. or 3. is not used
-        mAmper = (3.3 - measurementData[0]) / this->controller->getTotResistorFromMode(measurement[0] - '0');
-        std::cout << "current: " << mAmper << " resistance: " << this->controller->getTotResistorFromMode(measurement[0] - '0') << std::endl;
-        if (measurement[1] - '0' == 0) // 2. is not used
+    {                                      // 2. or 3. is not used
+        if (bestMeasurement[1] - '0' == 0) // 2. is not used
         {
             std::cout << "voltage drop on 1. resistor:" << 3.3 - measurementData[0] << std::endl;
             std::cout << "voltage drop on unkown resistor:" << measurementData[0] - measurementData[2] << std::endl;
             std::cout << "voltage drop on 2. resistor:" << measurementData[2] << std::endl;
-            return ((measurementData[0] - measurementData[2]) / mAmper);
+            return ((measurementData[0] - measurementData[2]) / bestmAmper);
         }
         else
         { // 3. is not used
             std::cout << "voltage drop on 1. resistor:" << 3.3 - measurementData[0] << std::endl;
             std::cout << "voltage drop on unkown resistor:" << measurementData[0] - measurementData[1] << std::endl;
             std::cout << "voltage drop on 2. resistor:" << measurementData[1] << std::endl;
-            return ((measurementData[0] - measurementData[1]) / mAmper);
+            return ((measurementData[0] - measurementData[1]) / bestmAmper);
         }
     }
 }
@@ -128,8 +128,9 @@ std::vector<double> BASECALCULATE::getMeasurement(std::string measurement)
     return this->values->getMeasurement(measurement);
 }
 
-bool BASECALCULATE::IsAnythingConnected(double avgVoltage, uint8_t portMode){
-    return this->cleanup->IsAnythingConnected(avgVoltage,portMode);
+bool BASECALCULATE::IsAnythingConnected(double avgVoltage, uint8_t portMode)
+{
+    return this->cleanup->IsAnythingConnected(avgVoltage, portMode);
 }
 
 //* --------------------- Private functions -------------

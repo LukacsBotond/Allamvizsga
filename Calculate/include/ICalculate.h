@@ -14,7 +14,7 @@ public:
 
     virtual void startMeasurements() = 0;
     virtual void SameOut3ChannelRepeat(uint8_t sw1, uint8_t sw2, uint8_t sw3) = 0;
-    virtual double calcResistance(std::string measurement) = 0;
+    virtual double calcResistance(std::vector<std::string> &measurements) = 0;
 
     virtual std::vector<double> getMeasurement(std::string measurement) = 0;
 

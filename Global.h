@@ -34,8 +34,8 @@
 
 //* resistors
 
-#define RESISTOR_LOW 330
-#define RESISTOR_MID 4700
+#define RESISTOR_LOW 356
+#define RESISTOR_MID 4670
 #define RESISTOR_HIGH 0
 
 class IADC;
