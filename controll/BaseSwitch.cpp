@@ -36,8 +36,8 @@ void BASESWITCH::selectOutput(uint8_t port)
     case 0:
         gpio_set_dir(gpio1, GPIO_IN);
         gpio_set_dir(gpio2, GPIO_IN);
-        gpio_pull_down(gpio1);
-        gpio_pull_down(gpio2);
+        //gpio_pull_down(gpio1);
+        //gpio_pull_down(gpio2);
         break;
     case 1:
         gpio_disable_pulls(gpio1);
@@ -119,5 +119,51 @@ uint BASESWITCH::getResistor(uint8_t nr)
         return outRes1;
     default:
         throw NOTSUPPOSEDTOREACHTHIS("getResistor, not supposed to reach this");
+    }
+}
+
+double BASESWITCH::getTotSwitchResistance()
+{
+    // high impedance is connected
+    if (this->outPort == 0)
+    {
+        return INT32_MAX;
+    } // low high resistor is connected
+    else if (this->outPort <= 2)
+    {
+        return getResistor(0);
+    }                                                // low reseistor is connected
+    else if (this->outPort <= 4)
+    {
+        return getResistor(1); // aswitch1->getResistor(1);
+    }
+    else // both connected in parallel
+    {
+        uint res1 = getResistor(0); // aswitch1->getResistor(0);
+        uint res2 = getResistor(1); // aswitch1->getResistor(1);
+        return (res1 * res2) / (res1 + res2);
+    }
+}
+
+double BASESWITCH::getTotSwitchResistanceFromMode(uint8_t mode)
+{
+    // high impedance is connected
+    if (mode == 0)
+    {
+        return INT32_MAX;
+    } // low high resistor is connected
+    else if (mode <= 2)
+    {
+        return getResistor(0);
+    }                                                // low reseistor is connected
+    else if (mode <= 4)
+    {
+        return getResistor(1); // aswitch1->getResistor(1);
+    }
+    else // both connected in parallel
+    {
+        uint res1 = getResistor(0); // aswitch1->getResistor(0);
+        uint res2 = getResistor(1); // aswitch1->getResistor(1);
+        return (res1 * res2) / (res1 + res2);
     }
 }

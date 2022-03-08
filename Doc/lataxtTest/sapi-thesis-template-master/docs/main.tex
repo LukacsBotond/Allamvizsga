@@ -1,0 +1,78 @@
+\documentclass[12pt, twosides]{report}
+
+\include{preamble}
+
+\title{
+	{Elektronikai alkatrész teszter}\\
+	{\large Sapientia\\
+	Erdélyi Magyar Tudományegyetem, Marosvásárhely}
+}
+\author{
+	Lukács, Botond\\
+	\texttt{lukacs.botond@student.ms.sapientia.ro}
+	\and
+	dr. Túrós, László-Zsolt\\
+	\texttt{turosl@ms.sapientia.ro }	
+}
+\date{2022}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+
+\includepdf[pages={1,2,3}]{pdfs/allamvizsga_boritoMod.pdf}
+
+\section*{Extras}
+\input{chapters/abstractRo}
+\pagebreak
+
+\includepdf[pages={6}]{pdfs/allamvizsga_boritoMod.pdf}
+
+\section*{Kivonat}
+\input{chapters/abstractHu}
+\pagebreak
+
+\section*{Abstract}
+\input{chapters/abstractEn}
+\pagebreak
+
+\pagenumbering{gobble}
+
+\tableofcontents
+
+\listoffigures
+
+\chapter{Bevezető}
+\pagenumbering{arabic}
+\input{chapters/introduction}
+
+\chapter{Szakirodalom áttekintése}
+\input{chapters/literature}
+
+\chapter{Elméleti áttekintés}
+\input{chapters/theory.tex}
+
+\chapter{Rendszer specifikációi}
+\input{chapters/specifications}
+
+%Terv
+\chapter{Gyakorlati megvalósítás} \label{chpt:implementation}
+\input{chapters/implementation}
+
+\chapter{Eredmények}
+\input{chapters/results}
+
+%következtetés
+\chapter{Összefoglalás}
+\input{chapters/summary}
+
+\addcontentsline{toc}{chapter}{Irodalomjegyzék}
+\bibliographystyle{ieeetr}
+\bibliography{References}
+
+%appendix
+\appendix
+\chapter{Függelék}
+\input{chapters/appendix}
+
+
+\end{document}

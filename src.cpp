@@ -21,6 +21,9 @@
 
 #include "common/include/common.h"
 
+#include "stateMachine/include/Machine.h"
+#include "stateMachine/include/Resistor.h"
+
 //! Test classes
 /*
 #include "./Tests/BaseCleanInputTests/include/BaseCleanInputTest.h"
@@ -61,61 +64,21 @@ void ICALCULATE::doneSemaphoreAquire()
     sem_acquire_blocking(&doneSemaphore1);
 }
 
-/*
-void BASESWITCHCONTROLLER::SameOut3ChannelRepeat(uint8_t sw1P, uint8_t sw2P, uint8_t sw3P)
-{
-    std::vector<double> values;
-    std::string measurement;
-    measurement = std::to_string(sw1P);
-    measurement += std::to_string(sw2P);
-    measurement += std::to_string(sw3P);
-    std::cout << "test measurement: " << measurement << "\n";
-    //todo input chech, no short circuits
-    for (int i = 0; i < 3; i++)
-    {
-        multicore_fifo_push_blocking(i);
-        //std::cout << "start BaseController1\n";
-        aswitch1->selectOutput(sw1P);
-        //std::cout << "start BaseController2\n";
-        aswitch2->selectOutput(sw2P);
-        //std::cout << "start BaseController3\n";
-        aswitch3->selectOutput(sw3P);
-        //std::cout << &startSemaphore1 << std::endl;
-        //std::cout << &doneSemaphore1 << std::endl;
-        //std::cout << "Sem Base avebile: "<<sem_available(&startSemaphore1)<<std::endl;
-
-        //start ADC
-
-        //WAIT for ADC
-
-        sleep_ms(500);
-        //calc->calculateRes();
-        //std::cout << "start BaseController6\n";
-        //drain
-        aswitch1->selectOutput(5);
-        //std::cout << "start BaseController7\n";
-        aswitch2->selectOutput(5);
-        //std::cout << "start BaseController8\n";
-        aswitch3->selectOutput(5);
-        //std::cout << "start BaseController\n";
-        sleep_ms(500);
-    }
-}
-*/
-//when main core starts the semaphore it prints
+// when main core starts the semaphore it prints
 void core1_entry()
 {
     adc->setupFIFO();
     std::cout << "ADC start! \n";
+    adc->set_clkDiv(100);
     while (1)
     {
         sem_acquire_blocking(&startSemaphore1);
         adc->setupFIFO();
         adc->start_freeRunning();
-        //adc->printSamples();
+        // adc->printSamples();
         sem_release(&doneSemaphore1);
     }
-    //gpio_set_irq_enabled_with_callback(6, GPIO_IRQ_EDGE_RISE, true, &gpio_callback);
+    // gpio_set_irq_enabled_with_callback(6, GPIO_IRQ_EDGE_RISE, true, &gpio_callback);
 
     while (1)
     {
@@ -152,11 +115,11 @@ int main()
 
     //! TEST case callers
 
-    //testCasesCaller();
+    // testCasesCaller();
 
     //! end test case callers
 
-    //COMMON *common = new COMMON();
+    // COMMON *common = new COMMON();
     IASWITCH *aswitch1 = new BASESWITCH(RESISTOR_LOW, RESISTOR_MID, RESISTOR_HIGH, SWITHCH1_LOW, SWITHCH1_HIGH);
     IASWITCH *aswitch2 = new BASESWITCH(RESISTOR_LOW, RESISTOR_MID, RESISTOR_HIGH, SWITHCH2_LOW, SWITHCH2_HIGH);
     IASWITCH *aswitch3 = new BASESWITCH(RESISTOR_LOW, RESISTOR_MID, RESISTOR_HIGH, SWITHCH3_LOW, SWITHCH3_HIGH);
@@ -166,7 +129,11 @@ int main()
     ICALCULATE *calc = new BASECALCULATE(val, cleanup, controller);
     multicore_launch_core1(core1_entry);
 
-    calc->startMeasurements();
+    MACHINE *machine = new MACHINE();
+    machine->setState(new RESISTOR(calc));
+    machine->calculate();
+
+    // calc->startMeasurements();
     /*
     sleep_ms(3000);
     controller->SameOut3ChannelRepeat(2, 0, 5);
@@ -182,7 +149,7 @@ int main()
 */
     /*
     DISPLAYDRIVER *driver = new DISPLAYDRIVER();
-    
+
     driver->fillColor();
     sleep_ms(1000);
     std::cout<<"fekete\n";
@@ -211,10 +178,10 @@ int main()
     charDriver->printLine("almafa");
 */
 
-    //delete adc;
+    // delete adc;
+    std::cout << "Sleeping\n";
     while (1)
     {
-        std::cout << "Sleeping\n";
         sleep_ms(5000);
     }
 
