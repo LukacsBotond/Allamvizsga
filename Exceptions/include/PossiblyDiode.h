@@ -2,7 +2,7 @@
 #include <iostream>
 #include <exception>
 
-class NOSUCHPORT : virtual public std::exception
+class POSSIBLYDIODE : virtual public std::exception
 {
 
 protected:
@@ -11,7 +11,7 @@ protected:
     std::string error_message; ///< Error message
 
 public:
-    NOSUCHPORT(const std::string &msg) : error_message(msg)
+    POSSIBLYDIODE(const std::string &msg) : error_message(msg)
     {
     }
     virtual const char *what() const throw()

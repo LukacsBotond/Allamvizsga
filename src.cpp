@@ -131,8 +131,14 @@ int main()
 
     MACHINE *machine = new MACHINE();
     machine->setState(new RESISTOR(calc));
-    machine->calculate();
-
+    try
+    {
+        machine->calculate();
+    }
+    catch (POSSIBLYDIODE &e)
+    {
+        std::cout << e.what() << std::endl;
+    }
     // calc->startMeasurements();
     /*
     sleep_ms(3000);

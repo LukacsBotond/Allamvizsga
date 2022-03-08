@@ -45,7 +45,7 @@ add_executable(src src.cpp
         stateMachine/machineStates.cpp
 
         # test cases
-        Tests/BaseCleanInputTests/BaseCleanInputTest.cpp
+        #Tests/BaseCleanInputTest.cpp
         )
 
 pico_set_program_name(src "src")
