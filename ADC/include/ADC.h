@@ -59,13 +59,13 @@ private:
     uint dma_chan;
     uint dma_chan1;
     uint16_t CAPTURE_DEPTH = 255;
-    uint16_t **capture_buf;
+    uint16_t *capture_buf;
     //holds which part of the capture_buff is used for writing
     //cannot be used for reading
     bool usedIndex = 0;
 
     dma_channel_config cfg;
-    dma_channel_config cfg1;
+    //dma_channel_config cfg1;
 
     void waitDMAFull() override;
 

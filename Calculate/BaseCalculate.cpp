@@ -39,27 +39,26 @@ void BASECALCULATE::SameOut3ChannelRepeat(uint8_t sw1, uint8_t sw2, uint8_t sw3)
     for (int i = 0; i < 3; i++)
     {
         // chose which ADC channel to read from
-        multicore_fifo_push_blocking(i);
-
+        multicore_fifo_push_blocking((i + 1) % 3);
         controller->setSwithcSetting(1, sw1);
         controller->setSwithcSetting(2, sw2);
         controller->setSwithcSetting(3, sw3);
-        // start ADC
+        // start ADCc
         this->startSemaphoreRelease();
 
         // WAIT for ADC
         this->doneSemaphoreAquire();
 
-        uint16_t *capture_buf = adc->getCaptureBuff();
-        uint16_t CAPTURE_DEPTH = adc->getCaptureDepth();
-        valuesVector.push_back(cleanup->AVGVoltage(capture_buf, CAPTURE_DEPTH));
+        // uint16_t *capture_buf = adc->getCaptureBuff();
+        // uint16_t CAPTURE_DEPTH = adc->getCaptureDepth();
+        valuesVector.push_back(cleanup->AVGVoltage(adc->getCaptureBuff(), adc->getCaptureDepth()));
         // calculateResult();
         // adc->printSamples();
         // drain
         controller->setSwithcSetting(1, 5);
         controller->setSwithcSetting(2, 5);
         controller->setSwithcSetting(3, 5);
-        sleep_ms(100);
+        // sleep_ms(1000);
     }
     if (!this->values->addMeasurement(measurement, valuesVector))
         std::cerr << "BaseCalculate addMeasurement fail" << std::endl;

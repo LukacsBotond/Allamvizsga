@@ -7,12 +7,12 @@ bool BASECLEANINPUT::IsAnythingConnected(double avgVoltage, uint8_t portMode)
     // to send voltage on a diode backwards
     if (portMode == 0)
     {
-        return (avgVoltage > 0.8);
+        return (avgVoltage > 3);
     }
     if (portMode == 2 || portMode == 4)
     {
         return (avgVoltage < 3.1);
     }
     //
-    return (avgVoltage > 0.05);
+    return (avgVoltage > 0.1);
 }

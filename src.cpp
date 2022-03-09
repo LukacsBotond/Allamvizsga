@@ -69,11 +69,11 @@ void core1_entry()
 {
     adc->setupFIFO();
     std::cout << "ADC start! \n";
-    adc->set_clkDiv(100);
+    adc->set_clkDiv(0);
     while (1)
     {
-        sem_acquire_blocking(&startSemaphore1);
         adc->setupFIFO();
+        sem_acquire_blocking(&startSemaphore1);
         adc->start_freeRunning();
         // adc->printSamples();
         sem_release(&doneSemaphore1);

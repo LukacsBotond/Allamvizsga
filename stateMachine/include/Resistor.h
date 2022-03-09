@@ -101,7 +101,7 @@ bool RESISTOR::checkReverse(std::string measurementNormal, std::string measureme
     std::cout << "measurementDataNormal " << measurementDataNormal[0] << " " << measurementDataNormal[1] << " " << measurementDataNormal[2] << std::endl;
     std::cout << "measurementDataReverse " << measurementDataReverse[0] << " " << measurementDataReverse[1] << " " << measurementDataReverse[2] << std::endl;
     std::cout << "measurementNormal " << measurementNormal << ": " << icalculate->IsAnythingConnected(measurementDataNormal.at(0), measurementNormal[0] - '0') << " " << icalculate->IsAnythingConnected(measurementDataNormal.at(1), measurementNormal[1] - '0') << " " << icalculate->IsAnythingConnected(measurementDataNormal.at(2), measurementNormal[2] - '0') << std::endl;
-    std::cout << "measurementReverse " << measurementReverse << ": " << icalculate->IsAnythingConnected(measurementDataReverse.at(0), measurementNormal[0] - '0') << " " << icalculate->IsAnythingConnected(measurementDataReverse.at(1), measurementNormal[1] - '0') << " " << icalculate->IsAnythingConnected(measurementDataReverse.at(2), measurementNormal[2] - '0') << std::endl;
+    std::cout << "measurementReverse " << measurementReverse << ": " << icalculate->IsAnythingConnected(measurementDataReverse.at(0), measurementReverse[0] - '0') << " " << icalculate->IsAnythingConnected(measurementDataReverse.at(1), measurementReverse[1] - '0') << " " << icalculate->IsAnythingConnected(measurementDataReverse.at(2), measurementReverse[2] - '0') << std::endl;
 
     //! DELETE END
 
@@ -109,44 +109,50 @@ bool RESISTOR::checkReverse(std::string measurementNormal, std::string measureme
     if (measurementNormal[0] - '0' == 0)
     {
         if ( // need to pass in one direction or in the other direction
-            (icalculate->IsAnythingConnected(measurementDataNormal.at(1), measurementNormal[1] - '0') &&
-             icalculate->IsAnythingConnected(measurementDataNormal.at(2), measurementNormal[2] - '0')) ||
-
-            (icalculate->IsAnythingConnected(measurementDataReverse.at(1), measurementReverse[1] - '0') &&
-             icalculate->IsAnythingConnected(measurementDataReverse.at(2), measurementReverse[2] - '0')))
+            !(icalculate->IsAnythingConnected(measurementDataNormal.at(1), measurementNormal[1] - '0') && icalculate->IsAnythingConnected(measurementDataNormal.at(2), measurementNormal[2] - '0')) &&
+            !(icalculate->IsAnythingConnected(measurementDataReverse.at(1), measurementReverse[1] - '0') && icalculate->IsAnythingConnected(measurementDataReverse.at(2), measurementReverse[2] - '0')))
         {
             throw NOTHINGCONNECTED("1-2 is not used");
         }
-        std::cout << " 1-2 " << (measurementDataNormal.at(1) - measurementDataNormal.at(2)) << " " << (measurementDataReverse.at(1) - measurementDataReverse.at(2)) << std::endl;
-        return icalculate->roughlyEqual((measurementDataNormal.at(1) - measurementDataNormal.at(2)), (measurementDataReverse.at(1) - measurementDataReverse.at(2)));
+        else
+        {
+            std::cout << " 1-2 " << (measurementDataNormal.at(1) - measurementDataNormal.at(2)) << " " << (measurementDataReverse.at(1) - measurementDataReverse.at(2)) << std::endl;
+            return icalculate->roughlyEqual((measurementDataNormal.at(1) - measurementDataNormal.at(2)), (measurementDataReverse.at(1) - measurementDataReverse.at(2)));
+        }
     }
     else
     {                                        // 2. or 3. is not used
         if (measurementNormal[1] - '0' == 0) // 2. is not used
         {
             if ( // need to pass in one direction or in the other direction
-                (icalculate->IsAnythingConnected(measurementDataNormal.at(0), measurementNormal[0] - '0') &&
-                 icalculate->IsAnythingConnected(measurementDataNormal.at(2), measurementNormal[2] - '0')) ||
-                (icalculate->IsAnythingConnected(measurementDataReverse.at(0), measurementReverse[0] - '0') &&
-                 icalculate->IsAnythingConnected(measurementDataReverse.at(2), measurementReverse[2] - '0')))
+                !(icalculate->IsAnythingConnected(measurementDataNormal.at(0), measurementNormal[0] - '0') &&
+                  icalculate->IsAnythingConnected(measurementDataNormal.at(2), measurementNormal[2] - '0')) &&
+                !(icalculate->IsAnythingConnected(measurementDataReverse.at(0), measurementReverse[0] - '0') &&
+                  icalculate->IsAnythingConnected(measurementDataReverse.at(2), measurementReverse[2] - '0')))
             {
                 throw NOTHINGCONNECTED("0-2 is not used");
             }
-            std::cout << " 0-2 " << (measurementDataNormal.at(0) - measurementDataNormal.at(2)) << " " << (measurementDataReverse.at(0) - measurementDataReverse.at(2)) << std::endl;
-            return icalculate->roughlyEqual((measurementDataNormal.at(0) - measurementDataNormal.at(2)), (measurementDataReverse.at(0) - measurementDataReverse.at(2)));
+            else
+            {
+                std::cout << " 0-2 " << (measurementDataNormal.at(0) - measurementDataNormal.at(2)) << " " << (measurementDataReverse.at(0) - measurementDataReverse.at(2)) << std::endl;
+                return icalculate->roughlyEqual((measurementDataNormal.at(0) - measurementDataNormal.at(2)), (measurementDataReverse.at(0) - measurementDataReverse.at(2)));
+            }
         }
         else // 3. is not used
         {
             if ( // need to pass in one direction or in the other direction
-                (icalculate->IsAnythingConnected(measurementDataNormal.at(0), measurementNormal[0] - '0') &&
-                 icalculate->IsAnythingConnected(measurementDataNormal.at(1), measurementNormal[1] - '0')) ||
-                (icalculate->IsAnythingConnected(measurementDataReverse.at(0), measurementReverse[0] - '0') &&
-                 icalculate->IsAnythingConnected(measurementDataReverse.at(1), measurementReverse[1] - '0')))
+                !(icalculate->IsAnythingConnected(measurementDataNormal.at(0), measurementNormal[0] - '0') &&
+                  icalculate->IsAnythingConnected(measurementDataNormal.at(1), measurementNormal[1] - '0')) &&
+                !(icalculate->IsAnythingConnected(measurementDataReverse.at(0), measurementReverse[0] - '0') &&
+                  icalculate->IsAnythingConnected(measurementDataReverse.at(1), measurementReverse[1] - '0')))
             {
                 throw NOTHINGCONNECTED("0-1 is not used");
             }
-            std::cout << " 0-1 " << (measurementDataNormal.at(0) - measurementDataNormal.at(1)) << " " << (measurementDataReverse.at(0) - measurementDataReverse.at(1)) << std::endl;
-            return icalculate->roughlyEqual((measurementDataNormal.at(0) - measurementDataNormal.at(1)), (measurementDataReverse.at(0) - measurementDataReverse.at(1)));
+            else
+            {
+                std::cout << " 0-1 " << (measurementDataNormal.at(0) - measurementDataNormal.at(1)) << " " << (measurementDataReverse.at(0) - measurementDataReverse.at(1)) << std::endl;
+                return icalculate->roughlyEqual((measurementDataNormal.at(0) - measurementDataNormal.at(1)), (measurementDataReverse.at(0) - measurementDataReverse.at(1)));
+            }
         }
     }
 }
