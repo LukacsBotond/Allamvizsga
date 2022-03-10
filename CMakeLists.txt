@@ -23,7 +23,7 @@ pico_sdk_init()
 
 add_executable(src src.cpp
         ADC/ADC.cpp
-
+        ADC/ADCCorrecter.cpp
         Calculate/BaseCalculate.cpp
         Calculate/BaseValues.cpp
         Calculate/BaseCleanInput.cpp

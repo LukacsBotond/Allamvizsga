@@ -1,8 +1,10 @@
 #pragma once
 #include "IValues.h"
 #include "../../Exceptions/include/NoSuchMeasurement.h"
+#include "../../ADC/include/ADCCorrecter.h"
 #include <vector>
 
+//class IADCCORRECTER;
 class ICALCULATE
 {
 protected:

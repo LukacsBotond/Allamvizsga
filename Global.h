@@ -38,6 +38,8 @@
 #define RESISTOR_MID 4670
 #define RESISTOR_HIGH 0
 
+//*Power save pin
+#define POWERS_SAVE_PIN 23
+
 class IADC;
 extern IADC *adc;
-//static queue_t ADCSelect_queue;

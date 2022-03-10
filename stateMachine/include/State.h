@@ -35,6 +35,3 @@ std::vector<double> STATE::getMeasurement(std::string measurement)
     }
     return measurementData;
 }
-ICALCULATE *STATE::icalculate = nullptr;
-std::vector<std::string> STATE::usedModes = {};
-

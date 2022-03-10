@@ -113,10 +113,12 @@ uint ADC::getADCSelect()
 void ADC::start_freeRunning()
 {
     //std::cout << "\ncurrent channel: " << adc_get_selected_input() << std::endl;
+    gpio_put(POWERS_SAVE_PIN,HIGH);
     adc_run(true);
     // waitDMAFull();
     dma_channel_wait_for_finish_blocking(dma_chan);
     adc_run(false);
+    gpio_put(POWERS_SAVE_PIN,LOW);
 }
 
 void ADC::set_clkDiv(uint div)

@@ -1,13 +1,18 @@
 #include "./include/BaseCalculate.h"
 #include "../Global.h"
 
-BASECALCULATE::BASECALCULATE(IVALUES *values, ICLEANINPUT *cleanup, ISWITCHCONTROLLER *controller) : values(values), cleanup(cleanup), controller(controller) {}
+BASECALCULATE::BASECALCULATE(IVALUES *values, ICLEANINPUT *cleanup, ISWITCHCONTROLLER *controller, IADCORRECTER *adccorrecter) : values(values), cleanup(cleanup), controller(controller), adccorrecter(adccorrecter)
+{
+    this->adccorrecter->loadIcalculate(this);
+    this->adccorrecter->init();
+}
 
 BASECALCULATE::~BASECALCULATE()
 {
     delete values;
     delete cleanup;
     delete controller;
+    delete adccorrecter;
 }
 
 void BASECALCULATE::startMeasurements()
@@ -51,14 +56,25 @@ void BASECALCULATE::SameOut3ChannelRepeat(uint8_t sw1, uint8_t sw2, uint8_t sw3)
 
         // uint16_t *capture_buf = adc->getCaptureBuff();
         // uint16_t CAPTURE_DEPTH = adc->getCaptureDepth();
-        valuesVector.push_back(cleanup->AVGVoltage(adc->getCaptureBuff(), adc->getCaptureDepth()));
+        valuesVector.push_back(cleanup->AVGVoltage(adccorrecter->offsetCorrection(adc->getCaptureBuff(), adc->getCaptureDepth()), adc->getCaptureDepth()));
         // calculateResult();
-        // adc->printSamples();
+        /*
+        adc->printSamples();
+        std::cout << "corrected:\n";
+        capture_buf = adccorrecter->offsetCorrection(capture_buf, CAPTURE_DEPTH);
+        for (int index = 0; index < adc->getCaptureDepth(); index++)
+        {
+            std::cout << capture_buf[index] << " ";
+            if (index % 20 == 19)
+            {
+                std::cout << std::endl;
+            }
+        }
+*/
         // drain
         controller->setSwithcSetting(1, 5);
         controller->setSwithcSetting(2, 5);
         controller->setSwithcSetting(3, 5);
-        // sleep_ms(1000);
     }
     if (!this->values->addMeasurement(measurement, valuesVector))
         std::cerr << "BaseCalculate addMeasurement fail" << std::endl;

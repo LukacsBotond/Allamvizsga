@@ -13,6 +13,8 @@
 #include "display/include/displayDriver.h"
 #include "display/include/characterDisplay.h"
 #include "ADC/include/ADC.h"
+#include "ADC/include/ADCCorrecter.h"
+
 #include "controll/include/BaseSwitch.h"
 #include "controll/include/BaseSwithcController.h"
 #include "Calculate/include/BaseCalculate.h"
@@ -103,6 +105,10 @@ void resus_callback(void) {
 */
 
 IADC *adc = new ADC();
+ICALCULATE *IADCORRECTER::icalculate = nullptr;
+ICALCULATE *STATE::icalculate = nullptr;
+std::vector<std::string> STATE::usedModes = {};
+
 int main()
 {
 
@@ -119,15 +125,17 @@ int main()
 
     //! end test case callers
 
+    multicore_launch_core1(core1_entry);
+    
     // COMMON *common = new COMMON();
     IASWITCH *aswitch1 = new BASESWITCH(RESISTOR_LOW, RESISTOR_MID, RESISTOR_HIGH, SWITHCH1_LOW, SWITHCH1_HIGH);
     IASWITCH *aswitch2 = new BASESWITCH(RESISTOR_LOW, RESISTOR_MID, RESISTOR_HIGH, SWITHCH2_LOW, SWITHCH2_HIGH);
     IASWITCH *aswitch3 = new BASESWITCH(RESISTOR_LOW, RESISTOR_MID, RESISTOR_HIGH, SWITHCH3_LOW, SWITHCH3_HIGH);
     IVALUES *val = new BASEVALUES();
     ICLEANINPUT *cleanup = new BASECLEANINPUT();
+    IADCORRECTER *adccorrecter = new ADCCORRECTER();
     ISWITCHCONTROLLER *controller = new BASESWITCHCONTROLLER(aswitch1, aswitch2, aswitch3);
-    ICALCULATE *calc = new BASECALCULATE(val, cleanup, controller);
-    multicore_launch_core1(core1_entry);
+    ICALCULATE *calc = new BASECALCULATE(val, cleanup, controller, adccorrecter);
 
     MACHINE *machine = new MACHINE();
     machine->setState(new RESISTOR(calc));
