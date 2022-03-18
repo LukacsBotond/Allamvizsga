@@ -102,7 +102,6 @@ bool RESISTOR::checkReverse(std::string measurementNormal, std::string measureme
     std::cout << "measurementDataReverse " << measurementDataReverse[0] << " " << measurementDataReverse[1] << " " << measurementDataReverse[2] << std::endl;
     std::cout << "measurementNormal " << measurementNormal << ": " << icalculate->IsAnythingConnected(measurementDataNormal.at(0), measurementNormal[0] - '0') << " " << icalculate->IsAnythingConnected(measurementDataNormal.at(1), measurementNormal[1] - '0') << " " << icalculate->IsAnythingConnected(measurementDataNormal.at(2), measurementNormal[2] - '0') << std::endl;
     std::cout << "measurementReverse " << measurementReverse << ": " << icalculate->IsAnythingConnected(measurementDataReverse.at(0), measurementReverse[0] - '0') << " " << icalculate->IsAnythingConnected(measurementDataReverse.at(1), measurementReverse[1] - '0') << " " << icalculate->IsAnythingConnected(measurementDataReverse.at(2), measurementReverse[2] - '0') << std::endl;
-
     //! DELETE END
 
     // first port is not used
@@ -156,3 +155,7 @@ bool RESISTOR::checkReverse(std::string measurementNormal, std::string measureme
         }
     }
 }
+
+
+
+

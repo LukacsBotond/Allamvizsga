@@ -8,6 +8,12 @@ ADC::ADC()
 {
     // capture_buf = new uint16_t *[2];
     capture_buf = new uint16_t[CAPTURE_DEPTH];
+
+    if (capture_buf == nullptr)
+    {
+        std::cout << "failed to allocate memory to ADC::CAPTUREBUFF\n";
+        throw NULLEXCEPT("failed to allocate memory to ADC::CAPTUREBUFF\n");
+    }
     // capture_buf[1] = new uint16_t[CAPTURE_DEPTH];
     adc_gpio_init(ACD_CHANNEL_0);
     adc_gpio_init(ACD_CHANNEL_1);
@@ -75,6 +81,7 @@ void ADC::setupFIFO()
         );
         */
 
+    // empty fifo array before next read
     while (!adc_fifo_is_empty())
     {
         adc_fifo_get();
@@ -101,7 +108,7 @@ void ADC::setADCSelect(uint8_t chanel)
         adc_select_input(ACD_CHANNEL_0);
         throw NOSUCHPORT("port must be 0/1/2");
     }
-    //std::cout << "set ADC chan to: " << (int)chanel << " channel" << std::endl;
+    // std::cout << "set ADC chan to: " << (int)chanel << " channel" << std::endl;
     adc_select_input(chanel);
 }
 
@@ -112,13 +119,13 @@ uint ADC::getADCSelect()
 
 void ADC::start_freeRunning()
 {
-    //std::cout << "\ncurrent channel: " << adc_get_selected_input() << std::endl;
-    gpio_put(POWERS_SAVE_PIN,HIGH);
+    // std::cout << "\ncurrent channel: " << adc_get_selected_input() << std::endl;
+    gpio_put(POWERS_SAVE_PIN, HIGH);
     adc_run(true);
     // waitDMAFull();
     dma_channel_wait_for_finish_blocking(dma_chan);
     adc_run(false);
-    gpio_put(POWERS_SAVE_PIN,LOW);
+    gpio_put(POWERS_SAVE_PIN, LOW);
 }
 
 void ADC::set_clkDiv(uint div)
@@ -126,7 +133,12 @@ void ADC::set_clkDiv(uint div)
     adc_set_clkdiv(div);
 }
 
-// TODO make get_clkDiv
+// TODO check get_clkDiv
+uint32_t ADC::get_clkHz()
+{
+    std::cout << clock_get_hz(clk_adc) << std::endl;
+    return clock_get_hz(clk_adc);
+}
 
 uint16_t ADC::getCaptureDepth()
 {
@@ -136,6 +148,8 @@ uint16_t ADC::getCaptureDepth()
 uint16_t *ADC::getCaptureBuff()
 {
     // std::cout << "getCaptureBuff usedIndex:" << !usedIndex << std::endl;
+    if (capture_buf == nullptr)
+        throw NULLEXCEPT("ADC capturebuff is NULL");
     return capture_buf;
 }
 
@@ -148,4 +162,11 @@ void ADC::printSamples()
         if (i % 20 == 19)
             std::cout << std::endl;
     }
+}
+
+void ADC::setCaptureBuff(uint16_t *buff)
+{
+    if (buff == nullptr)
+        throw NULLEXCEPT("setCaptureBuff is null");
+    this->capture_buf = buff;
 }

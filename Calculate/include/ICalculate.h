@@ -2,22 +2,25 @@
 #include "IValues.h"
 #include "../../Exceptions/include/NoSuchMeasurement.h"
 #include "../../ADC/include/ADCCorrecter.h"
+#include "./ICleanInput.h"
+#include "../../ADC/include/IADC.h"
+#include "../../controll/include/IAswitch.h"
+#include "../../controll/include/BaseSwithcController.h"
 #include <vector>
 
-//class IADCCORRECTER;
+class IADCORRECTER;
 class ICALCULATE
 {
 protected:
 public:
+    static IVALUES *values;
+    static ICLEANINPUT *cleanup;
+    static ISWITCHCONTROLLER *controller;
+    static IADCORRECTER *adccorrecter;
     virtual ~ICALCULATE() {}
 
-    //! DELETE LATER
-    virtual void calculateResult() = 0;
-
-    virtual void startMeasurements() = 0;
     virtual void SameOut3ChannelRepeat(uint8_t sw1, uint8_t sw2, uint8_t sw3) = 0;
     virtual double calcResistance(std::vector<std::string> &measurements) = 0;
-
     virtual std::vector<double> getMeasurement(std::string measurement) = 0;
 
     void startSemaphoreRelease();

@@ -1,6 +1,7 @@
 \documentclass[12pt, twosides]{report}
 
 \include{preamble}
+\usepackage{hyperref}
 
 \title{
 	{Elektronikai alkatrész teszter}\\
@@ -65,14 +66,19 @@
 \chapter{Összefoglalás}
 \input{chapters/summary}
 
+%irodalomjegyzek
 \addcontentsline{toc}{chapter}{Irodalomjegyzék}
-\bibliographystyle{ieeetr}
-\bibliography{References}
+\begin{thebibliography}{99}
+\bibitem{Test00} T. Test, \emph{Test testing tests}, Journal of Testing
+%\bibliographystyle{ieeetr}
+%\bibliography{References}
+\end{thebibliography}
 
 %appendix
 \appendix
 \chapter{Függelék}
 \input{chapters/appendix}
+
 
 
 \end{document}

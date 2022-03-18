@@ -107,6 +107,10 @@ void resus_callback(void) {
 IADC *adc = new ADC();
 ICALCULATE *IADCORRECTER::icalculate = nullptr;
 ICALCULATE *STATE::icalculate = nullptr;
+IVALUES *ICALCULATE::values;
+ICLEANINPUT *ICALCULATE::cleanup;
+ISWITCHCONTROLLER *ICALCULATE::controller;
+IADCORRECTER *ICALCULATE::adccorrecter;
 std::vector<std::string> STATE::usedModes = {};
 
 int main()
@@ -126,7 +130,7 @@ int main()
     //! end test case callers
 
     multicore_launch_core1(core1_entry);
-    
+
     // COMMON *common = new COMMON();
     IASWITCH *aswitch1 = new BASESWITCH(RESISTOR_LOW, RESISTOR_MID, RESISTOR_HIGH, SWITHCH1_LOW, SWITHCH1_HIGH);
     IASWITCH *aswitch2 = new BASESWITCH(RESISTOR_LOW, RESISTOR_MID, RESISTOR_HIGH, SWITHCH2_LOW, SWITHCH2_HIGH);

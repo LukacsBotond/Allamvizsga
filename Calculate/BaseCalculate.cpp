@@ -1,8 +1,12 @@
 #include "./include/BaseCalculate.h"
 #include "../Global.h"
 
-BASECALCULATE::BASECALCULATE(IVALUES *values, ICLEANINPUT *cleanup, ISWITCHCONTROLLER *controller, IADCORRECTER *adccorrecter) : values(values), cleanup(cleanup), controller(controller), adccorrecter(adccorrecter)
+BASECALCULATE::BASECALCULATE(IVALUES *values, ICLEANINPUT *cleanup, ISWITCHCONTROLLER *controller, IADCORRECTER *adccorrecter)
 {
+    this->values = values;
+    this->cleanup = cleanup;
+    this->controller = controller;
+    this->adccorrecter = adccorrecter;
     this->adccorrecter->loadIcalculate(this);
     this->adccorrecter->init();
 }
@@ -13,23 +17,6 @@ BASECALCULATE::~BASECALCULATE()
     delete cleanup;
     delete controller;
     delete adccorrecter;
-}
-
-void BASECALCULATE::startMeasurements()
-{
-    /*
-    sleep_ms(100);
-    SameOut3ChannelRepeat(4, 0, 5);
-    sleep_ms(100);
-    SameOut3ChannelRepeat(5, 0, 4);
-    sleep_ms(100);
-    SameOut3ChannelRepeat(2, 0, 5);
-    sleep_ms(100);
-    SameOut3ChannelRepeat(5, 0, 2);
-    //values->printMeasurements();
-    std::cout << "resitor: " << calcResistance("405") << std::endl;
-    std::cout << "resitor: " << calcResistance("205") << std::endl;
-    */
 }
 
 void BASECALCULATE::SameOut3ChannelRepeat(uint8_t sw1, uint8_t sw2, uint8_t sw3)
@@ -148,6 +135,7 @@ bool BASECALCULATE::IsAnythingConnected(double avgVoltage, uint8_t portMode)
     return this->cleanup->IsAnythingConnected(avgVoltage, portMode);
 }
 
+/*
 //* --------------------- Private functions -------------
 void BASECALCULATE::calculateResult()
 {
@@ -163,3 +151,4 @@ void BASECALCULATE::calculateResult()
 
     // std::cout << "ActiveResistances: sw1: " << res1 << " sw2: " << res2 << " sw3: " << res3 << std::endl;
 }
+*/
