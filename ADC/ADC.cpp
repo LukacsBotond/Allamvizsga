@@ -4,6 +4,10 @@
 #include "../Exceptions/include/NotSupposedToReachThis.h"
 #include "../Global.h"
 
+#ifdef ADCDISABLE
+#include "../Exceptions/include/ASKmeasurement.h"
+#endif // ADCDISABLE
+
 ADC::ADC()
 {
     // capture_buf = new uint16_t *[2];
@@ -88,18 +92,6 @@ void ADC::setupFIFO()
     }
 }
 
-void ADC::waitDMAFull()
-{
-    // if (!usedIndex)
-    dma_channel_wait_for_finish_blocking(dma_chan);
-    // else
-    //     dma_channel_wait_for_finish_blocking(dma_chan1);
-
-    // buffer full, now it can be read
-    // usedIndex = !usedIndex;
-    // std::cout << "usedIndex:" << usedIndex << std::endl;
-}
-
 void ADC::setADCSelect(uint8_t chanel)
 {
     if (chanel > 3 || chanel < 0)
@@ -119,6 +111,7 @@ uint ADC::getADCSelect()
 
 void ADC::start_freeRunning()
 {
+#ifndef ADCDISABLE
     // std::cout << "\ncurrent channel: " << adc_get_selected_input() << std::endl;
     gpio_put(POWERS_SAVE_PIN, HIGH);
     adc_run(true);
@@ -126,18 +119,27 @@ void ADC::start_freeRunning()
     dma_channel_wait_for_finish_blocking(dma_chan);
     adc_run(false);
     gpio_put(POWERS_SAVE_PIN, LOW);
+#endif // ADCDISABLE
+
+#ifdef ADCDISABLE
+    throw ASKMEASUREMENT(std::to_string(getADCSelect()));
+#endif
 }
 
 void ADC::set_clkDiv(uint div)
 {
+    if (div > 96)
+        adc_div = div;
+    else
+        adc_div = 96;
     adc_set_clkdiv(div);
 }
 
 // TODO check get_clkDiv
 uint32_t ADC::get_clkHz()
 {
-    std::cout << clock_get_hz(clk_adc) << std::endl;
-    return clock_get_hz(clk_adc);
+    std::cout << clock_get_hz(clk_adc) << "div" << adc_div << std::endl;
+    return (float)(clock_get_hz(clk_adc) / adc_div);
 }
 
 uint16_t ADC::getCaptureDepth()

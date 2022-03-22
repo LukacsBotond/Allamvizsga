@@ -17,10 +17,10 @@ Az összeállított rendszert szabadon lehet vezérelni így automatizálni lehe
 amivel egyszerűsíti az emberek dolgát. Viszont nagyban gyorsítja a folyamatok sebességét és 
 pontosságát, miközben csökkenti a költségeket, mivel nem kell egy képzett dolgozó irányítsa, 
 egy ilyen példa a robotkarok irányítása, lehetséges lenne karok segítségével irányítani, 
-viszont ez lassú és költésges, mivel minden robotkar mellé kellene egy munkás aki közel sem 
+viszont ez lassú és költséges, mivel minden robotkar mellé kellene egy munkás aki közel sem 
 lenne elég nagy pontosságú. 
 
-Ezen kívűl gyakran használják automatizált tesztelésekre is, mivel egyszerű megismételhető 
+Ezen kívül gyakran használják automatizált tesztelésekre is, mivel egyszerű megismételhető 
 teszteket végezni velük, miközben képesek valós időben mérni a rendszer viselkedését. Ennek 
 a feladatnak is ez a lényege, az alkatrészek tesztelése egy gyors és automatizált módon. 
 
@@ -46,7 +46,7 @@ azonosítására aminek összesen tübb mint 3 lába van.
 Megvalósítás során a költégek csökkentése a cél, miközben a pontosság nem csökken nagyban. 
 Két verzió is összeállítható, az egyik egyszerű ellenállásokkal és a második egy DAC (Digital 
 Analog Converter) segítségével. Mindkettő alkalmas a komponensek meghatározására, viszont az 
-ellenállásos verzió nem alkalmas karakterisztika diagramm kirajzolására, viszon sokkal olcsóbb, 
+ellenállásos verzió nem alkalmas karakterisztika diagram kirajzolására, viszont sokkal olcsóbb, 
 mivel nem használ egy külső DAC-ot.
 
 Mérés eredménye kikerül egy kis kijelzőre és grafikus felületen is megtekinthető amennyiben 
@@ -67,33 +67,25 @@ megtatlálható vagy külső akkumulátor is megfelel amelynek van USB kimenete.
 
 \section{Hasonló eszközök}
 
-Just \hyperlink{label1}{Click me!}. In the paper \cite{Test00}...
+Egy hasonló rendszer már megvalósult \cite{similarSystem} ami egy Arduino\cite{ArduinoAtmega} 
+mikroprocesszoron alapul. Ez egy egyszerűbb rendszer, ami csupán ellenállásokat használ az 
+alkatrészek felismerésére és egy kijelzőt az adatok megjelenítésére. Ebből több fejlesztés is 
+kialakult, több minden tesztelésére és nagyobb pontosság elérésére, miközben a rendszer 
+egyszerűségét fenntartani. Ezek a rendszerek viszont nem használnak DAC-ot és ezért nem képesek 
+karakterisztika diagramot készíteni. Ezen kívül nem csatlakoztatható egyszerűen számítógéphez, 
+csupán újraprogramozás céljából, így minden esetben kell tartalmazzanak egy kijelzőt, ami 
+növeli a költségeket. Az általános működésük hasonló, mint ebben a projektben, viszont itt 
+precízen lehet változtatni a feszültséget, nem csak kapcsolni földre vagy tápfeszültségre.
+Az bekötése hasonlóképpen történik: lásd \ref{fig:basicTesterConnection}
 
+Mindegyik GPIO pin lehet csatolva földre, vagy tápfeszültségre, de le is lehet kapcsolva, így 
+nem befolyásolja az áramkör működését. Az ADC pin meg lehet ADC üzemmódban, ilyenkor nem befolyásolja
+az áramkört, viszont lehet földre, vagy tápfeszültségre is kapcsolni, ilyen esetben port ellenállás
+nélkül csatolódik az áramkörre.
 
-
-Ez a verzió egy egyszerűsített verzió, viszont ez is képes felismerni a komponenst és meghatározni a paramétereit, viszont kissebb a pontossága és nem képes karakterisztika diagrammot kirajzolására.
-
-A bekötés a következőképpen lehetséges (lásd \ref{fig:basicTesterConnection} ábra).
-
-\begin{figure}
+\begin{figure}[H]
     \centering
-    \hfill
-    \subfigure[Insbot]{\includegraphics[scale=0.3]{figures/images/literature/BasicTesterConnection.png}}
-    \caption{Ellená}
+    \subfigure[Eredeti teszter]{\includegraphics[scale=0.3]{figures/images/literature/OrgTesterConnection.png}}
+    \caption{Eredeti teszter}
     \label{fig:basicTesterConnection}
 \end{figure}
-
-
-
-%Két ábra egymás mellett (lásd \ref{fig:insbots} ábra).
-
-%\begin{figure}[h]
-%    \centering
-%    \hfill
-%    \subfigure[Insbot \cite{colot2004insbot}]{\includegraphics[scale=0.3]{figures/images/literature/insbot.png}}
-%    \hfill
-%    \subfigure[Insbot és csótányok interakciója \cite{garnier2011ants}.]{\includegraphics[scale=0.25]{figures/images/literature/insbot_cockroach.png}}
-%    
-%    \caption{Insbot és csótányok interakciója. Az insbot-ok képesek a csótányokat csalogatni.}
-%    \label{fig:insbots}
-%\end{figure}

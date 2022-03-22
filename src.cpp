@@ -9,6 +9,32 @@
 #include <vector>
 
 #include "Global.h"
+
+#ifdef DEBUG
+//! Test classes
+
+#include "ADC/include/ADC.h"
+#include "./Tests/include/TestPrinter.h"
+#include "./Tests/include/BaseCleanInputTest.h"
+#include "./Tests/include/ADCTest.h"
+#include "Calculate/include/BaseCalculate.h"
+
+IADC *adc = new ADC();
+ICLEANINPUT *ICALCULATE::cleanup;
+void testCasesCaller()
+{
+    
+    TESTPRINTER* testprinter = new TESTPRINTER();
+    BASECLEANINPUT *cleanup = new BASECLEANINPUT();
+    BaseCleanInputTest testCleanup(cleanup,testprinter);
+    ADCTest adctest;
+    //delete cleanup;
+    
+}
+
+//! END test cases
+#endif // DEBUG
+#ifndef DEBUG
 #include "display/include/ili9341.h"
 #include "display/include/displayDriver.h"
 #include "display/include/characterDisplay.h"
@@ -25,19 +51,6 @@
 
 #include "stateMachine/include/Machine.h"
 #include "stateMachine/include/Resistor.h"
-
-//! Test classes
-/*
-#include "./Tests/BaseCleanInputTests/include/BaseCleanInputTest.h"
-
-void testCasesCaller()
-{
-    BASECLEANINPUT *cleanup = new BASECLEANINPUT();
-    BaseCleanInputTest testCleanup(cleanup);
-    //delete cleanup;
-}
-*/
-//! END test cases
 
 static struct semaphore startSemaphore1;
 static struct semaphore doneSemaphore1;
@@ -113,8 +126,16 @@ ISWITCHCONTROLLER *ICALCULATE::controller;
 IADCORRECTER *ICALCULATE::adccorrecter;
 std::vector<std::string> STATE::usedModes = {};
 
+#endif // DEBUG
 int main()
 {
+    stdio_init_all();
+    std::cout << "Test\n";
+    sleep_ms(3000);
+    std::cout << "Test\n";
+    testCasesCaller();
+
+#ifndef DEBUG
 
     stdio_init_all();
     std::cout << "Test\n";
@@ -196,7 +217,8 @@ int main()
     charDriver->printLine("almafa");
 */
 
-    // delete adc;
+#endif
+
     std::cout << "Sleeping\n";
     while (1)
     {

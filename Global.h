@@ -43,3 +43,12 @@
 
 class IADC;
 extern IADC *adc;
+
+
+
+
+
+//!DEBUG
+//disables ADC read
+#define DEBUG
+#define ADCDISABLE

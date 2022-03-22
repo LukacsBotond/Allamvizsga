@@ -1,0 +1,49 @@
+\section{Kezdetek}
+
+Első lépésként tanulmányoztam egy hasonló terméket, amely hasonlóan működik, 
+viszont kevesebb funkcionalitással. Ebből megismerve a működési elvét és ezt fejlesztve 
+terveztem meg a teszteremet. Legfontosabb része a teszternek egy mikrovezérlő, 
+amely a rendszer magját adja, erre a célra egy Raspberry Pi Pico-t \cite{RaspberryPico} 
+választottam, a nagyszámú GPIO-ja miatt, nagy teljesítménye miatt és nagy sebességű 
+beépített hardveres kommunikációs protokollokkal (legfőképpen SPI \cite{SPIprotokol}). 
+Ezután egy kijelző következett, amelyeken a teszter ki tudja jelezni az adatokat az adott 
+komponensről. Erre a célra egy ILI9341 \cite{ILI9341Datasheet} kijelzőt használtam, ez 
+egy 2.2” méretű színes TFT kijelző, és erre íródnak ki az adatok a felhasználó fele. 
+Ezen kívül van 2 LED, amely a rendszer státuszát jelzi egyszerű színkódokkal. A teszteléshez 
+szükséges áramkört a DAC segítségével történik és a mikrovezérlő csak a feszültség 
+értékeket nézi, erre a célra egy DAC8565 \cite{DAC} DAC-ot használtam amely szintén 
+SPI-on keresztül kommunikál a mikrovezérlővel. Ennek a 3 kimenete egy-egy 3 kimenetes 
+analóg kapcsolón\cite{AnalogSwitch} keresztül különböző ellenállásokra kapcsolódnak a nagyobb precizitás 
+elérése érdekében és az esetleges rövidzár esetén is az áramerősség biztonságos szinten 
+tartásáért, minden esetben a létrehozott áramkörön lesz egy ellenállás, ami az 
+áramerősséget limitálja, hogy esetlegesen ne tegye tönkre a tesztelés alatt levő 
+alkatrészt. Miközben a mikrovezérlőnek 3 ADC (analog-digital converter) portja közvetlen 
+rá van csatolva egy lábra ahová majd a tesztelni kívánt komponens kerül. A rendszernek 
+van egy külső referencia feszültsége, ami egy stabil 3.3V-ot biztosít az ADC referenciaként 
+és DAC referenciának.
+
+\subsection{A rendszer Blokk váza}
+
+A rendszerher működéséhez szükséges egy 5V-os feszültség forrás, ez lehet egy általános USB
+tápforrás, vagy lehetséges direkt 5V csatlakoztatása is. Az áramerősség alacsony, így nem közelíti
+meg az 500mA-es áramerősség határt amit egy átlagos USB képes leadni. Külső akkumulátorról
+is táplálható. Amennyiben egy számítógéphez, vagy egy olyan eszközhöz van csatolva ami képes 
+a serial portot olvasni akkor a mérési eredményeket automatikusan elküldi azon keresztül a 
+másik eszköz felé. 
+
+A pontos részleteket az a következőkben lesznek leírva.
+
+\begin{figure}[H]
+    \centering
+    \subfigure[A rendszer block váza]{\includegraphics[scale=0.3]{figures/images/literature/blockDiagramm.png}}
+    \caption{A rendszer block váza}
+    \label{fig:blockDiagramm}
+\end{figure}
+
+\section{Fő komponensek részletes bemutatása}
+
+A komponensek kiválasztásánál fontos szempont volt, hogy lehetőleg a legpontosabb 
+eredményeket érje el, miközben lehetőleg egyszerű maradjon a rendszer és az áramfogyasztás 
+is alacsony legyen és emellett hordozható legyen.
+
+\subsection{Digital analog converter}

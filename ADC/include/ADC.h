@@ -3,13 +3,6 @@
 
 class IADC
 {
-protected:
-    /*
-        toggles index to the other array which is free to read from
-        waits in blockking will the array fills up with values from ADC
-    */
-    virtual void waitDMAFull() = 0;
-
 public:
     /*
     check for new data on FIFO
@@ -72,11 +65,9 @@ private:
     // holds which part of the capture_buff is used for writing
     // cannot be used for reading
     bool usedIndex = 0;
-
+    uint32_t adc_div = 96;
     dma_channel_config cfg;
     // dma_channel_config cfg1;
-
-    void waitDMAFull() override;
 
 public:
     // setup the DMA channels
@@ -99,4 +90,5 @@ public:
     //! debug
     void printSamples() override;
     void setCaptureBuff(uint16_t *buff) override;
+    
 };
