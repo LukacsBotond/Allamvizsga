@@ -116,7 +116,7 @@ bool RESISTOR::checkReverse(std::string measurementNormal, std::string measureme
         else
         {
             std::cout << " 1-2 " << (measurementDataNormal.at(1) - measurementDataNormal.at(2)) << " " << (measurementDataReverse.at(1) - measurementDataReverse.at(2)) << std::endl;
-            return icalculate->roughlyEqual((measurementDataNormal.at(1) - measurementDataNormal.at(2)), (measurementDataReverse.at(1) - measurementDataReverse.at(2)));
+            return commonClass->roughlyEqual((measurementDataNormal.at(1) - measurementDataNormal.at(2)), (measurementDataReverse.at(1) - measurementDataReverse.at(2)));
         }
     }
     else
@@ -134,7 +134,7 @@ bool RESISTOR::checkReverse(std::string measurementNormal, std::string measureme
             else
             {
                 std::cout << " 0-2 " << (measurementDataNormal.at(0) - measurementDataNormal.at(2)) << " " << (measurementDataReverse.at(0) - measurementDataReverse.at(2)) << std::endl;
-                return icalculate->roughlyEqual((measurementDataNormal.at(0) - measurementDataNormal.at(2)), (measurementDataReverse.at(0) - measurementDataReverse.at(2)));
+                return commonClass->roughlyEqual((measurementDataNormal.at(0) - measurementDataNormal.at(2)), (measurementDataReverse.at(0) - measurementDataReverse.at(2)));
             }
         }
         else // 3. is not used
@@ -150,7 +150,7 @@ bool RESISTOR::checkReverse(std::string measurementNormal, std::string measureme
             else
             {
                 std::cout << " 0-1 " << (measurementDataNormal.at(0) - measurementDataNormal.at(1)) << " " << (measurementDataReverse.at(0) - measurementDataReverse.at(1)) << std::endl;
-                return icalculate->roughlyEqual((measurementDataNormal.at(0) - measurementDataNormal.at(1)), (measurementDataReverse.at(0) - measurementDataReverse.at(1)));
+                return commonClass->roughlyEqual((measurementDataNormal.at(0) - measurementDataNormal.at(1)), (measurementDataReverse.at(0) - measurementDataReverse.at(1)));
             }
         }
     }

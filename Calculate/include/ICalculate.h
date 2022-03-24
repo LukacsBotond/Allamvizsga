@@ -1,5 +1,5 @@
 #pragma once
-#include "IValues.h"
+#include "./IValues.h"
 #include "../../Exceptions/include/NoSuchMeasurement.h"
 #include "../../ADC/include/ADCCorrecter.h"
 #include "./ICleanInput.h"
@@ -25,6 +25,8 @@ public:
 
     void startSemaphoreRelease();
     void doneSemaphoreAquire();
+    //! Technically deleted
+    /*
     bool roughlyEqual(double val1, double val2)
     {
         val1 = abs(val1);
@@ -33,6 +35,7 @@ public:
             return true;
         return false;
     }
+    */
 
     // ICLEANINPUT interface
     virtual bool IsAnythingConnected(double avgVoltage, uint8_t portMode) = 0;

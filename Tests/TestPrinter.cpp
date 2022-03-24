@@ -2,7 +2,7 @@
 
 void TESTPRINTER::errorPrinter(std::string functionName, double calculatedValue, double correctValue)
 {
-    std::cout << "ERROR! BASECLEANINPUT " << functionName << " error, value supposed to be" << correctValue << " instead it is " << calculatedValue << "! \n";
+    std::cout << "ERROR! BASECLEANINPUT " << functionName << " error, value supposed to be " << correctValue << " instead it is " << calculatedValue << "!\n";
 }
 
 void TESTPRINTER::errorPrinter(std::string functionName, std::string description)

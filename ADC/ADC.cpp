@@ -122,6 +122,7 @@ void ADC::start_freeRunning()
 #endif // ADCDISABLE
 
 #ifdef ADCDISABLE
+    // use set setCaptureBuff() to store own value to the buffer
     throw ASKMEASUREMENT(std::to_string(getADCSelect()));
 #endif
 }
@@ -136,10 +137,9 @@ void ADC::set_clkDiv(uint div)
 }
 
 // TODO check get_clkDiv
-uint32_t ADC::get_clkHz()
+double ADC::get_clkHz()
 {
-    std::cout << clock_get_hz(clk_adc) << "div" << adc_div << std::endl;
-    return (float)(clock_get_hz(clk_adc) / adc_div);
+    return (double)(clock_get_hz(clk_adc) / adc_div);
 }
 
 uint16_t ADC::getCaptureDepth()
@@ -151,7 +151,7 @@ uint16_t *ADC::getCaptureBuff()
 {
     // std::cout << "getCaptureBuff usedIndex:" << !usedIndex << std::endl;
     if (capture_buf == nullptr)
-        throw NULLEXCEPT("ADC capturebuff is NULL");
+        throw NULLEXCEPT("ADC getCapturebuff is NULL");
     return capture_buf;
 }
 
@@ -164,11 +164,12 @@ void ADC::printSamples()
         if (i % 20 == 19)
             std::cout << std::endl;
     }
+    std::cout << std::endl;
 }
 
-void ADC::setCaptureBuff(uint16_t *buff)
+void ADC::setCaptureBuff(uint16_t *buff, uint16_t buffSize)
 {
-    if (buff == nullptr)
-        throw NULLEXCEPT("setCaptureBuff is null");
-    this->capture_buf = buff;
+    if (buff == nullptr || buffSize != CAPTURE_DEPTH)
+        throw NULLEXCEPT("ADC setCaptureBuff is null or buffSize it not equal to" + std::to_string(CAPTURE_DEPTH));
+    memcpy(this->capture_buf, buff, (CAPTURE_DEPTH + 1) * sizeof(uint16_t));
 }

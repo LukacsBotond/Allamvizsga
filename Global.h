@@ -2,6 +2,7 @@
 #include "ADC/include/IADC.h"
 #include "ADC/include/ADC.h"
 #include "controll/include/IAswitch.h"
+#include "./common/include/common.h"
 
 //* power level
 #define HIGH 1
@@ -44,11 +45,17 @@
 class IADC;
 extern IADC *adc;
 
+class COMMON;
+extern COMMON *commonClass;
 
 
 
 
 //!DEBUG
+
+//if commented out then the normal program runs without test cases
+//if not then only the test cases run
+#define TESTS
+
 //disables ADC read
-#define DEBUG
 #define ADCDISABLE

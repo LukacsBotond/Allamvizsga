@@ -10,7 +10,7 @@
 
 #include "Global.h"
 
-#ifdef DEBUG
+#ifdef TESTS
 //! Test classes
 
 #include "ADC/include/ADC.h"
@@ -19,22 +19,23 @@
 #include "./Tests/include/ADCTest.h"
 #include "Calculate/include/BaseCalculate.h"
 
+COMMON *commonClass = new COMMON();
 IADC *adc = new ADC();
 ICLEANINPUT *ICALCULATE::cleanup;
+
 void testCasesCaller()
 {
-    
-    TESTPRINTER* testprinter = new TESTPRINTER();
+
+    TESTPRINTER *testprinter = new TESTPRINTER();
     BASECLEANINPUT *cleanup = new BASECLEANINPUT();
-    BaseCleanInputTest testCleanup(cleanup,testprinter);
-    ADCTest adctest;
-    //delete cleanup;
-    
+    BaseCleanInputTest testCleanup(cleanup, testprinter);
+    ADCTest adctest(testprinter);
+    // delete cleanup;
 }
 
 //! END test cases
-#endif // DEBUG
-#ifndef DEBUG
+#endif // TESTS
+#ifndef TESTS
 #include "display/include/ili9341.h"
 #include "display/include/displayDriver.h"
 #include "display/include/characterDisplay.h"
@@ -118,6 +119,7 @@ void resus_callback(void) {
 */
 
 IADC *adc = new ADC();
+COMMON *commonClass = new COMMON();
 ICALCULATE *IADCORRECTER::icalculate = nullptr;
 ICALCULATE *STATE::icalculate = nullptr;
 IVALUES *ICALCULATE::values;
@@ -126,16 +128,19 @@ ISWITCHCONTROLLER *ICALCULATE::controller;
 IADCORRECTER *ICALCULATE::adccorrecter;
 std::vector<std::string> STATE::usedModes = {};
 
-#endif // DEBUG
+#endif // TESTS
 int main()
 {
     stdio_init_all();
     std::cout << "Test\n";
     sleep_ms(3000);
     std::cout << "Test\n";
+#ifdef TESTS
+
     testCasesCaller();
 
-#ifndef DEBUG
+#endif // DEBUG
+#ifndef TESTS
 
     stdio_init_all();
     std::cout << "Test\n";

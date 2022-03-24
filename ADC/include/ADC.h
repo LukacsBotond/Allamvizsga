@@ -31,7 +31,10 @@ public:
     */
     virtual void set_clkDiv(uint div) = 0;
 
-    virtual uint32_t get_clkHz() = 0;
+    /*
+        @return the ADC measurement frequency
+    */
+    virtual double get_clkHz() = 0;
     /*
         @return how many elements the array have
     */
@@ -52,7 +55,7 @@ public:
         !for testing only
         @param buff must be CAPTURE_DEPTH size
     */
-    virtual void setCaptureBuff(uint16_t *buff) = 0;
+    virtual void setCaptureBuff(uint16_t *buff, uint16_t buffSize) = 0;
 };
 
 class ADC : public IADC
@@ -83,12 +86,12 @@ public:
     uint getADCSelect() override;
     void start_freeRunning() override;
     void set_clkDiv(uint div) override;
-    uint32_t get_clkHz() override;
+    double get_clkHz() override;
     uint16_t getCaptureDepth() override;
     uint16_t *getCaptureBuff() override;
 
     //! debug
     void printSamples() override;
-    void setCaptureBuff(uint16_t *buff) override;
+    void setCaptureBuff(uint16_t *buff, uint16_t buffSize) override;
     
 };
