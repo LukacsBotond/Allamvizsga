@@ -78,14 +78,25 @@ növeli a költségeket. Az általános működésük hasonló, mint ebben a pro
 precízen lehet változtatni a feszültséget, nem csak kapcsolni földre vagy tápfeszültségre.
 Az bekötése hasonlóképpen történik: lásd \ref{fig:basicTesterConnection}
 
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.3]{figures/images/literature/OrgTesterConnection.png}
+    \caption{Eredeti teszter bekötési rajza}
+    \label{fig:basicTesterConnection}
+\end{figure}
+
 Mindegyik GPIO pin lehet csatolva földre, vagy tápfeszültségre, de le is lehet kapcsolva, így 
 nem befolyásolja az áramkör működését. Az ADC pin meg lehet ADC üzemmódban, ilyenkor nem befolyásolja
 az áramkört, viszont lehet földre, vagy tápfeszültségre is kapcsolni, ilyen esetben port ellenállás
-nélkül csatolódik az áramkörre.
+nélkül csatolódik az áramkörre. Viszont ilyenkor kell figyelni a rövidzárra, mivel bármi be lehet
+kötve tesztelés céljából.
 
-\begin{figure}[H]
-    \centering
-    \subfigure[Eredeti teszter]{\includegraphics[scale=0.3]{figures/images/literature/OrgTesterConnection.png}}
-    \caption{Eredeti teszter}
-    \label{fig:basicTesterConnection}
-\end{figure}
+Viszont szintén hordozható egy 9V-os elem segítsségével és az eredmények megjelennek egy
+kis LCD kijelzőn, ebből több féle verzió is létezik, van amely csak egy karakter kijelzőt
+használ, van amelyik egy színes kép kirajzolására is alkalmas kijelzőt alkalmaz. 
+
+A tesztelés néhány másodpercbe telik, nagy méretű kondenzátorok esetén telhet több időbe,
+viszont ebben az esetben csak annyi idő, míg a legkissebb ellenálláson keresztül képes feltölteni
+a kondenzátorot.
+
+Test \cite{sun2016gpio}

@@ -22,6 +22,8 @@ public:
         if not then 2nd and 3rd
         if none of them pass then return false
         stores which pins were in use in static std::vector<std::string> usedModes vector
+        *THROWS: POSSIBLYDIODE
+        * NOTHINGCONNECTED exceptions
     */
     bool check() override;
 
@@ -29,6 +31,7 @@ public:
     /*
     checks which pins were used be calling the check() function then find the best
     resistor mode for the calculation
+    *THROWS a NOTARESISTOR exception
     */
     void calculate() override;
 };
