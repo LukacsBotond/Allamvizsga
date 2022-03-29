@@ -26,12 +26,23 @@ bool BASEVALUES::addMeasurement(std::string measurement, std::vector<double> val
 
 std::vector<double> BASEVALUES::getMeasurement(std::string measurement)
 {
+    if (measurement.size() != 3)
+        throw NOSUCHMEASUREMENT("BASEVALUES the seach string is not 3 length, string: " + measurement + "|\n");
     auto pos = this->measurements.find(measurement);
     if (pos == this->measurements.end())
     {
-        throw NOSUCHMEASUREMENT("BASEVALUES no such saved measurement:" + measurement);
+        throw NOSUCHMEASUREMENT("BASEVALUES no such saved measurement:" + measurement + "|\n");
     }
     return pos->second;
+}
+
+void BASEVALUES::cleanMeasurements()
+{
+    for (auto i : this->measurements)
+    {
+        i.second.clear();
+    }
+    this->measurements.clear();
 }
 
 //* DEBUG

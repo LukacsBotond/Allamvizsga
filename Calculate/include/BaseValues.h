@@ -17,5 +17,7 @@ public:
 
     bool addMeasurement(std::string measurement, std::vector<double> values) override;
     std::vector<double> getMeasurement(std::string measurement) override;
+    void cleanMeasurements() override;
+
     void printMeasurements() override;
 };

@@ -7,7 +7,7 @@
 class BASECALCULATE : public ICALCULATE
 {
 private:
-    //void calculateResult() override;
+    // void calculateResult() override;
 
 public:
     BASECALCULATE(IVALUES *values, ICLEANINPUT *cleanup, ISWITCHCONTROLLER *controller, IADCORRECTER *adccorrecter);
@@ -18,7 +18,8 @@ public:
     double calcResistance(std::vector<std::string> &measurements) override;
 
     std::vector<double> getMeasurement(std::string measurement) override;
-
+    bool setMeasurement(std::string measurement, std::vector<double> valuesVector) override;
+    void cleanMesurements() override;
     // ICLEANINPUT interface
     bool IsAnythingConnected(double avgVoltage, uint8_t portMode) override;
 };

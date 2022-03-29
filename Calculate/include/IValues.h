@@ -28,6 +28,11 @@ public:
     */
     virtual std::vector<double> getMeasurement(std::string measurement) = 0;
     
+    /*
+        deletes the stored values
+    */
+    virtual void cleanMeasurements() = 0;
+
     //! debug
     /*
         prints stored measurement values through the serial port

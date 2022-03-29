@@ -14,23 +14,58 @@
 //! Test classes
 
 #include "ADC/include/ADC.h"
-#include "./Tests/include/TestPrinter.h"
-#include "./Tests/include/BaseCleanInputTest.h"
-#include "./Tests/include/ADCTest.h"
+#include "controll/include/BaseSwitch.h"
+#include "controll/include/BaseSwithcController.h"
+#include "Tests/include/TestPrinter.h"
+#include "Tests/include/BaseCleanInputTest.h"
+#include "Tests/include/ADCTest.h"
 #include "Calculate/include/BaseCalculate.h"
+#include "Calculate/include/BaseValues.h"
+#include "Tests/include/BaseCalculateTest.h"
 
-COMMON *commonClass = new COMMON();
+void ICALCULATE::startSemaphoreRelease()
+{
+    sem_release(&startSemaphore1);
+}
+
+void ICALCULATE::doneSemaphoreAquire()
+{
+    sem_acquire_blocking(&doneSemaphore1);
+}
+
 IADC *adc = new ADC();
+COMMON *commonClass = new COMMON();
+ICALCULATE *IADCORRECTER::icalculate = nullptr;
+// ICALCULATE *STATE::icalculate = nullptr;
+IVALUES *ICALCULATE::values;
 ICLEANINPUT *ICALCULATE::cleanup;
-
+ISWITCHCONTROLLER *ICALCULATE::controller;
+IADCORRECTER *ICALCULATE::adccorrecter;
 void testCasesCaller()
 {
-
+    IASWITCH *aswitch1 = new BASESWITCH(RESISTOR_LOW, RESISTOR_MID, RESISTOR_HIGH, SWITHCH1_LOW, SWITHCH1_HIGH);
+    IASWITCH *aswitch2 = new BASESWITCH(RESISTOR_LOW, RESISTOR_MID, RESISTOR_HIGH, SWITHCH2_LOW, SWITHCH2_HIGH);
+    IASWITCH *aswitch3 = new BASESWITCH(RESISTOR_LOW, RESISTOR_MID, RESISTOR_HIGH, SWITHCH3_LOW, SWITHCH3_HIGH);
+    std::cout << "Test1\n";
+    sleep_ms(100);
     TESTPRINTER *testprinter = new TESTPRINTER();
-    BASECLEANINPUT *cleanup = new BASECLEANINPUT();
-    BaseCleanInputTest testCleanup(cleanup, testprinter);
+    IVALUES *val = new BASEVALUES();
+    ICLEANINPUT *cleanup = new BASECLEANINPUT();
+    IADCORRECTER *adccorrecter = new ADCCORRECTER();
+    std::cout << "Test2\n";
+    ISWITCHCONTROLLER *controller = new BASESWITCHCONTROLLER(aswitch1, aswitch2, aswitch3);
+    ICALCULATE *basecalculate = new BASECALCULATE(val, cleanup, controller, adccorrecter);
+    BASECLEANINPUT *cleanuptest = new BASECLEANINPUT();
+    std::cout << "Test3\n";
+    std::cout << "BaseCleanInput Test\n";
+    sleep_ms(1000);
+    BaseCleanInputTest testCleanup(cleanuptest, testprinter);
+    std::cout << "ADC Tests\n";
+    sleep_ms(1000);
     ADCTest adctest(testprinter);
-    // delete cleanup;
+    std::cout << "BaseCalculate Tests\n";
+    sleep_ms(1000);
+    BaseCalculateTest calculatetest(basecalculate, testprinter);
 }
 
 //! END test cases

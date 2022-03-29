@@ -7,8 +7,10 @@ BASECALCULATE::BASECALCULATE(IVALUES *values, ICLEANINPUT *cleanup, ISWITCHCONTR
     this->cleanup = cleanup;
     this->controller = controller;
     this->adccorrecter = adccorrecter;
+#ifndef ADCDISABLE // disables the correction if the ADC is disabled
     this->adccorrecter->loadIcalculate(this);
     this->adccorrecter->init();
+#endif
 }
 
 BASECALCULATE::~BASECALCULATE()
@@ -63,7 +65,7 @@ void BASECALCULATE::SameOut3ChannelRepeat(uint8_t sw1, uint8_t sw2, uint8_t sw3)
         controller->setSwithcSetting(2, 5);
         controller->setSwithcSetting(3, 5);
     }
-    if (!this->values->addMeasurement(measurement, valuesVector))
+    if (!setMeasurement(measurement, valuesVector))
         std::cerr << "BaseCalculate addMeasurement fail" << std::endl;
 
     // values->printMeasurements();
@@ -71,7 +73,6 @@ void BASECALCULATE::SameOut3ChannelRepeat(uint8_t sw1, uint8_t sw2, uint8_t sw3)
 
 double BASECALCULATE::calcResistance(std::vector<std::string> &measurements)
 {
-
     std::vector<double> measurementData;
     double voltageDrop = 0;
     double mAmper = 0;
@@ -79,7 +80,11 @@ double BASECALCULATE::calcResistance(std::vector<std::string> &measurements)
     std::string bestMeasurement;
     for (int i = 0; i < measurements.size(); i += 2)
     {
-        measurementData = this->values->getMeasurement(measurements[i]);
+        std::cout << "measurement: " << i << " val: " << measurements[i] << std::endl;
+        std::string store = measurements[i];
+        std::cout << "store: " << store << std::endl;
+
+        measurementData = this->values->getMeasurement(store);
         // first port is not used
         if (measurements[i][0] - '0' == 0)
         {
@@ -128,6 +133,16 @@ double BASECALCULATE::calcResistance(std::vector<std::string> &measurements)
 std::vector<double> BASECALCULATE::getMeasurement(std::string measurement)
 {
     return this->values->getMeasurement(measurement);
+}
+
+bool BASECALCULATE::setMeasurement(std::string measurement, std::vector<double> valuesVector)
+{
+    return this->values->addMeasurement(measurement, valuesVector);
+}
+
+void BASECALCULATE::cleanMesurements()
+{
+    return this->values->cleanMeasurements();
 }
 
 bool BASECALCULATE::IsAnythingConnected(double avgVoltage, uint8_t portMode)
