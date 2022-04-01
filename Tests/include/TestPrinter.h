@@ -8,7 +8,7 @@ private:
 public:
     TESTPRINTER(/* args */) {}
     ~TESTPRINTER() {}
-    void errorPrinter(std::string functionName, double calculatedValue, double correctValue);
-    void errorPrinter(std::string functionName, std::string description);
-    void succesPrinter(std::string functionName, std::string description);
+    void errorPrinter(const std::string functionName, const double calculatedValue, const double correctValue) const;
+    void errorPrinter(const std::string functionName, const std::string description) const;
+    void succesPrinter(const std::string functionName, const std::string description) const;
 };

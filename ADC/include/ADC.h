@@ -15,7 +15,7 @@ public:
         @param chanel select active chanel to read from
         * CAN THROW NOSUCHPORT if incorrect port was given
     */
-    virtual void setADCSelect(uint8_t chanel) = 0;
+    virtual void setADCSelect(const uint8_t chanel) = 0;
     /*
         @return which ADC channel is in use currently
     */
@@ -29,7 +29,7 @@ public:
     /*
         @param change the adc clock divisor so lower clock can be achived
     */
-    virtual void set_clkDiv(uint div) = 0;
+    virtual void set_clkDiv(const uint div) = 0;
 
     /*
         @return the ADC measurement frequency
@@ -55,7 +55,7 @@ public:
         !for testing only
         @param buff must be CAPTURE_DEPTH size
     */
-    virtual void setCaptureBuff(uint16_t *buff, uint16_t buffSize) = 0;
+    virtual void setCaptureBuff(uint16_t *buff,const uint16_t buffSize) = 0;
 };
 
 class ADC : public IADC
@@ -82,16 +82,16 @@ public:
     void setupFIFO() override;
 
     //* can throw exception
-    void setADCSelect(uint8_t chanel) override;
+    void setADCSelect(const uint8_t chanel) override;
     uint getADCSelect() override;
     void start_freeRunning() override;
-    void set_clkDiv(uint div) override;
+    void set_clkDiv(const uint div) override;
     double get_clkHz() override;
     uint16_t getCaptureDepth() override;
     uint16_t *getCaptureBuff() override;
 
     //! debug
     void printSamples() override;
-    void setCaptureBuff(uint16_t *buff, uint16_t buffSize) override;
+    void setCaptureBuff(uint16_t *buff,const uint16_t buffSize) override;
     
 };

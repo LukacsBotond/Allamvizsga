@@ -1,18 +1,20 @@
 #include "./include/BaseValues.h"
 
 BASEVALUES::~BASEVALUES() {}
-void BASEVALUES::setResistance(double res)
+void BASEVALUES::setResistance(const double res)
 {
     resistance = res;
 }
 
-double BASEVALUES::getResistance()
+double BASEVALUES::getResistance() const
 {
     return resistance;
 }
 
-bool BASEVALUES::addMeasurement(std::string measurement, std::vector<double> values)
+bool BASEVALUES::addMeasurement(const std::string measurement,const std::vector<double> values)
 {
+
+    std::cout << "addMeasurementValues: " << measurement << std::endl;
     if (values.size() != 3)
         return false;
 
@@ -24,8 +26,10 @@ bool BASEVALUES::addMeasurement(std::string measurement, std::vector<double> val
     return true;
 }
 
-std::vector<double> BASEVALUES::getMeasurement(std::string measurement)
+std::vector<double> BASEVALUES::getMeasurement(const std::string measurement) const
 {
+    std::cout << "measurementValues: "
+              << " val: " << measurement << "LENGHT:" << measurement.size() << std::endl;
     if (measurement.size() != 3)
         throw NOSUCHMEASUREMENT("BASEVALUES the seach string is not 3 length, string: " + measurement + "|\n");
     auto pos = this->measurements.find(measurement);

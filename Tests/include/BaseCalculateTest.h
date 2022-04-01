@@ -13,6 +13,8 @@ public:
     BaseCalculateTest(ICALCULATE *basecalculate, TESTPRINTER *testprinter);
     ~BaseCalculateTest();
     void calcResistanceTest();
+
+    double voltageDropBasedOnCurrent(const double resistor, const double mAmper);
 };
 
 BaseCalculateTest::BaseCalculateTest(ICALCULATE *basecalculate, TESTPRINTER *testprinter)
@@ -29,7 +31,6 @@ BaseCalculateTest::~BaseCalculateTest()
 
 void BaseCalculateTest::calcResistanceTest()
 {
-    std::cout << "Test3\n";
     std::vector<double> measurement;
     std::vector<std::string> strmeasurements;
     measurement.push_back(0);
@@ -43,10 +44,11 @@ void BaseCalculateTest::calcResistanceTest()
     measurement.at(1) = 3.3;
     measurement.at(2) = 3.3;
     std::cout << "Test5\n";
-    basecalculate->setMeasurement("405", measurement);
+    if (!basecalculate->setMeasurement("405", measurement))
+        std::cout << "setMeasurements fail\n";
     strmeasurements.push_back("405");
-    basecalculate->setMeasurement("504", measurement);
-    strmeasurements.push_back("504");
+    // basecalculate->setMeasurement("504", measurement);
+    // strmeasurements.push_back("504");
     std::cout << "Test6\n";
     try
     {
@@ -57,4 +59,10 @@ void BaseCalculateTest::calcResistanceTest()
         std::cout << e.what() << std::endl;
     }
     std::cout << "Test7\n";
+}
+
+//* --------------------- Private functions -------------
+double BaseCalculateTest::voltageDropBasedOnCurrent(const double resistor, const double mAmper)
+{
+    return 3.3 - (mAmper * resistor);
 }

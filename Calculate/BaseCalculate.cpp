@@ -21,7 +21,7 @@ BASECALCULATE::~BASECALCULATE()
     delete adccorrecter;
 }
 
-void BASECALCULATE::SameOut3ChannelRepeat(uint8_t sw1, uint8_t sw2, uint8_t sw3)
+void BASECALCULATE::SameOut3ChannelRepeat(const uint8_t sw1, const uint8_t sw2, const uint8_t sw3)
 {
     std::vector<double> valuesVector;
     std::string measurement;
@@ -73,18 +73,26 @@ void BASECALCULATE::SameOut3ChannelRepeat(uint8_t sw1, uint8_t sw2, uint8_t sw3)
 
 double BASECALCULATE::calcResistance(std::vector<std::string> &measurements)
 {
+    if (measurements.size() == 0)
+    {
+        std::cout << "no measurements were given\n";
+        throw NOSUCHMEASUREMENT("BASECALCULATE calcResistance empty measurements vector");
+    }
+
     std::vector<double> measurementData;
     double voltageDrop = 0;
     double mAmper = 0;
     double bestmAmper = 0;
-    std::string bestMeasurement;
+    std::string bestMeasurement = measurements.at(0);
     for (int i = 0; i < measurements.size(); i += 2)
     {
-        std::cout << "measurement: " << i << " val: " << measurements[i] << std::endl;
-        std::string store = measurements[i];
-        std::cout << "store: " << store << std::endl;
+        std::cout << "measurementCalculate: " << i << " val: " << measurements[i] << "LENGHT:" << measurements.size() << std::endl;
+        // std::string store = "405";
+        //  std::cout << "store: " << store << std::endl;
 
-        measurementData = this->values->getMeasurement(store);
+        //    measurementData = this->values->getMeasurement(measurements[i]);
+        this->values->printMeasurements();
+        measurementData = this->values->getMeasurement(measurements[i]);
         // first port is not used
         if (measurements[i][0] - '0' == 0)
         {
@@ -94,13 +102,16 @@ double BASECALCULATE::calcResistance(std::vector<std::string> &measurements)
         { // 2. or 3. is not used
             mAmper = (3.3 - measurementData[0]) / this->controller->getTotResistorFromMode(measurements[i][0] - '0');
         }
-
+        std::cout << "mAmper: " << mAmper << std::endl;
         if (mAmper > bestmAmper)
         {
+            std::cout << "if\n";
             bestmAmper = mAmper;
             bestMeasurement = measurements[i];
         }
     }
+
+    std::cout << "bestMeasurement: " << bestMeasurement << std::endl;
 
     measurementData = this->values->getMeasurement(bestMeasurement);
     // first port is not used
@@ -130,22 +141,27 @@ double BASECALCULATE::calcResistance(std::vector<std::string> &measurements)
     }
 }
 
-std::vector<double> BASECALCULATE::getMeasurement(std::string measurement)
+std::vector<double> BASECALCULATE::getMeasurement(const std::string measurement) const
 {
+    std::cout << "measurementClaculate get: "
+              << " val: " << measurement << "LENGHT:" << measurement.size() << std::endl;
     return this->values->getMeasurement(measurement);
 }
 
-bool BASECALCULATE::setMeasurement(std::string measurement, std::vector<double> valuesVector)
+bool BASECALCULATE::setMeasurement(const std::string measurement, std::vector<double> valuesVector)
 {
+    std::cout << "measurementCalculate set: "
+              << " val: " << measurement << "LENGHT:" << measurement.size() << std::endl;
     return this->values->addMeasurement(measurement, valuesVector);
 }
 
 void BASECALCULATE::cleanMesurements()
 {
+    std::cout << "measurementCalculate clear: \n";
     return this->values->cleanMeasurements();
 }
 
-bool BASECALCULATE::IsAnythingConnected(double avgVoltage, uint8_t portMode)
+bool BASECALCULATE::IsAnythingConnected(const double avgVoltage, const uint8_t portMode)
 {
     return this->cleanup->IsAnythingConnected(avgVoltage, portMode);
 }

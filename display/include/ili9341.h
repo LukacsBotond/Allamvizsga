@@ -73,6 +73,6 @@ public:
   ILI9341();
   ~ILI9341();
 
-  void set_command(uint8_t cmd);
-  void command_param(uint8_t data);
+  void set_command(const uint8_t cmd);
+  void command_param(const uint8_t data);
 };

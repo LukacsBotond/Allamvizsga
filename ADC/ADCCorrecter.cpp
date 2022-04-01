@@ -16,7 +16,7 @@ void ADCCORRECTER::init()
     std::cout << "gnd offset: " << gndOffset << "VCCoffset: " << VCCOffset << std::endl;
 }
 
-uint16_t *ADCCORRECTER::offsetCorrection(uint16_t *samples, uint16_t samplesSize)
+uint16_t *ADCCORRECTER::offsetCorrection(uint16_t *samples,const uint16_t samplesSize)
 {
     if (samplesSize <= 0 || samples == nullptr)
     {
@@ -30,7 +30,7 @@ uint16_t *ADCCORRECTER::offsetCorrection(uint16_t *samples, uint16_t samplesSize
 }
 
 //* --------------------- Private functions -------------
-double ADCCORRECTER::getBaseValue(int8_t swMode, double reqVoltage, bool bigger)
+double ADCCORRECTER::getBaseValue(const int8_t swMode,const double reqVoltage,const bool bigger)
 {
     // get "GND" measurement
     icalculate->SameOut3ChannelRepeat(swMode, swMode, swMode);

@@ -10,7 +10,7 @@
 class RESISTOR : public STATE
 {
 private:
-    bool checkReverse(std::string measurementNormal, std::string measurementReverse);
+    bool checkReverse(const std::string measurementNormal, const std::string measurementReverse);
 
 public:
     RESISTOR(ICALCULATE *icalculate);
@@ -95,7 +95,7 @@ void RESISTOR::calculate()
 }
 
 //* --------------------- Private functions -------------
-bool RESISTOR::checkReverse(std::string measurementNormal, std::string measurementReverse)
+bool RESISTOR::checkReverse(const std::string measurementNormal, const std::string measurementReverse)
 {
     std::vector<double> measurementDataNormal = getMeasurement(measurementNormal);
     std::vector<double> measurementDataReverse = getMeasurement(measurementReverse);
@@ -158,7 +158,3 @@ bool RESISTOR::checkReverse(std::string measurementNormal, std::string measureme
         }
     }
 }
-
-
-
-

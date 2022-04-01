@@ -23,18 +23,18 @@ void CHARACTERDISPLAY::insertChar(uint8_t position, const uint8_t *charSet)
     }
 }
 
-const uint8_t *CHARACTERDISPLAY::transChartoCharSet(char character)
+const uint8_t *CHARACTERDISPLAY::transChartoCharSet(char character) const
 {
     return charset[character - ' '];
 }
 
 void CHARACTERDISPLAY::printLine(std::string str)
 {
-    //clean row*
+    // clean row*
     std::fill_n(row, rowSize, bg_Color);
     int size = str.size();
     const uint8_t *charset;
-    //put string in a line
+    // put string in a line
     for (int i = 0; i < size; i++)
     {
         std::cout << str[i] << " kodolva: ";
@@ -46,7 +46,7 @@ void CHARACTERDISPLAY::printLine(std::string str)
         }
         std::cout << std::endl;
     }
-    //dumpRow();
+    // dumpRow();
     writeLine();
 }
 

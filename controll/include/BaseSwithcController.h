@@ -19,9 +19,9 @@ public:
     //! TODO implement this in CALCULATE class
     //void SameOut3ChannelRepeat(uint8_t sw1P, uint8_t sw2P, uint8_t sw3P) override;
 
-    void setSwithcSetting(uint8_t swNum, uint8_t mode) override;
-    uint8_t getSwithcSetting(uint8_t swNum) override;
-    uint getResistorSetting(uint8_t swNum, uint8_t resistorNr) override;
-    double getswTotResistorSetting(uint8_t swNum) override;
-    double getTotResistorFromMode(uint8_t mode) override;
+    void setSwithcSetting(const uint8_t swNum, const uint8_t mode) override;
+    uint8_t getSwithcSetting(const uint8_t swNum) const override;
+    uint getResistorSetting(const uint8_t swNum,const uint8_t resistorNr) const override;
+    double getswTotResistorSetting(uint8_t swNum) const  override;
+    double getTotResistorFromMode(uint8_t mode) const override;
 };

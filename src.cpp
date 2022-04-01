@@ -57,6 +57,7 @@ void testCasesCaller()
     ICALCULATE *basecalculate = new BASECALCULATE(val, cleanup, controller, adccorrecter);
     BASECLEANINPUT *cleanuptest = new BASECLEANINPUT();
     std::cout << "Test3\n";
+    /*
     std::cout << "BaseCleanInput Test\n";
     sleep_ms(1000);
     BaseCleanInputTest testCleanup(cleanuptest, testprinter);
@@ -65,6 +66,7 @@ void testCasesCaller()
     ADCTest adctest(testprinter);
     std::cout << "BaseCalculate Tests\n";
     sleep_ms(1000);
+    */
     BaseCalculateTest calculatetest(basecalculate, testprinter);
 }
 

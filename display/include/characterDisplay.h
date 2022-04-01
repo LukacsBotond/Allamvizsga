@@ -204,6 +204,6 @@ protected:
 public:
     CHARACTERDISPLAY(uint16_t bg_Color, uint16_t fg_Color);
     //translates char to a printable character
-    const uint8_t* transChartoCharSet(char character);
-    void printLine(std::string str);
+    const uint8_t* transChartoCharSet(const char character) const;
+    void printLine(const std::string str);
 };

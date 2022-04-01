@@ -92,7 +92,7 @@ void ADC::setupFIFO()
     }
 }
 
-void ADC::setADCSelect(uint8_t chanel)
+void ADC::setADCSelect(const uint8_t chanel)
 {
     if (chanel > 3 || chanel < 0)
     {
@@ -127,7 +127,7 @@ void ADC::start_freeRunning()
 #endif
 }
 
-void ADC::set_clkDiv(uint div)
+void ADC::set_clkDiv(const uint div)
 {
     if (div > 96)
         adc_div = div;
@@ -167,7 +167,7 @@ void ADC::printSamples()
     std::cout << std::endl;
 }
 
-void ADC::setCaptureBuff(uint16_t *buff, uint16_t buffSize)
+void ADC::setCaptureBuff(uint16_t *buff,const uint16_t buffSize)
 {
     if (buff == nullptr || buffSize != CAPTURE_DEPTH)
         throw NULLEXCEPT("ADC setCaptureBuff is null or buffSize it not equal to" + std::to_string(CAPTURE_DEPTH));
