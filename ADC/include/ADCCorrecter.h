@@ -13,6 +13,6 @@ private:
 
 public:
     ADCCORRECTER(){}
-    void init();
+    void init() override;
     uint16_t *offsetCorrection(uint16_t *samples,const uint16_t samplesSize) override;
 };
