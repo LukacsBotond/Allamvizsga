@@ -17,8 +17,8 @@ public:
     //* Throw a NOTARESISTOR exception if it is not a resistor
     double calcResistance(std::vector<std::string> &measurements) override;
 
-    std::vector<double> getMeasurement(const std::string measurement)const override;
-    bool setMeasurement(const std::string measurement, std::vector<double> valuesVector) override;
+    std::vector<double> getMeasurement(const std::string &measurement)const override;
+    bool setMeasurement(const std::string &measurement, std::vector<double> valuesVector) override;
     void cleanMesurements() override;
     // ICLEANINPUT interface
     bool IsAnythingConnected(const double avgVoltage,const uint8_t portMode) override;

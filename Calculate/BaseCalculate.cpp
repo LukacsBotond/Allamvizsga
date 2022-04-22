@@ -28,8 +28,8 @@ void BASECALCULATE::SameOut3ChannelRepeat(const uint8_t sw1, const uint8_t sw2, 
     measurement = std::to_string(sw1);
     measurement += std::to_string(sw2);
     measurement += std::to_string(sw3);
-    std::cout << "test measurement, sw settings: " << measurement << "\n";
-    // todo input chech, no short circuits
+    // std::cout << "test measurement, sw settings: " << measurement << "\n";
+    //  todo input chech, no short circuits
     for (int i = 0; i < 3; i++)
     {
         // chose which ADC channel to read from
@@ -80,18 +80,18 @@ double BASECALCULATE::calcResistance(std::vector<std::string> &measurements)
     }
 
     std::vector<double> measurementData;
-    double voltageDrop = 0;
-    double mAmper = 0;
+    // double voltageDrop = 0;
+    double mAmper;
     double bestmAmper = 0;
+    double voltageDrop = 0;
     std::string bestMeasurement = measurements.at(0);
     for (int i = 0; i < measurements.size(); i += 2)
     {
-        std::cout << "measurementCalculate: " << i << " val: " << measurements[i] << "LENGHT:" << measurements.size() << std::endl;
-        // std::string store = "405";
-        //  std::cout << "store: " << store << std::endl;
+        // std::cout << "measurementCalculate: " << i << " val: " << measurements[i] << "LENGHT:" << measurements.size() << std::endl;
+        //  std::string store = "405";
+        //   std::cout << "store: " << store << std::endl;
 
         //    measurementData = this->values->getMeasurement(measurements[i]);
-        this->values->printMeasurements();
         measurementData = this->values->getMeasurement(measurements[i]);
         // first port is not used
         if (measurements[i][0] - '0' == 0)
@@ -102,62 +102,71 @@ double BASECALCULATE::calcResistance(std::vector<std::string> &measurements)
         { // 2. or 3. is not used
             mAmper = (3.3 - measurementData[0]) / this->controller->getTotResistorFromMode(measurements[i][0] - '0');
         }
-        std::cout << "mAmper: " << mAmper << std::endl;
         if (mAmper > bestmAmper)
         {
-            std::cout << "if\n";
             bestmAmper = mAmper;
             bestMeasurement = measurements[i];
         }
     }
+    // this->values->printMeasurements();
 
-    std::cout << "bestMeasurement: " << bestMeasurement << std::endl;
+    // std::cout << "bestMeasurement: " << bestMeasurement <<" mAmper: " << bestmAmper << std::endl;
 
     measurementData = this->values->getMeasurement(bestMeasurement);
     // first port is not used
     if (bestMeasurement[0] - '0' == 0)
     {
-        std::cout << "voltage drop on 1. resistor:" << 3.3 - measurementData[1] << std::endl;
-        std::cout << "voltage drop on unkown resistor:" << measurementData[1] - measurementData[2] << std::endl;
-        std::cout << "voltage drop on 2. resistor:" << measurementData[2] << std::endl;
-        return ((measurementData[1] - measurementData[2]) / bestmAmper);
+        voltageDrop = measurementData[1] - measurementData[2];
+        if (voltageDrop < 0) // if negative make it positive
+            voltageDrop *= -1;
+        // std::cout << "voltage drop on 1. resistor:" << 3.3 - measurementData[1] << std::endl;
+        // std::cout << "voltage drop on unkown resistor:" << voltageDrop << std::endl;
+        // std::cout << "voltage drop on 2. resistor:" << measurementData[2] << std::endl;
+        return ((voltageDrop) / bestmAmper);
     }
     else
     {                                      // 2. or 3. is not used
         if (bestMeasurement[1] - '0' == 0) // 2. is not used
         {
-            std::cout << "voltage drop on 1. resistor:" << 3.3 - measurementData[0] << std::endl;
-            std::cout << "voltage drop on unkown resistor:" << measurementData[0] - measurementData[2] << std::endl;
-            std::cout << "voltage drop on 2. resistor:" << measurementData[2] << std::endl;
-            return ((measurementData[0] - measurementData[2]) / bestmAmper);
+            voltageDrop = measurementData[0] - measurementData[2];
+            if (voltageDrop < 0) // if negative make it positive
+                voltageDrop *= -1;
+            // std::cout << "voltage drop on 1. resistor:" << 3.3 - measurementData[0] << std::endl;
+            // std::cout << "voltage drop on unkown resistor:" << voltageDrop << std::endl;
+            // std::cout << "voltage drop on 2. resistor:" << measurementData[2] << std::endl;
+            return ((voltageDrop) / bestmAmper);
         }
         else
         { // 3. is not used
-            std::cout << "voltage drop on 1. resistor:" << 3.3 - measurementData[0] << std::endl;
-            std::cout << "voltage drop on unkown resistor:" << measurementData[0] - measurementData[1] << std::endl;
-            std::cout << "voltage drop on 2. resistor:" << measurementData[1] << std::endl;
-            return ((measurementData[0] - measurementData[1]) / bestmAmper);
+            voltageDrop = measurementData[0] - measurementData[1];
+            if (voltageDrop < 0) // if negative make it positive
+                voltageDrop *= -1;
+            // std::cout << "voltage drop on 1. resistor:" << 3.3 - measurementData[0] << std::endl;
+            // std::cout << "voltage drop on unkown resistor:" << voltageDrop << std::endl;
+            // std::cout << "voltage drop on 2. resistor:" << measurementData[1] << std::endl;
+
+            return ((voltageDrop) / bestmAmper);
         }
     }
 }
 
-std::vector<double> BASECALCULATE::getMeasurement(const std::string measurement) const
+std::vector<double> BASECALCULATE::getMeasurement(const std::string &measurement) const
 {
-    std::cout << "measurementClaculate get: "
-              << " val: " << measurement << "LENGHT:" << measurement.size() << std::endl;
+    // std::cout << "measurementClaculate get: "
+    //           << " val: " << measurement << "LENGHT:" << measurement.size() << std::endl;
     return this->values->getMeasurement(measurement);
 }
 
-bool BASECALCULATE::setMeasurement(const std::string measurement, std::vector<double> valuesVector)
+bool BASECALCULATE::setMeasurement(const std::string &measurement, std::vector<double> valuesVector)
 {
-    std::cout << "measurementCalculate set: "
-              << " val: " << measurement << "LENGHT:" << measurement.size() << std::endl;
+    // std::cout << "measurementCalculate set: "
+    //          << " val: " << measurement << "LENGHT:" << measurement.size() << std::endl;
     return this->values->addMeasurement(measurement, valuesVector);
 }
 
 void BASECALCULATE::cleanMesurements()
 {
-    std::cout << "measurementCalculate clear: \n";
+    // std::cout << "measurementCalculate clear: \n";
     return this->values->cleanMeasurements();
 }
 

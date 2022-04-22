@@ -19,14 +19,17 @@ public:
      @return true if there weren no measurement with the same name
      false, if there is no 3 value in the values vector or failed to insert
     */
-    virtual bool addMeasurement(const std::string measurement, std::vector<double> values) = 0;
+    virtual bool addMeasurement(const std::string &measurement, std::vector<double> values) = 0;
+    
+    
     /*
-    @param measurement, which output mode was used during the measurement, for example 
+    *Get Measurement data by name 
+    @param measurement,(const std::string &measurement), which output mode was used during the measurement, for example 
      "405"
-     @return the avaraged voltage of that setting if exist
+     @return (std::vector<double>) with 3 value, avaraged voltage of that setting if exist
      *THROW NOSUCHMEASUREMENT if there is no such saved measurement
     */
-    virtual std::vector<double> getMeasurement(const std::string measurement) const = 0;
+    virtual std::vector<double> getMeasurement(const std::string &measurement) const = 0;
     
     /*
         deletes the stored values

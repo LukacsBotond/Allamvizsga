@@ -11,10 +11,10 @@ double BASEVALUES::getResistance() const
     return resistance;
 }
 
-bool BASEVALUES::addMeasurement(const std::string measurement,const std::vector<double> values)
+bool BASEVALUES::addMeasurement(const std::string &measurement, const std::vector<double> values)
 {
 
-    std::cout << "addMeasurementValues: " << measurement << std::endl;
+    //std::cout << "addMeasurementValues: " << measurement << std::endl;
     if (values.size() != 3)
         return false;
 
@@ -26,10 +26,10 @@ bool BASEVALUES::addMeasurement(const std::string measurement,const std::vector<
     return true;
 }
 
-std::vector<double> BASEVALUES::getMeasurement(const std::string measurement) const
+std::vector<double> BASEVALUES::getMeasurement(const std::string &measurement) const
 {
-    std::cout << "measurementValues: "
-              << " val: " << measurement << "LENGHT:" << measurement.size() << std::endl;
+    //std::cout << "measurementValues: "
+    //          << " val: " << measurement << "LENGHT:" << measurement.size() << std::endl;
     if (measurement.size() != 3)
         throw NOSUCHMEASUREMENT("BASEVALUES the seach string is not 3 length, string: " + measurement + "|\n");
     auto pos = this->measurements.find(measurement);
