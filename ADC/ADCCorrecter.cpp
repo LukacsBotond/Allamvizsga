@@ -18,7 +18,7 @@ void ADCCORRECTER::init()
 
 uint16_t *ADCCORRECTER::offsetCorrection(uint16_t *samples,const uint16_t samplesSize)
 {
-    if (samplesSize <= 0 || samples == nullptr)
+    if (samplesSize == 0 || samples == nullptr)
     {
         throw NOTSUPPOSEDTOREACHTHIS("ADC correcter got samplesize 0 or null array");
     }

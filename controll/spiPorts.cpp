@@ -1,7 +1,7 @@
 #include "include/spiPorts.h"
 
 SPIPORTS::SPIPORTS(
-    int sp1,
+    int spi,
     int miso,
     int cs,
     int sck,
