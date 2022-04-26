@@ -30,7 +30,7 @@ void BASESWITCHCONTROLLER::setSwithcSetting(uint8_t swNum, uint8_t mode)
     }
 }
 
-uint8_t BASESWITCHCONTROLLER::getSwithcSetting(uint8_t swNum)
+uint8_t BASESWITCHCONTROLLER::getSwithcSetting(uint8_t swNum) const
 {
     switch (swNum)
     {
@@ -46,7 +46,7 @@ uint8_t BASESWITCHCONTROLLER::getSwithcSetting(uint8_t swNum)
     }
 }
 
-uint BASESWITCHCONTROLLER::getResistorSetting(uint8_t swNum, uint8_t resistorNr)
+uint BASESWITCHCONTROLLER::getResistorSetting(uint8_t swNum, uint8_t resistorNr) const
 {
     switch (swNum)
     {
@@ -62,7 +62,7 @@ uint BASESWITCHCONTROLLER::getResistorSetting(uint8_t swNum, uint8_t resistorNr)
     }
 }
 
-double BASESWITCHCONTROLLER::getswTotResistorSetting(uint8_t swNum)
+double BASESWITCHCONTROLLER::getswTotResistorSetting(uint8_t swNum) const
 {
     switch (swNum)
     {
@@ -78,7 +78,7 @@ double BASESWITCHCONTROLLER::getswTotResistorSetting(uint8_t swNum)
     }
 }
 
-double BASESWITCHCONTROLLER::getTotResistorFromMode(uint8_t mode){
+double BASESWITCHCONTROLLER::getTotResistorFromMode(uint8_t mode) const
+{
     return this->aswitch1->getTotSwitchResistanceFromMode(mode);
 }
-

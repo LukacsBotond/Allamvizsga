@@ -6,12 +6,10 @@ class NOSUCHMEASUREMENT : virtual public std::exception
 {
 
 protected:
-    int error_number;          ///< Error number
-    int error_offset;          ///< Error offset
     std::string error_message; ///< Error message
 
 public:
-    NOSUCHMEASUREMENT(const std::string &msg) : error_message(msg)
+    explicit NOSUCHMEASUREMENT(const std::string &msg) : error_message(msg)
     {
     }
     virtual const char *what() const throw()

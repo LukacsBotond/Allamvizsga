@@ -102,12 +102,12 @@ void BASESWITCH::selectOutput(uint8_t port)
     }
 }
 
-uint8_t BASESWITCH::getOutput()
+uint8_t BASESWITCH::getOutput() const
 {
     return outPort;
 }
 
-uint BASESWITCH::getResistor(uint8_t nr)
+uint BASESWITCH::getResistor(uint8_t nr) const
 {
     if (nr > 1)
         throw NOSUCHPORT("only 2 resistor 0/1 is used");
@@ -122,7 +122,7 @@ uint BASESWITCH::getResistor(uint8_t nr)
     }
 }
 
-double BASESWITCH::getTotSwitchResistance()
+double BASESWITCH::getTotSwitchResistance() const
 {
     // high impedance is connected
     if (this->outPort == 0)
@@ -145,7 +145,7 @@ double BASESWITCH::getTotSwitchResistance()
     }
 }
 
-double BASESWITCH::getTotSwitchResistanceFromMode(uint8_t mode)
+double BASESWITCH::getTotSwitchResistanceFromMode(uint8_t mode) const
 {
     // high impedance is connected
     if (mode == 0)

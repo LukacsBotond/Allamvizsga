@@ -1,7 +1,7 @@
 #include "./include/ICleanInput.h"
 
 
-double ICLEANINPUT::AVGVoltage(uint16_t *samples, uint16_t samplesSize)
+double ICLEANINPUT::AVGVoltage(uint16_t *samples,const uint16_t samplesSize)
 {
     if (samples == nullptr || samplesSize < 1)
     {

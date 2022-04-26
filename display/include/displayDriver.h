@@ -17,9 +17,9 @@ public:
 
     void writeLine();
 
-    void fillRestScreen(uint16_t color = 0x0000);
+    void fillRestScreen(const uint16_t color = 0x0000);
     //* crears the screen with a set color
-    void fillColor(uint16_t color = 0x0000);
+    void fillColor(const uint16_t color = 0x0000);
 
 
     //* DEBUG 

@@ -1,6 +1,7 @@
 \documentclass[12pt, twosides]{report}
 
 \include{preamble}
+\usepackage{hyperref}
 
 \title{
 	{Elektronikai alkatrész teszter}\\
@@ -45,8 +46,8 @@
 \pagenumbering{arabic}
 \input{chapters/introduction}
 
-\chapter{Szakirodalom áttekintése}
-\input{chapters/literature}
+\chapter{Kutatás módszertana}
+\input{chapters/KutatásMódszertan.tex}
 
 \chapter{Elméleti áttekintés}
 \input{chapters/theory.tex}
@@ -65,7 +66,9 @@
 \chapter{Összefoglalás}
 \input{chapters/summary}
 
+%irodalomjegyzek
 \addcontentsline{toc}{chapter}{Irodalomjegyzék}
+
 \bibliographystyle{ieeetr}
 \bibliography{References}
 
@@ -73,6 +76,7 @@
 \appendix
 \chapter{Függelék}
 \input{chapters/appendix}
+
 
 
 \end{document}

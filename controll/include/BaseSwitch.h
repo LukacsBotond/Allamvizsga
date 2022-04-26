@@ -15,10 +15,10 @@ private:
 public:
     BASESWITCH(uint outRes1, uint outRes2, uint outRes3, uint gpio1, uint gpio2);
     //give values to the output resistors
-    void selectOutput(uint8_t port) override;
+    void selectOutput(const uint8_t port) override;
     //value sent to the analog switch
-    uint8_t getOutput() override;
-    uint getResistor(uint8_t nr) override;
-    double getTotSwitchResistance() override;
-    double getTotSwitchResistanceFromMode(uint8_t mode) override;
+    uint8_t getOutput() const  override;
+    uint getResistor(uint8_t nr) const override;
+    double getTotSwitchResistance() const override;
+    double getTotSwitchResistanceFromMode(uint8_t mode) const override;
 };

@@ -2,6 +2,7 @@
 #include "ADC/include/IADC.h"
 #include "ADC/include/ADC.h"
 #include "controll/include/IAswitch.h"
+#include "./common/include/common.h"
 
 //* power level
 #define HIGH 1
@@ -38,6 +39,23 @@
 #define RESISTOR_MID 4670
 #define RESISTOR_HIGH 0
 
+//*Power save pin
+#define POWERS_SAVE_PIN 23
+
 class IADC;
 extern IADC *adc;
-//static queue_t ADCSelect_queue;
+
+class COMMON;
+extern COMMON *commonClass;
+
+
+
+
+//!DEBUG
+
+//if commented out then the normal program runs without test cases
+//if not then only the test cases run
+#define TESTS
+
+//disables ADC read
+#define ADCDISABLE

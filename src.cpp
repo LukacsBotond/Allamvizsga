@@ -9,10 +9,76 @@
 #include <vector>
 
 #include "Global.h"
+
+#ifdef TESTS
+//! Test classes
+
+#include "ADC/include/ADC.h"
+#include "controll/include/BaseSwitch.h"
+#include "controll/include/BaseSwithcController.h"
+#include "Tests/include/TestPrinter.h"
+#include "Tests/include/BaseCleanInputTest.h"
+#include "Tests/include/ADCTest.h"
+#include "Calculate/include/BaseCalculate.h"
+#include "Calculate/include/BaseValues.h"
+#include "Tests/include/BaseCalculateTest.h"
+
+void ICALCULATE::startSemaphoreRelease()
+{
+    sem_release(&startSemaphore1);
+}
+
+void ICALCULATE::doneSemaphoreAquire()
+{
+    sem_acquire_blocking(&doneSemaphore1);
+}
+
+IADC *adc = new ADC();
+COMMON *commonClass = new COMMON();
+ICALCULATE *IADCORRECTER::icalculate = nullptr;
+// ICALCULATE *STATE::icalculate = nullptr;
+IVALUES *ICALCULATE::values;
+ICLEANINPUT *ICALCULATE::cleanup;
+ISWITCHCONTROLLER *ICALCULATE::controller;
+IADCORRECTER *ICALCULATE::adccorrecter;
+void testCasesCaller()
+{
+    IASWITCH *aswitch1 = new BASESWITCH(RESISTOR_LOW, RESISTOR_MID, RESISTOR_HIGH, SWITHCH1_LOW, SWITHCH1_HIGH);
+    IASWITCH *aswitch2 = new BASESWITCH(RESISTOR_LOW, RESISTOR_MID, RESISTOR_HIGH, SWITHCH2_LOW, SWITHCH2_HIGH);
+    IASWITCH *aswitch3 = new BASESWITCH(RESISTOR_LOW, RESISTOR_MID, RESISTOR_HIGH, SWITHCH3_LOW, SWITHCH3_HIGH);
+    std::cout << "Test1\n";
+    sleep_ms(100);
+    TESTPRINTER *testprinter = new TESTPRINTER();
+    IVALUES *val = new BASEVALUES();
+    ICLEANINPUT *cleanup = new BASECLEANINPUT();
+    IADCORRECTER *adccorrecter = new ADCCORRECTER();
+    std::cout << "Test2\n";
+    ISWITCHCONTROLLER *controller = new BASESWITCHCONTROLLER(aswitch1, aswitch2, aswitch3);
+    ICALCULATE *basecalculate = new BASECALCULATE(val, cleanup, controller, adccorrecter);
+    BASECLEANINPUT *cleanuptest = new BASECLEANINPUT();
+    std::cout << "Test3\n";
+    /*
+    std::cout << "BaseCleanInput Test\n";
+    sleep_ms(1000);
+    BaseCleanInputTest testCleanup(cleanuptest, testprinter);
+    std::cout << "ADC Tests\n";
+    sleep_ms(1000);
+    ADCTest adctest(testprinter);
+    std::cout << "BaseCalculate Tests\n";
+    sleep_ms(1000);
+    */
+    BaseCalculateTest calculatetest(basecalculate, testprinter);
+}
+
+//! END test cases
+#endif // TESTS
+#ifndef TESTS
 #include "display/include/ili9341.h"
 #include "display/include/displayDriver.h"
 #include "display/include/characterDisplay.h"
 #include "ADC/include/ADC.h"
+#include "ADC/include/ADCCorrecter.h"
+
 #include "controll/include/BaseSwitch.h"
 #include "controll/include/BaseSwithcController.h"
 #include "Calculate/include/BaseCalculate.h"
@@ -23,19 +89,6 @@
 
 #include "stateMachine/include/Machine.h"
 #include "stateMachine/include/Resistor.h"
-
-//! Test classes
-/*
-#include "./Tests/BaseCleanInputTests/include/BaseCleanInputTest.h"
-
-void testCasesCaller()
-{
-    BASECLEANINPUT *cleanup = new BASECLEANINPUT();
-    BaseCleanInputTest testCleanup(cleanup);
-    //delete cleanup;
-}
-*/
-//! END test cases
 
 static struct semaphore startSemaphore1;
 static struct semaphore doneSemaphore1;
@@ -69,11 +122,11 @@ void core1_entry()
 {
     adc->setupFIFO();
     std::cout << "ADC start! \n";
-    adc->set_clkDiv(100);
+    adc->set_clkDiv(0);
     while (1)
     {
-        sem_acquire_blocking(&startSemaphore1);
         adc->setupFIFO();
+        sem_acquire_blocking(&startSemaphore1);
         adc->start_freeRunning();
         // adc->printSamples();
         sem_release(&doneSemaphore1);
@@ -103,8 +156,28 @@ void resus_callback(void) {
 */
 
 IADC *adc = new ADC();
+COMMON *commonClass = new COMMON();
+ICALCULATE *IADCORRECTER::icalculate = nullptr;
+ICALCULATE *STATE::icalculate = nullptr;
+IVALUES *ICALCULATE::values;
+ICLEANINPUT *ICALCULATE::cleanup;
+ISWITCHCONTROLLER *ICALCULATE::controller;
+IADCORRECTER *ICALCULATE::adccorrecter;
+std::vector<std::string> STATE::usedModes = {};
+
+#endif // TESTS
 int main()
 {
+    stdio_init_all();
+    std::cout << "Test\n";
+    sleep_ms(3000);
+    std::cout << "Test\n";
+#ifdef TESTS
+
+    testCasesCaller();
+
+#endif // DEBUG
+#ifndef TESTS
 
     stdio_init_all();
     std::cout << "Test\n";
@@ -119,20 +192,28 @@ int main()
 
     //! end test case callers
 
+    multicore_launch_core1(core1_entry);
+
     // COMMON *common = new COMMON();
     IASWITCH *aswitch1 = new BASESWITCH(RESISTOR_LOW, RESISTOR_MID, RESISTOR_HIGH, SWITHCH1_LOW, SWITHCH1_HIGH);
     IASWITCH *aswitch2 = new BASESWITCH(RESISTOR_LOW, RESISTOR_MID, RESISTOR_HIGH, SWITHCH2_LOW, SWITHCH2_HIGH);
     IASWITCH *aswitch3 = new BASESWITCH(RESISTOR_LOW, RESISTOR_MID, RESISTOR_HIGH, SWITHCH3_LOW, SWITHCH3_HIGH);
     IVALUES *val = new BASEVALUES();
     ICLEANINPUT *cleanup = new BASECLEANINPUT();
+    IADCORRECTER *adccorrecter = new ADCCORRECTER();
     ISWITCHCONTROLLER *controller = new BASESWITCHCONTROLLER(aswitch1, aswitch2, aswitch3);
-    ICALCULATE *calc = new BASECALCULATE(val, cleanup, controller);
-    multicore_launch_core1(core1_entry);
+    ICALCULATE *calc = new BASECALCULATE(val, cleanup, controller, adccorrecter);
 
     MACHINE *machine = new MACHINE();
     machine->setState(new RESISTOR(calc));
-    machine->calculate();
-
+    try
+    {
+        machine->calculate();
+    }
+    catch (POSSIBLYDIODE &e)
+    {
+        std::cout << e.what() << std::endl;
+    }
     // calc->startMeasurements();
     /*
     sleep_ms(3000);
@@ -178,7 +259,8 @@ int main()
     charDriver->printLine("almafa");
 */
 
-    // delete adc;
+#endif
+
     std::cout << "Sleeping\n";
     while (1)
     {

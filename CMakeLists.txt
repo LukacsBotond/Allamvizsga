@@ -23,7 +23,7 @@ pico_sdk_init()
 
 add_executable(src src.cpp
         ADC/ADC.cpp
-
+        ADC/ADCCorrecter.cpp
         Calculate/BaseCalculate.cpp
         Calculate/BaseValues.cpp
         Calculate/BaseCleanInput.cpp
@@ -37,15 +37,16 @@ add_executable(src src.cpp
         controll/spi.cpp
         controll/spiPorts.cpp
         controll/BaseSwitchController.cpp
-#        controll/Aswitch.cpp
+        #controll/Aswitch.cpp
         controll/BaseSwitch.cpp
 
         common/common.cpp
-
+        
         stateMachine/machineStates.cpp
 
         # test cases
-        Tests/BaseCleanInputTests/BaseCleanInputTest.cpp
+        Tests/BaseCleanInputTest.cpp
+        Tests/TestPrinter.cpp
         )
 
 pico_set_program_name(src "src")

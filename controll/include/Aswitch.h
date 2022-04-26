@@ -15,9 +15,9 @@ public:
     ASWITCH(uint outRes1, uint outRes2, uint outRes3, uint gpio1, uint gpio2);
 
     //select analog swithch
-    void selectOutput(uint_8 port) override;
+    void selectOutput(const uint_8 port) override;
     //value sent to the analog switch
-    uint8_t getOutput() override;
-    uint getResistor(uint8_t nr) override;
-    double getTotSwitchResistance() override;
+    uint8_t getOutput() const override;
+    uint getResistor(const uint8_t nr) const override;
+    double getTotSwitchResistance() const override;
 };
