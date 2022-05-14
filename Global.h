@@ -16,28 +16,28 @@
 #define ACD_CHANNEL_2 28
 
 //* DIPSPLAY PINS
-#define DISP_SPI_CHANNEL 0
+#define DISP_SPI_CHANNEL 1
 #define DISP_FREQ 100000
-#define DISP_MISO 4
-#define DISP_CS 5
-#define DISP_SCK 6
-#define DISP_MOSI 7
-#define DISP_RESET 8
-#define DISP_DC 9
+#define DISP_MISO -1
+#define DISP_CS 13
+#define DISP_SCK 14
+#define DISP_MOSI 15
+#define DISP_RESET 12
+#define DISP_DC 11
 
 //* SWITCH pins
-#define SWITHCH1_LOW 16
-#define SWITHCH1_HIGH 17
-#define SWITHCH2_LOW 18
-#define SWITHCH2_HIGH 19
-#define SWITHCH3_LOW 20
-#define SWITHCH3_HIGH 21
+#define SWITHCH1_1 16
+#define SWITHCH1_2 17
+#define SWITHCH2_1 18
+#define SWITHCH2_2 19
+#define SWITHCH3_1 20
+#define SWITHCH3_2 21
 
 //* resistors
 
-#define RESISTOR_LOW 356
-#define RESISTOR_MID 4670
-#define RESISTOR_HIGH 0
+#define RESISTOR_LOW 100
+#define RESISTOR_MID 330
+#define RESISTOR_HIGH 4700
 
 //*Power save pin
 #define POWERS_SAVE_PIN 23

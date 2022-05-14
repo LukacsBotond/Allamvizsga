@@ -25,7 +25,6 @@ void BASESWITCHCONTROLLER::setSwithcSetting(uint8_t swNum, uint8_t mode)
     case 3:
         return this->aswitch3->selectOutput(mode);
     default:
-        std::string swNumstr = std::to_string(swNum);
         throw NOTSUPPOSEDTOREACHTHIS("BaseSwitch setSwitchSetting out of range 0-3 only, got" + swNum);
     }
 }
@@ -41,7 +40,6 @@ uint8_t BASESWITCHCONTROLLER::getSwithcSetting(uint8_t swNum) const
     case 3:
         return this->aswitch3->getOutput();
     default:
-        std::string swNumstr = std::to_string(swNum);
         throw NOTSUPPOSEDTOREACHTHIS("BaseSwitch getSwitchSetting out of range 0-3 only, got" + swNum);
     }
 }
@@ -57,7 +55,6 @@ uint BASESWITCHCONTROLLER::getResistorSetting(uint8_t swNum, uint8_t resistorNr)
     case 3:
         return this->aswitch3->getResistor(resistorNr);
     default:
-        std::string swNumstr = std::to_string(swNum);
         throw NOTSUPPOSEDTOREACHTHIS("BaseSwitch getSwitchSetting out of range 0-3 only, got" + swNum);
     }
 }
@@ -73,7 +70,6 @@ double BASESWITCHCONTROLLER::getswTotResistorSetting(uint8_t swNum) const
     case 3:
         return this->aswitch3->getTotSwitchResistance();
     default:
-        std::string swNumstr = std::to_string(swNum);
         throw NOTSUPPOSEDTOREACHTHIS("BaseSwitch getSwitchSetting out of range 0-3 only, got" + swNum);
     }
 }

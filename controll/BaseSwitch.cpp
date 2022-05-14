@@ -14,9 +14,8 @@
     8 -> 11
 */
 BASESWITCH::BASESWITCH(uint outRes1, uint outRes2, uint outRes3, uint gpio1, uint gpio2)
-    : outRes1(outRes1), outRes2(outRes2), outRes3(outRes3), gpio1(gpio1), gpio2(gpio2)
+    : outRes1(outRes1), outRes2(outRes2), outRes3(outRes3), gpio1(gpio1), gpio2(gpio2), outPort(0)
 {
-    outPort = 0;
     gpio_init(gpio1);
     gpio_init(gpio2);
     gpio_set_dir(gpio1, GPIO_IN);
@@ -124,25 +123,7 @@ uint BASESWITCH::getResistor(uint8_t nr) const
 
 double BASESWITCH::getTotSwitchResistance() const
 {
-    // high impedance is connected
-    if (this->outPort == 0)
-    {
-        return INT32_MAX;
-    } // low high resistor is connected
-    else if (this->outPort <= 2)
-    {
-        return getResistor(0);
-    }                                                // low reseistor is connected
-    else if (this->outPort <= 4)
-    {
-        return getResistor(1); // aswitch1->getResistor(1);
-    }
-    else // both connected in parallel
-    {
-        uint res1 = getResistor(0); // aswitch1->getResistor(0);
-        uint res2 = getResistor(1); // aswitch1->getResistor(1);
-        return (res1 * res2) / (res1 + res2);
-    }
+    return getTotSwitchResistanceFromMode(this->outPort);
 }
 
 double BASESWITCH::getTotSwitchResistanceFromMode(uint8_t mode) const

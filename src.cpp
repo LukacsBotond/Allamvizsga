@@ -14,7 +14,7 @@
 //! Test classes
 
 #include "ADC/include/ADC.h"
-#include "controll/include/BaseSwitch.h"
+#include "controll/include/Aswitch.h"
 #include "controll/include/BaseSwithcController.h"
 #include "Tests/include/TestPrinter.h"
 #include "Tests/include/BaseCleanInputTest.h"
@@ -43,9 +43,9 @@ ISWITCHCONTROLLER *ICALCULATE::controller;
 IADCORRECTER *ICALCULATE::adccorrecter;
 void testCasesCaller()
 {
-    IASWITCH *aswitch1 = new BASESWITCH(RESISTOR_LOW, RESISTOR_MID, RESISTOR_HIGH, SWITHCH1_LOW, SWITHCH1_HIGH);
-    IASWITCH *aswitch2 = new BASESWITCH(RESISTOR_LOW, RESISTOR_MID, RESISTOR_HIGH, SWITHCH2_LOW, SWITHCH2_HIGH);
-    IASWITCH *aswitch3 = new BASESWITCH(RESISTOR_LOW, RESISTOR_MID, RESISTOR_HIGH, SWITHCH3_LOW, SWITHCH3_HIGH);
+    IASWITCH *aswitch1 = new ASWITCH(RESISTOR_LOW, RESISTOR_MID, RESISTOR_HIGH, SWITHCH1_1, SWITHCH1_2);
+    IASWITCH *aswitch2 = new ASWITCH(RESISTOR_LOW, RESISTOR_MID, RESISTOR_HIGH, SWITHCH2_1, SWITHCH2_2);
+    IASWITCH *aswitch3 = new ASWITCH(RESISTOR_LOW, RESISTOR_MID, RESISTOR_HIGH, SWITHCH3_1, SWITHCH3_2);
     std::cout << "Test1\n";
     sleep_ms(100);
     TESTPRINTER *testprinter = new TESTPRINTER();

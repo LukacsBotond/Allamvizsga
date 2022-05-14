@@ -10,7 +10,7 @@ private:
     uint outRes3;
     uint gpio1;
     uint gpio2;
-    uint outPort;
+    uint outPort; //current port mode
 
 public:
     BASESWITCH(uint outRes1, uint outRes2, uint outRes3, uint gpio1, uint gpio2);
