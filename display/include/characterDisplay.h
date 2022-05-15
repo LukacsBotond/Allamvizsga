@@ -1,6 +1,5 @@
 #pragma once
 #include "./ili9341.h"
-#include <iostream>
 
 class CHARACTERDISPLAY : public ILI9341
 {
@@ -205,6 +204,6 @@ protected:
 public:
     CHARACTERDISPLAY(SPI *spi, uint16_t bg_Color, uint16_t fg_Color);
     // translates char to a printable character
-    const uint8_t *transChartoCharSet(const char character) const;
-    void printLine(const std::string &str);
+    const uint8_t *transChartoCharSet(const char character) const override;
+    void printLine(const std::string &str) override;
 };

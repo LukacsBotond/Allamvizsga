@@ -2,6 +2,7 @@
 
 #include "../../controll/include/spi.h"
 #include "../../controll/include/spiPorts.h"
+#include <iostream>
 
 #define ILI9341_TFTWIDTH 320  ///< ILI9341 max TFT width
 #define ILI9341_TFTHEIGHT 240 ///< ILI9341 max TFT height
@@ -80,8 +81,7 @@ public:
   void set_command(const uint8_t cmd);
   void command_param(const uint8_t data);
 
-
-  //!copied from displayDriver
+  //! copied from displayDriver
   void writeLine();
 
   void fillRestScreen(const uint16_t color = 0x0000);
@@ -90,4 +90,8 @@ public:
 
   //* DEBUG
   void dumpRow();
+
+  //* NOT IMPLEMENTED FUNCTIONS IN THIS CLASS
+  virtual const uint8_t *transChartoCharSet(const char character) const = 0;
+  virtual void printLine(const std::string &str) =0;
 };

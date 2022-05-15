@@ -7,7 +7,7 @@
 #include "../Global.h"
 
 /*
- 
+
  (pin 1) VCC        5V/3.3V power input
  (pin 2) GND        Ground
  (pin 3) CS         LCD chip select signal, low level enable
@@ -17,32 +17,43 @@
  (pin 7) SCK        SPI bus clock signal
  (pin 8) LED        Backlight control; if not controlled, connect 3.3V always bright
  (pin 9) SDO(MISO)  SPI bus read data signal; optional
- 
+
  */
 /*
 ili9341_config_t ili9341_config = {
-	.port = spi0,
-	.pin_miso = 4,
-	.pin_cs = 5,
-	.pin_sck = 6,
-	.pin_mosi = 7,
-	.pin_reset = 8,
-	.pin_dc = 9
+    .port = spi0,
+    .pin_miso = 4,
+    .pin_cs = 5,
+    .pin_sck = 6,
+    .pin_mosi = 7,
+    .pin_reset = 8,
+    .pin_dc = 9
 };
 */
 
-ILI9341::ILI9341(SPI* spi): spi(spi)
+ILI9341::ILI9341(SPI *spi) : spi(spi)
 {
-    //spiPorts* tmp = new spiPorts(0, 10, 13, 14, 15, 12, 11);
-    //SPIPORTS *tmpPorts = new SPIPORTS(0, 4, 5, 6, 7, 8, 9);
-    //spi_instance = new SPI(300, tmpPorts);
-    //delete tmpPorts;
+    // spiPorts* tmp = new spiPorts(0, 10, 13, 14, 15, 12, 11);
+    // SPIPORTS *tmpPorts = new SPIPORTS(0, 4, 5, 6, 7, 8, 9);
+    // spi_instance = new SPI(300, tmpPorts);
+    // delete tmpPorts;
+    // high = command, low = data
+
+    gpio_init(DISP_DC);
+    gpio_set_dir(DISP_DC, GPIO_OUT);
+    gpio_put(DISP_DC, LOW);
+
+    // Reset is active-low
+    gpio_init(DISP_RESET);
+    gpio_set_dir(DISP_RESET, GPIO_OUT);
+    gpio_put(DISP_RESET, HIGH);
+
     sleep_ms(10);
     gpio_put(DISP_RESET, LOW);
     sleep_ms(10);
     gpio_put(DISP_RESET, HIGH);
     spi->changeFormat(false);
-    set_command(0x01); //soft reset
+    set_command(0x01); // soft reset
     sleep_ms(100);
     set_command(ILI9341_GAMMASET);
     command_param(0x01);
@@ -74,7 +85,7 @@ ILI9341::ILI9341(SPI* spi): spi(spi)
     set_command(ILI9341_DISPON);
     //
 
-    //landscape mode
+    // landscape mode
     set_command(ILI9341_MADCTL);
     command_param(0b11110100);
 
@@ -99,7 +110,8 @@ ILI9341::ILI9341(SPI* spi): spi(spi)
     this->row = new uint16_t[rowSize];
 }
 
-ILI9341::~ILI9341(){
+ILI9341::~ILI9341()
+{
     delete row;
 }
 
@@ -122,7 +134,7 @@ void ILI9341::writeLine()
     spi->changeFormat(false);
 }
 
-//TODO whatewer this is NOT doing
+// TODO whatewer this is NOT doing
 void ILI9341::fillRestScreen(uint16_t color)
 {
     /*

@@ -94,7 +94,6 @@ void testCasesCaller()
 
 static struct semaphore startSemaphore1;
 static struct semaphore doneSemaphore1;
-
 /*
 uint8_t counter = 0;
 void gpio_callback(uint gpio, uint32_t events)
@@ -122,6 +121,7 @@ void ICALCULATE::doneSemaphoreAquire()
 // when main core starts the semaphore it prints
 void core1_entry()
 {
+    //gpio_set_irq_enabled_with_callback(14, GPIO_IRQ_EDGE_RISE, true, &gpio_callback);
     adc->setupFIFO();
     std::cout << "ADC start! \n";
     adc->set_clkDiv(0);
@@ -133,7 +133,6 @@ void core1_entry()
         // adc->printSamples();
         sem_release(&doneSemaphore1);
     }
-    // gpio_set_irq_enabled_with_callback(6, GPIO_IRQ_EDGE_RISE, true, &gpio_callback);
 
     while (1)
     {
@@ -181,33 +180,33 @@ int main()
 #endif // DEBUG
 #ifndef TESTS
 
-    stdio_init_all();
-    std::cout << "Test\n";
-    sleep_ms(3000);
-    std::cout << "Test\n";
     sem_init(&startSemaphore1, 0, 1);
     sem_init(&doneSemaphore1, 0, 1);
+    gpio_init(RED_LED_PIN);
+    gpio_init(GREEN_LED_PIN);
 
-    //! TEST case callers
+    gpio_set_dir(RED_LED_PIN, true);
+    gpio_set_dir(GREEN_LED_PIN, true);
 
-    // testCasesCaller();
-
-    //! end test case callers
-
+    gpio_put(RED_LED_PIN, LOW);
+    gpio_put(GREEN_LED_PIN, HIGH);
     multicore_launch_core1(core1_entry);
-
-    SPI* spidac = new SPI(25000,SPIPORTS(DAC_SPI_CHANNEL, DAC_MISO, DAC_CS, DAC_SCK, DAC_MOSI, DAC_RESET, DAC_DC));
-    // COMMON *common = new COMMON();
+    // DAC
+    SPIPORTS *dac_spi_ports = new SPIPORTS(DAC_SPI_CHANNEL, DAC_CS, DAC_SCK, DAC_MOSI);
+    SPI *spidac = new SPI(DAC_FREQ, dac_spi_ports);
+    IDAC *dac = new DAC(spidac);
+    // Switch controller
     IASWITCH *aswitch1 = new ASWITCH(RESISTOR_LOW, RESISTOR_MID, RESISTOR_HIGH, SWITHCH1_1, SWITHCH1_2);
     IASWITCH *aswitch2 = new ASWITCH(RESISTOR_LOW, RESISTOR_MID, RESISTOR_HIGH, SWITHCH2_1, SWITHCH2_2);
     IASWITCH *aswitch3 = new ASWITCH(RESISTOR_LOW, RESISTOR_MID, RESISTOR_HIGH, SWITHCH3_1, SWITHCH3_2);
-    IDAC *dac = new DAC(spidac);
-    IVALUES *val = new BASEVALUES();
-    ICLEANINPUT *cleanup = new BASECLEANINPUT();
-    IADCORRECTER *adccorrecter = new ADCCORRECTER();
-    ISWITCHCONTROLLER *controller = new BASESWITCHCONTROLLER(aswitch1, aswitch2, aswitch3);
-    ICALCULATE *calc = new BASECALCULATE(val, cleanup, controller, adccorrecter);
+    ISWITCHCONTROLLER *controller = new BASESWITCHCONTROLLER(aswitch1, aswitch2, aswitch3, dac);
+    //
+    // IVALUES *val = new BASEVALUES();
+    // ICLEANINPUT *cleanup = new BASECLEANINPUT();
+    // IADCORRECTER *adccorrecter = new ADCCORRECTER();
 
+    // ICALCULATE *calc = new BASECALCULATE(val, cleanup, controller, adccorrecter);
+    /*
     MACHINE *machine = new MACHINE();
     machine->setState(new RESISTOR(calc));
     try
@@ -218,50 +217,34 @@ int main()
     {
         std::cout << e.what() << std::endl;
     }
-    // calc->startMeasurements();
-    /*
-    sleep_ms(3000);
-    controller->SameOut3ChannelRepeat(2, 0, 5);
+    */
 
-    sleep_ms(3000);
-    controller->SameOut3ChannelRepeat(5, 0, 4);
-
-    sleep_ms(3000);
-    controller->SameOut3ChannelRepeat(5, 0, 2);
-
-    sleep_ms(3000);
-    controller->SameOut3ChannelRepeat(5, 0, 5);
-*/
-    /*
-    DISPLAYDRIVER *driver = new DISPLAYDRIVER();
+    // display
+    SPIPORTS *displ_spi_ports = new SPIPORTS(DISP_SPI_CHANNEL, DISP_CS, DISP_SCK, DISP_MOSI);
+    SPI *spidispl = new SPI(DISP_FREQ, displ_spi_ports);
+    ILI9341 *driver = new CHARACTERDISPLAY(spidispl, 0x0000, 0xFFFF);
+    std::cout << "TEST6" << std::endl;
+    gpio_put(GREEN_LED_PIN, LOW);
 
     driver->fillColor();
-    sleep_ms(1000);
-    std::cout<<"fekete\n";
-    driver->fillColor(common->swap_bytes(0x0000));
-    sleep_ms(1000);
-    std::cout<<"feher\n";
-    driver->fillColor(common->swap_bytes(0xFFFF));
-    sleep_ms(1000);
-    std::cout<<"piros\n";
-    driver->fillColor(common->swap_bytes(0xF800));
-    sleep_ms(1000);
-    std::cout<<"Sarga\n";
-    driver->fillColor(common->swap_bytes(0xFE60));
-    sleep_ms(1000);
-    std::cout<<"kek\n";
-    driver->fillColor(common->swap_bytes(0x081F));
-    */
-    /*
-    sleep_ms(1000);
-    CHARACTERDISPLAY *charDriver = new CHARACTERDISPLAY( 0x0000 , 0xFFFF );
-    charDriver->fillColor(common->swap_bytes(0x081F));
-    charDriver->printLine("!!!!");
-    charDriver->printLine("!!!!");
-    charDriver->printLine("!!!!");
-    charDriver->printLine("=");
-    charDriver->printLine("almafa");
-*/
+    std::cout << "fekete\n";
+    driver->fillColor(commonClass->swap_bytes(0x0000));
+    std::cout << "feher\n";
+    driver->fillColor(commonClass->swap_bytes(0xFFFF));
+
+    std::cout << "piros\n";
+    driver->fillColor(commonClass->swap_bytes(0xF800));
+    std::cout << "Sarga\n";
+    driver->fillColor(commonClass->swap_bytes(0xFE60));
+    std::cout << "kek\n";
+    driver->fillColor(commonClass->swap_bytes(0x081F));
+
+    driver->fillColor(commonClass->swap_bytes(0x081F));
+    driver->printLine("!!!!");
+    driver->printLine("!!!!");
+    driver->printLine("!!!!");
+    driver->printLine("=");
+    driver->printLine("almafa");
 
 #endif
 

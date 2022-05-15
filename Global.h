@@ -18,7 +18,6 @@
 //* DIPSPLAY PINS
 #define DISP_SPI_CHANNEL 1
 #define DISP_FREQ 100000
-#define DISP_MISO -1
 #define DISP_CS 13
 #define DISP_SCK 14
 #define DISP_MOSI 15
@@ -27,8 +26,7 @@
 
 //* DAC pins
 #define DAC_SPI_CHANNEL 0
-#define DAC_FREQ 250000
-#define DAC_MISO -1
+#define DAC_FREQ 25000
 #define DAC_SCK 2
 #define DAC_MOSI 3
 #define DAC_LDAC 4

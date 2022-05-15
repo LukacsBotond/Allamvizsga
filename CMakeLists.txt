@@ -22,6 +22,7 @@ pico_sdk_init()
 # Add executable. Default name is the project name, version 0.1
 
 add_executable(src src.cpp
+        
         ADC/ADC.cpp
         ADC/ADCCorrecter.cpp
         Calculate/BaseCalculate.cpp
@@ -29,6 +30,7 @@ add_executable(src src.cpp
         Calculate/BaseCleanInput.cpp
         Calculate/ICleanInput.cpp
 
+        #display
         display/ili9341.cpp
         #display/displayDriver.cpp
         display/characterDisplay.cpp
