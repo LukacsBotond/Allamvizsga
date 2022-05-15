@@ -12,7 +12,7 @@ ASWITCH::ASWITCH(uint outRes1, uint outRes2, uint outRes3, uint8_t gpio1, uint8_
     gpio_put(gpio1, 0);
     gpio_put(gpio2, 0);
 }
-//! change later
+
 void ASWITCH::selectOutput(uint8_t port)
 {
     this->outPort = port;

@@ -6,6 +6,12 @@
 BASESWITCHCONTROLLER::BASESWITCHCONTROLLER(IASWITCH *sw1, IASWITCH *sw2, IASWITCH *sw3)
     : aswitch1(sw1), aswitch2(sw2), aswitch3(sw3)
 {
+    this->idac = new NothingDAC();
+}
+
+BASESWITCHCONTROLLER::BASESWITCHCONTROLLER(IASWITCH *sw1, IASWITCH *sw2, IASWITCH *sw3, IDAC* idac)
+    : aswitch1(sw1), aswitch2(sw2), aswitch3(sw3), idac(idac)
+{
 }
 
 BASESWITCHCONTROLLER::~BASESWITCHCONTROLLER()
@@ -13,7 +19,9 @@ BASESWITCHCONTROLLER::~BASESWITCHCONTROLLER()
     delete aswitch1;
     delete aswitch2;
     delete aswitch3;
+    delete idac;
 }
+
 void BASESWITCHCONTROLLER::setSwithcSetting(uint8_t swNum, uint8_t mode)
 {
     switch (swNum)

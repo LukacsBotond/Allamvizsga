@@ -37,4 +37,6 @@ public:
     uint getResistor(uint8_t nr) const override;
     double getTotSwitchResistance() const override;
     double getTotSwitchResistanceFromMode(uint8_t mode) const override;
+
+    //!TODO implement voltage setting for the DAC 
 };

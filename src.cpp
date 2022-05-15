@@ -79,8 +79,10 @@ void testCasesCaller()
 #include "ADC/include/ADC.h"
 #include "ADC/include/ADCCorrecter.h"
 
-#include "controll/include/BaseSwitch.h"
+//#include "controll/include/BaseSwitch.h"
+#include "controll/include/Aswitch.h"
 #include "controll/include/BaseSwithcController.h"
+#include "controll/include/DAC.h"
 #include "Calculate/include/BaseCalculate.h"
 #include "Calculate/include/BaseValues.h"
 #include "Calculate/include/BaseCleanInput.h"
@@ -194,10 +196,12 @@ int main()
 
     multicore_launch_core1(core1_entry);
 
+    SPI* spidac = new SPI(25000,SPIPORTS(DAC_SPI_CHANNEL, DAC_MISO, DAC_CS, DAC_SCK, DAC_MOSI, DAC_RESET, DAC_DC));
     // COMMON *common = new COMMON();
-    IASWITCH *aswitch1 = new BASESWITCH(RESISTOR_LOW, RESISTOR_MID, RESISTOR_HIGH, SWITHCH1_LOW, SWITHCH1_HIGH);
-    IASWITCH *aswitch2 = new BASESWITCH(RESISTOR_LOW, RESISTOR_MID, RESISTOR_HIGH, SWITHCH2_LOW, SWITHCH2_HIGH);
-    IASWITCH *aswitch3 = new BASESWITCH(RESISTOR_LOW, RESISTOR_MID, RESISTOR_HIGH, SWITHCH3_LOW, SWITHCH3_HIGH);
+    IASWITCH *aswitch1 = new ASWITCH(RESISTOR_LOW, RESISTOR_MID, RESISTOR_HIGH, SWITHCH1_1, SWITHCH1_2);
+    IASWITCH *aswitch2 = new ASWITCH(RESISTOR_LOW, RESISTOR_MID, RESISTOR_HIGH, SWITHCH2_1, SWITHCH2_2);
+    IASWITCH *aswitch3 = new ASWITCH(RESISTOR_LOW, RESISTOR_MID, RESISTOR_HIGH, SWITHCH3_1, SWITHCH3_2);
+    IDAC *dac = new DAC(spidac);
     IVALUES *val = new BASEVALUES();
     ICLEANINPUT *cleanup = new BASECLEANINPUT();
     IADCORRECTER *adccorrecter = new ADCCORRECTER();

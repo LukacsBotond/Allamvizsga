@@ -25,6 +25,18 @@
 #define DISP_RESET 12
 #define DISP_DC 11
 
+//* DAC pins
+#define DAC_SPI_CHANNEL 0
+#define DAC_FREQ 250000
+#define DAC_MISO -1
+#define DAC_SCK 2
+#define DAC_MOSI 3
+#define DAC_LDAC 4
+#define DAC_CS 5
+#define DAC_RESET 6
+#define DAC_ENABLE 7
+#define DAC_RSTSEL 8
+
 //* SWITCH pins
 #define SWITHCH1_1 16
 #define SWITHCH1_2 17
@@ -32,6 +44,11 @@
 #define SWITHCH2_2 19
 #define SWITHCH3_1 20
 #define SWITHCH3_2 21
+
+//* LED pins
+
+#define RED_LED_PIN 9
+#define GREEN_LED_PIN 10
 
 //* resistors
 
@@ -48,14 +65,11 @@ extern IADC *adc;
 class COMMON;
 extern COMMON *commonClass;
 
-
-
-
 //!DEBUG
 
 //if commented out then the normal program runs without test cases
 //if not then only the test cases run
-#define TESTS
+//#define TESTS
 
 //disables ADC read
-#define ADCDISABLE
+//#define ADCDISABLE

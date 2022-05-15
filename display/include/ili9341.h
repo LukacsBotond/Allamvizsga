@@ -1,8 +1,5 @@
 #pragma once
 
-#include <stdint.h>
-#include "pico/stdlib.h"
-#include "hardware/spi.h"
 #include "../../controll/include/spi.h"
 #include "../../controll/include/spiPorts.h"
 
