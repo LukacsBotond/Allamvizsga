@@ -1,7 +1,7 @@
 #pragma once
 
 #include "./ili9341.h"
-
+/*
 class DISPLAYDRIVER
 {
 protected:
@@ -25,4 +25,4 @@ public:
     //* DEBUG 
     void dumpRow();
 };
-
+*/

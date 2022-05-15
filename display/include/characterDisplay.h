@@ -1,13 +1,14 @@
 #pragma once
-#include "./displayDriver.h"
+#include "./ili9341.h"
 #include <iostream>
 
-class CHARACTERDISPLAY : public DISPLAYDRIVER
+class CHARACTERDISPLAY : public ILI9341
 {
 private:
-    void insertChar(uint8_t position,const uint8_t* charSet);
+    void insertChar(uint8_t position, const uint8_t *charSet);
     uint16_t bg_Color;
     uint16_t fg_Color;
+
 protected:
     const uint8_t charset[95][8] =
         {{//
@@ -202,8 +203,8 @@ protected:
           0x08, 0x15, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00}};
 
 public:
-    CHARACTERDISPLAY(uint16_t bg_Color, uint16_t fg_Color);
-    //translates char to a printable character
-    const uint8_t* transChartoCharSet(const char character) const;
-    void printLine(const std::string str);
+    CHARACTERDISPLAY(SPI *spi, uint16_t bg_Color, uint16_t fg_Color);
+    // translates char to a printable character
+    const uint8_t *transChartoCharSet(const char character) const;
+    void printLine(const std::string &str);
 };

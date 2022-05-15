@@ -31,17 +31,17 @@ ili9341_config_t ili9341_config = {
 };
 */
 
-ILI9341::ILI9341() : SPI(DISP_FREQ, SPIPORTS(DISP_SPI_CHANNEL, DISP_MISO, DISP_CS, DISP_SCK, DISP_MOSI, DISP_RESET, DISP_DC))
+ILI9341::ILI9341(SPI* spi): spi(spi)
 {
     //spiPorts* tmp = new spiPorts(0, 10, 13, 14, 15, 12, 11);
     //SPIPORTS *tmpPorts = new SPIPORTS(0, 4, 5, 6, 7, 8, 9);
     //spi_instance = new SPI(300, tmpPorts);
     //delete tmpPorts;
     sleep_ms(10);
-    gpio_put(ports->reset, LOW);
+    gpio_put(DISP_RESET, LOW);
     sleep_ms(10);
-    gpio_put(ports->reset, HIGH);
-    changeFormat(false);
+    gpio_put(DISP_RESET, HIGH);
+    spi->changeFormat(false);
     set_command(0x01); //soft reset
     sleep_ms(100);
     set_command(ILI9341_GAMMASET);
@@ -49,11 +49,11 @@ ILI9341::ILI9341() : SPI(DISP_FREQ, SPIPORTS(DISP_SPI_CHANNEL, DISP_MISO, DISP_C
     uint8_t tmp[]{0x0f, 0x31, 0x2b, 0x0c, 0x0e, 0x08, 0x4e, 0xf1, 0x37, 0x07, 0x10, 0x03, 0x0e, 0x09, 0x00};
     // positive gamma correction
     set_command(ILI9341_GMCTRP1);
-    write_data(tmp, 15);
+    spi->write_data(tmp, 15);
     uint8_t tmp1[]{0x00, 0x0e, 0x14, 0x03, 0x11, 0x07, 0x31, 0xc1, 0x48, 0x08, 0x0f, 0x0c, 0x31, 0x36, 0x0f};
     // negative gamma correction
     set_command(ILI9341_GMCTRN1);
-    write_data(tmp1, 15);
+    spi->write_data(tmp1, 15);
     // memory access control
     set_command(ILI9341_MADCTL);
     command_param(0x48);
@@ -93,16 +93,67 @@ ILI9341::ILI9341() : SPI(DISP_FREQ, SPIPORTS(DISP_SPI_CHANNEL, DISP_MISO, DISP_C
     command_param(0xef); // end column -> 239
 
     set_command(ILI9341_RAMWR);
+
+    this->currentLine = 0;
+    this->rowSize = lineHeight * ILI9341_TFTWIDTH;
+    this->row = new uint16_t[rowSize];
+}
+
+ILI9341::~ILI9341(){
+    delete row;
 }
 
 void ILI9341::set_command(uint8_t cmd)
 {
-    gpio_put(ports->dc, LOW);
-    write_data(&cmd, 1);
-    gpio_put(ports->dc, HIGH);
+    gpio_put(DISP_DC, LOW);
+    spi->write_data(&cmd, 1);
+    gpio_put(DISP_DC, HIGH);
 }
 
 void ILI9341::command_param(uint8_t data)
 {
-    write_data(&data, 1);
+    spi->write_data(&data, 1);
+}
+
+void ILI9341::writeLine()
+{
+    spi->changeFormat(true);
+    spi->write_data(row, rowSize);
+    spi->changeFormat(false);
+}
+
+//TODO whatewer this is NOT doing
+void ILI9341::fillRestScreen(uint16_t color)
+{
+    /*
+    display->changeFormat(true);
+    if (currentLine >= ILI9341::height / lineHeight)
+    {
+        return;
+    }
+    display->changeFormat(false);
+    */
+}
+
+void ILI9341::fillColor(uint16_t color)
+{
+    set_command(ILI9341_RAMWR);
+    spi->changeFormat(true);
+    int pixels = ILI9341_TFTWIDTH * ILI9341_TFTHEIGHT;
+    for (int i = 0; i < pixels; i++)
+    {
+        spi->write_data(&color, 1);
+    }
+    spi->changeFormat(false);
+}
+
+//* DEBUG
+void ILI9341::dumpRow()
+{
+    std::cout << "character write dump row\n";
+    for (int i = 0; i < rowSize; i++)
+    {
+        std::cout << row[i] << " ";
+        sleep_ms(1);
+    }
 }

@@ -12,7 +12,7 @@ protected:
     bool mode;
 public:
     SPIPORTS *ports;
-    SPI(int frekv, SPIPORTS ports);
+    SPI(int frekv, SPIPORTS* ports);
     ~SPI();
 
     //* if true then it sets SPI to write 16 bit

@@ -30,9 +30,9 @@ add_executable(src src.cpp
         Calculate/ICleanInput.cpp
 
         display/ili9341.cpp
-        display/displayDriver.cpp
+        #display/displayDriver.cpp
         display/characterDisplay.cpp
-        display/graphDisplay.cpp
+        #display/graphDisplay.cpp
 
         controll/spi.cpp
         controll/spiPorts.cpp

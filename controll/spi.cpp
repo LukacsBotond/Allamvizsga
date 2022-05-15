@@ -3,13 +3,11 @@
 #include <iostream>
 using namespace std;
 
-SPI::SPI(int frekv, SPIPORTS portsIn) : mode(false)
+SPI::SPI(int frekv, SPIPORTS* portsIn) : mode(false)
 {
-    this->ports = new SPIPORTS(
-        portsIn.spi, portsIn.miso, portsIn.cs, portsIn.sck,
-        portsIn.mosi, portsIn.reset, portsIn.dc);
+    this->ports = portsIn;
     // printer();
-    if (portsIn.spi == 1)
+    if (this->ports->spi)
     {
         spi_Hw_inst = spi1;
     }
@@ -20,7 +18,6 @@ SPI::SPI(int frekv, SPIPORTS portsIn) : mode(false)
     spi_init(spi_Hw_inst, frekv);
     int baudrate = spi_set_baudrate(spi_Hw_inst, frekv);
     std::cout << "baudrate: " << baudrate << std::endl;
-    gpio_set_function(ports->miso, GPIO_FUNC_SPI);
     gpio_set_function(ports->sck, GPIO_FUNC_SPI);
     gpio_set_function(ports->mosi, GPIO_FUNC_SPI);
 
@@ -28,16 +25,6 @@ SPI::SPI(int frekv, SPIPORTS portsIn) : mode(false)
     gpio_init(ports->cs);
     gpio_set_dir(ports->cs, GPIO_OUT);
     gpio_put(ports->cs, LOW);
-
-    // high = command, low = data
-    gpio_init(ports->dc);
-    gpio_set_dir(ports->dc, GPIO_OUT);
-    gpio_put(ports->dc, LOW);
-
-    // Reset is active-low
-    gpio_init(ports->reset);
-    gpio_set_dir(ports->reset, GPIO_OUT);
-    gpio_put(ports->reset, HIGH);
 
     printer();
 }
@@ -125,9 +112,6 @@ void SPI::printer()
     cout << "DEBUG" << endl;
     std::cout << "spi: " << ports->spi << std::endl;
     std::cout << "cs: " << ports->cs << std::endl;
-    std::cout << "dc: " << ports->dc << std::endl;
-    std::cout << "miso: " << ports->miso << std::endl;
     std::cout << "mosi: " << ports->mosi << std::endl;
-    std::cout << "reset: " << ports->reset << std::endl;
     std::cout << "sck: " << ports->sck << std::endl;
 }

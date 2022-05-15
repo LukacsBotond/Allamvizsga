@@ -64,12 +64,30 @@
 #define ILI9341_GMCTRN1 0xE1 ///< Negative Gamma Correction \
                              //#define ILI9341_PWCTR6     0xFC
 
-class ILI9341 : public SPI
+class ILI9341
 {
+protected:
+  SPI *spi;
+  const uint8_t lineHeight = 8;
+  uint8_t currentLine;
+  uint16_t rowSize;
+  uint16_t *row;
+
 public:
-  ILI9341();
+  explicit ILI9341(SPI *spi);
   ~ILI9341();
 
   void set_command(const uint8_t cmd);
   void command_param(const uint8_t data);
+
+
+  //!copied from displayDriver
+  void writeLine();
+
+  void fillRestScreen(const uint16_t color = 0x0000);
+  //* crears the screen with a set color
+  void fillColor(const uint16_t color = 0x0000);
+
+  //* DEBUG
+  void dumpRow();
 };
