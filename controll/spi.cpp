@@ -85,12 +85,12 @@ void SPI::write_data(const uint32_t *buffer, int bytes)
     {
         uint8_t command = (uint8_t)(buffer[i] >> 16);
         uint16_t voltage = (uint16_t)buffer[i];
-        cout << "SPI 32 bit data: " << hex << int(command) << " // " << hex << int(voltage) << endl;
-        cout << dec << (int)0 << std::endl;
+        //cout << "SPI 32 bit data: " << hex << int(command) << " // " << hex << int(voltage) << endl;
+        //cout << dec << (int)0 << std::endl;
         cs_select();
         if (mode)
         { // the spi is in 16 bit format
-            cout << "mode0" << std::endl;
+            //cout << "mode0" << std::endl;
             changeFormat(!mode);                          // set it to 8
             spi_write_blocking(spi_Hw_inst, &command, 1); // send command
             changeFormat(!mode);                          // currently 8 set back to 16
@@ -98,7 +98,7 @@ void SPI::write_data(const uint32_t *buffer, int bytes)
         }
         else
         { // the spi is in 8 bit format
-            cout << "mode1" << std::endl;
+            //cout << "mode1" << std::endl;
             spi_write_blocking(spi_Hw_inst, &command, 1);   // send command
             changeFormat(!mode);                            // currently 8 set back to 16
             spi_write16_blocking(spi_Hw_inst, &voltage, 1); // send voltage

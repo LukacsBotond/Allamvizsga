@@ -94,11 +94,12 @@ void testCasesCaller()
 
 static struct semaphore startSemaphore1;
 static struct semaphore doneSemaphore1;
-/*
+
 uint8_t counter = 0;
 void gpio_callback(uint gpio, uint32_t events)
 {
-    std::cout << "miso: " << gpio_get(4) << " cs: " << gpio_get(5) << " mosi: " << gpio_get(7) << " dc " << gpio_get(9) << std::endl;
+    std::cout << "mosi: " << gpio_get(DAC_MOSI) << " cs: " << gpio_get(DAC_CS) << std::endl;
+    //std::cout << "mosi: " << gpio_get(DISP_MOSI) << " cs: " << gpio_get(DISP_CS) << std::endl;
     counter++;
     if (counter == 8)
     {
@@ -106,7 +107,7 @@ void gpio_callback(uint gpio, uint32_t events)
         counter = 0;
     }
 }
-*/
+
 
 void ICALCULATE::startSemaphoreRelease()
 {
@@ -121,7 +122,7 @@ void ICALCULATE::doneSemaphoreAquire()
 // when main core starts the semaphore it prints
 void core1_entry()
 {
-    //gpio_set_irq_enabled_with_callback(14, GPIO_IRQ_EDGE_RISE, true, &gpio_callback);
+    gpio_set_irq_enabled_with_callback(DAC_SCK, GPIO_IRQ_EDGE_RISE, true, &gpio_callback);
     adc->setupFIFO();
     std::cout << "ADC start! \n";
     adc->set_clkDiv(0);
@@ -195,6 +196,21 @@ int main()
     SPIPORTS *dac_spi_ports = new SPIPORTS(DAC_SPI_CHANNEL, DAC_CS, DAC_SCK, DAC_MOSI);
     SPI *spidac = new SPI(DAC_FREQ, dac_spi_ports);
     IDAC *dac = new DAC(spidac);
+    gpio_put(GREEN_LED_PIN, LOW);
+    //! TESTING delete later
+    dac->setVoltageOnChannel(0x0000, DAC_COMM_WRITE_LOAD_ALLCHANNEL);
+    sleep_ms(1000);
+    dac->setVoltageOnChannel(0x00FF, DAC_COMM_WRITE_LOAD_ALLCHANNEL);
+    sleep_ms(1000);
+    dac->setVoltageOnChannel(0x07FF, DAC_COMM_WRITE_LOAD_ALLCHANNEL);
+    sleep_ms(1000);
+    dac->setVoltageOnChannel(0x0FFF, DAC_COMM_WRITE_LOAD_ALLCHANNEL);
+    sleep_ms(1000);
+    dac->setVoltageOnChannel(0x7FFF, DAC_COMM_WRITE_LOAD_ALLCHANNEL);
+    sleep_ms(1000);
+    dac->setVoltageOnChannel(0xFFFF, DAC_COMM_WRITE_LOAD_ALLCHANNEL);
+    sleep_ms(1000);
+
     // Switch controller
     IASWITCH *aswitch1 = new ASWITCH(RESISTOR_LOW, RESISTOR_MID, RESISTOR_HIGH, SWITHCH1_1, SWITHCH1_2);
     IASWITCH *aswitch2 = new ASWITCH(RESISTOR_LOW, RESISTOR_MID, RESISTOR_HIGH, SWITHCH2_1, SWITHCH2_2);
@@ -224,7 +240,7 @@ int main()
     SPI *spidispl = new SPI(DISP_FREQ, displ_spi_ports);
     ILI9341 *driver = new CHARACTERDISPLAY(spidispl, 0x0000, 0xFFFF);
     std::cout << "TEST6" << std::endl;
-    gpio_put(GREEN_LED_PIN, LOW);
+
 
     driver->fillColor();
     std::cout << "fekete\n";
