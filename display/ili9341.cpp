@@ -105,7 +105,6 @@ ILI9341::ILI9341(SPI *spi) : spi(spi)
     set_command(ILI9341_RAMWR);
 
     this->currentLine = 0;
-    this->rowSize = lineHeight * ILI9341_TFTWIDTH;
     this->row = new uint16_t[rowSize];
 }
 
@@ -126,9 +125,42 @@ void ILI9341::command_param(uint8_t data)
     spi->write_data(&data, 1);
 }
 
+void ILI9341::set_Continous_Write_Area(const uint16_t caset_Start,
+                                       const uint16_t caset_End,
+                                       const uint16_t paset_Start,
+                                       const uint16_t paset_End)
+{
+    /*
+    uint8_t upper_Part = (uint8_t)caset_Start >> 8;
+    uint8_t lower_Part = (uint8_t)caset_Start;
+    // column address set
+    set_command(ILI9341_CASET);
+    command_param(upper_Part);
+    command_param(lower_Part); // start page
+    upper_Part = (uint8_t)caset_End >> 8;
+    lower_Part = (uint8_t)caset_End;
+    command_param(upper_Part);
+    command_param(lower_Part); // end page -> 319
+
+    // page address set
+    set_command(ILI9341_PASET);
+    upper_Part = (uint8_t)paset_Start >> 8;
+    lower_Part = (uint8_t)paset_Start;
+    command_param(upper_Part);
+    command_param(lower_Part); // start column
+    upper_Part = (uint8_t)paset_End >> 8;
+    lower_Part = (uint8_t)paset_End;
+    command_param(upper_Part);
+    command_param(lower_Part); // end column -> 239
+*/
+    set_command(ILI9341_RAMWR);
+    currentLine = 0;
+}
+
 void ILI9341::writeLine()
 {
     spi->write_data(row, rowSize);
+    currentLine++;
 }
 
 // TODO whatewer this is NOT doing

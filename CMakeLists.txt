@@ -32,7 +32,6 @@ add_executable(src src.cpp
 
         #display
         display/ili9341.cpp
-        #display/displayDriver.cpp
         display/characterDisplay.cpp
         #display/graphDisplay.cpp
 

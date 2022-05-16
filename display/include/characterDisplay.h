@@ -3,12 +3,10 @@
 
 class CHARACTERDISPLAY : public ILI9341
 {
-private:
+protected:
     void insertChar(uint8_t position, const uint8_t *charSet);
     uint16_t bg_Color;
     uint16_t fg_Color;
-
-protected:
     const uint8_t charset[95][8] =
         {{//
           0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00},
@@ -137,7 +135,7 @@ protected:
          {// ^
           0x04, 0x0A, 0x11, 0x00, 0x00, 0x00, 0x00, 0x00},
          {// _
-          0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x1F, 0x00},
+          0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xFF, 0x00},
          {// `
           0x10, 0x08, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00},
          {// a
@@ -203,10 +201,21 @@ protected:
 
 public:
     /*inicialize screen and set text and background color for the text
-
+        @param spi: SPI*, an spi class pointer
+        @param bg_Color: uint16_t the color behind the text
+        @param fg_Color: uint16_t the text color
     */
     CHARACTERDISPLAY(SPI *spi, uint16_t bg_Color, uint16_t fg_Color);
+    ~CHARACTERDISPLAY();
     // translates char to a printable character
-    const uint8_t *transChartoCharSet(const char character) const override;
-    void printLine(const std::string &str) override;
+    const uint8_t *transChartoCharSet(const char character) const;
+
+    /*
+        Prints a string to a line on the screen.
+        *Waring, it don't have new line feature so text over 40 charaters in landscape mode
+        *or 30 in vertical mode will result in undefined behaviour
+
+        @param str: string the input string
+    */
+    void printLine(const std::string &str);
 };

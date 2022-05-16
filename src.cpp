@@ -74,8 +74,9 @@ void testCasesCaller()
 #endif // TESTS
 #ifndef TESTS
 #include "display/include/ili9341.h"
-#include "display/include/displayDriver.h"
 #include "display/include/characterDisplay.h"
+#include "display/include/graphDraver.h"
+
 #include "ADC/include/ADC.h"
 #include "ADC/include/ADCCorrecter.h"
 
@@ -229,29 +230,32 @@ int main()
     // display
     SPIPORTS *displ_spi_ports = new SPIPORTS(DISP_SPI_CHANNEL, DISP_CS, DISP_SCK, DISP_MOSI);
     SPI *spidispl = new SPI(DISP_FREQ, displ_spi_ports);
-    ILI9341 *driver = new CHARACTERDISPLAY(spidispl, commonClass->swap_bytes(0x0000), commonClass->swap_bytes(0x081F));
-    std::cout << "TEST6" << std::endl;
-
+    
+    GRAPHDRAVER driver(spidispl, commonClass->swap_bytes(0x0000), commonClass->swap_bytes(0x081F));
     /*
-        driver->fillColor();
-        std::cout << "fekete\n";
-        driver->fillColor(commonClass->swap_bytes(0x0000));
-        std::cout << "feher\n";
-        driver->fillColor(commonClass->swap_bytes(0xFFFF));
+    std::cout << "TEST6" << std::endl;
+    driver.fillColor();
+    std::cout << "fekete\n";
+    driver.fillColor(commonClass->swap_bytes(0x0000));
+    std::cout << "feher\n";
+    driver.fillColor(commonClass->swap_bytes(0xFFFF));
 
-        std::cout << "piros\n";
-        driver->fillColor(commonClass->swap_bytes(0xF800));
-        std::cout << "Sarga\n";
-        driver->fillColor(commonClass->swap_bytes(0xFE60));
-        std::cout << "kek\n";
-        driver->fillColor(commonClass->swap_bytes(0x081F));
+    std::cout << "piros\n";
+    driver.fillColor(commonClass->swap_bytes(0xF800));
+    std::cout << "Sarga\n";
+    driver.fillColor(commonClass->swap_bytes(0xFE60));
+    std::cout << "kek\n";
+    driver.fillColor(commonClass->swap_bytes(0x081F));
+
+    driver.fillColor(commonClass->swap_bytes(0x081F));
+    driver.printLine("|");
+    driver.printLine("!!!!");
+    driver.printLine("!!!!");
+    driver.printLine("=");
+    driver.printLine("almafa");
     */
-    driver->fillColor(commonClass->swap_bytes(0x081F));
-    driver->printLine("|");
-    driver->printLine("!!!!");
-    driver->printLine("!!!!");
-    driver->printLine("=");
-    driver->printLine("almafa");
+    std::vector<double> y{1, 2, 3, 50};
+    driver.plotArray(y);
 
 #endif
 

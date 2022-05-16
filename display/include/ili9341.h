@@ -71,8 +71,9 @@ protected:
   SPI *spi;
   const uint8_t lineHeight = 8;
   const uint16_t lineWidth = ILI9341_TFTWIDTH;
+  const uint8_t maxLineNr = ILI9341_TFTHEIGHT / 8;
   uint8_t currentLine;
-  uint16_t rowSize;
+  const uint16_t rowSize = lineHeight * ILI9341_TFTWIDTH;
   uint16_t *row;
 
 public:
@@ -81,8 +82,11 @@ public:
 
   void set_command(const uint8_t cmd);
   void command_param(const uint8_t data);
+  void set_Continous_Write_Area(const uint16_t caset_Start = 0x0000,
+                                const uint16_t caset_End = 0x013f,
+                                const uint16_t paset_Start = 0x0000,
+                                const uint16_t paset_End = 0x00ef);
 
-  //! copied from displayDriver
   void writeLine();
 
   void fillRestScreen(const uint16_t color = 0x0000);
@@ -92,7 +96,9 @@ public:
   //* DEBUG
   void dumpRow();
 
-  //* NOT IMPLEMENTED FUNCTIONS IN THIS CLASS
-  virtual const uint8_t *transChartoCharSet(const char character) const = 0;
-  virtual void printLine(const std::string &str) =0;
+  /*
+    //* NOT IMPLEMENTED FUNCTIONS IN THIS CLASS
+    virtual const uint8_t *transChartoCharSet(const char character) const = 0;
+    virtual void printLine(const std::string &str) =0;
+    */
 };
