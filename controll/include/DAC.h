@@ -30,6 +30,7 @@ DAC::DAC(SPI *spi) : spi(spi)
     gpio_put(DAC_ENABLE,LOW);
     gpio_put(DAC_RSTSEL,LOW);
 
+    this->spi->changeFormat(8,SPI_CPOL_0,SPI_CPHA_1,SPI_MSB_FIRST);
     // disable internal reference
     uint32_t merged = DAC_INTERNAL_REFERENCE_ALLW_DOWN;
     this->spi->write_data(&merged, 1);

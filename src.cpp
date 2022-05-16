@@ -98,7 +98,7 @@ static struct semaphore doneSemaphore1;
 uint8_t counter = 0;
 void gpio_callback(uint gpio, uint32_t events)
 {
-    std::cout << "mosi: " << gpio_get(DAC_MOSI) << " cs: " << gpio_get(DAC_CS) << std::endl;
+    std::cout << "mosi: " << gpio_get(DAC_MOSI) << " cs: " << gpio_get(DAC_CS)<< " RESET: " << gpio_get(DAC_RESET)<< " enable: " << gpio_get(DAC_ENABLE) << " RSTSEL: " << gpio_get(DAC_RSTSEL) << std::endl;
     //std::cout << "mosi: " << gpio_get(DISP_MOSI) << " cs: " << gpio_get(DISP_CS) << std::endl;
     counter++;
     if (counter == 8)
@@ -122,7 +122,7 @@ void ICALCULATE::doneSemaphoreAquire()
 // when main core starts the semaphore it prints
 void core1_entry()
 {
-    gpio_set_irq_enabled_with_callback(DAC_SCK, GPIO_IRQ_EDGE_RISE, true, &gpio_callback);
+    gpio_set_irq_enabled_with_callback(DAC_SCK, GPIO_IRQ_EDGE_FALL, true, &gpio_callback);
     adc->setupFIFO();
     std::cout << "ADC start! \n";
     adc->set_clkDiv(0);
@@ -198,16 +198,22 @@ int main()
     IDAC *dac = new DAC(spidac);
     gpio_put(GREEN_LED_PIN, LOW);
     //! TESTING delete later
+    std::cout << "0x0000\n";
     dac->setVoltageOnChannel(0x0000, DAC_COMM_WRITE_LOAD_ALLCHANNEL);
     sleep_ms(1000);
+    std::cout << "0x00FF\n";
     dac->setVoltageOnChannel(0x00FF, DAC_COMM_WRITE_LOAD_ALLCHANNEL);
     sleep_ms(1000);
+    std::cout << "0x07FF\n";
     dac->setVoltageOnChannel(0x07FF, DAC_COMM_WRITE_LOAD_ALLCHANNEL);
     sleep_ms(1000);
+    std::cout << "0x0FFF\n";
     dac->setVoltageOnChannel(0x0FFF, DAC_COMM_WRITE_LOAD_ALLCHANNEL);
     sleep_ms(1000);
+    std::cout << "0x7FFF\n";
     dac->setVoltageOnChannel(0x7FFF, DAC_COMM_WRITE_LOAD_ALLCHANNEL);
     sleep_ms(1000);
+    std::cout << "0xFFFF\n";
     dac->setVoltageOnChannel(0xFFFF, DAC_COMM_WRITE_LOAD_ALLCHANNEL);
     sleep_ms(1000);
 
