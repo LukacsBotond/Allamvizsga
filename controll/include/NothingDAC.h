@@ -11,4 +11,5 @@ public:
     NothingDAC(/* args */){}
     ~NothingDAC(){}
     void setVoltageOnChannel(uint16_t voltage, uint8_t command) override{}
+    void reset(bool resetLvl) override{}
 };

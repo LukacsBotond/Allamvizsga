@@ -52,7 +52,6 @@ ILI9341::ILI9341(SPI *spi) : spi(spi)
     gpio_put(DISP_RESET, LOW);
     sleep_ms(10);
     gpio_put(DISP_RESET, HIGH);
-    spi->changeFormat(false);
     set_command(0x01); // soft reset
     sleep_ms(100);
     set_command(ILI9341_GAMMASET);
@@ -87,7 +86,7 @@ ILI9341::ILI9341(SPI *spi) : spi(spi)
 
     // landscape mode
     set_command(ILI9341_MADCTL);
-    command_param(0b11110100);
+    command_param(0b00110100);
 
     // column address set
     set_command(ILI9341_CASET);
@@ -129,9 +128,7 @@ void ILI9341::command_param(uint8_t data)
 
 void ILI9341::writeLine()
 {
-    spi->changeFormat(true);
     spi->write_data(row, rowSize);
-    spi->changeFormat(false);
 }
 
 // TODO whatewer this is NOT doing
@@ -150,13 +147,11 @@ void ILI9341::fillRestScreen(uint16_t color)
 void ILI9341::fillColor(uint16_t color)
 {
     set_command(ILI9341_RAMWR);
-    spi->changeFormat(true);
     int pixels = ILI9341_TFTWIDTH * ILI9341_TFTHEIGHT;
     for (int i = 0; i < pixels; i++)
     {
         spi->write_data(&color, 1);
     }
-    spi->changeFormat(false);
 }
 
 //* DEBUG

@@ -62,17 +62,20 @@ void SPI::cs_deselect()
 
 void SPI::write_data(const uint8_t *buffer, int bytes)
 {
+    changeFormat(false);
     cs_select();
     spi_write_blocking(spi_Hw_inst, buffer, bytes);
     cs_deselect();
 }
 void SPI::write_data_continuous(uint8_t *buffer, int bytes)
 {
+    changeFormat(false);
     spi_write_blocking(spi_Hw_inst, buffer, bytes);
 }
 
 void SPI::write_data(const uint16_t *buffer, int bytes)
 {
+    changeFormat(true);
     cs_select();
     spi_write16_blocking(spi_Hw_inst, buffer, bytes);
     cs_deselect();
@@ -80,6 +83,7 @@ void SPI::write_data(const uint16_t *buffer, int bytes)
 
 void SPI::write_data_continuous(uint16_t *buffer, int bytes)
 {
+    changeFormat(true);
     spi_write16_blocking(spi_Hw_inst, buffer, bytes);
 }
 
@@ -94,23 +98,12 @@ void SPI::write_data(const uint32_t *buffer, int bytes)
         sleep_ms(100);
         command = command >> 1;
         voltage = voltage >> 1;
+        changeFormat(false);
         cs_select();
-        if (mode)
-        { // the spi is in 16 bit format
-            // cout << "mode0" << std::endl;
-            changeFormat(!mode);                          // set it to 8
-            spi_write_blocking(spi_Hw_inst, &command, 1); // send command
-            changeFormat(!mode);                          // currently 8 set back to 16
-            spi_write16_blocking(spi_Hw_inst, &voltage, 1);
-        }
-        else
-        { // the spi is in 8 bit format
-            // cout << "mode1" << std::endl;
-            spi_write_blocking(spi_Hw_inst, &command, 1);   // send command
-            changeFormat(!mode);                            // currently 8 set back to 16
-            spi_write16_blocking(spi_Hw_inst, &voltage, 1); // send voltage
-            changeFormat(!mode);                            // set it to 8
-        }
+        spi_write_blocking(spi_Hw_inst, &command, 1);   // send command
+        changeFormat(true);                             // currently 8 set to 16
+        spi_write16_blocking(spi_Hw_inst, &voltage, 1); // send voltage
+
         cs_deselect();
     }
 }

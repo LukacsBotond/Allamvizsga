@@ -7,9 +7,10 @@
 
 class SPI
 {
-protected:
+private:
     spi_inst_t *spi_Hw_inst;
     bool mode;
+    void changeFormat(const bool mode);
 public:
     SPIPORTS *ports;
     SPI(int frekv, SPIPORTS* ports);
@@ -17,7 +18,7 @@ public:
 
     //* if true then it sets SPI to write 16 bit
     //* else outputs 8 bit only
-    void changeFormat(const bool mode);
+    
     void changeFormat(uint data_bits, spi_cpol_t cpol, spi_cpha_t cpha, spi_order_t order);
     void cs_select();
     void cs_deselect();

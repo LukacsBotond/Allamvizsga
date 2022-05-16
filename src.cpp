@@ -98,8 +98,8 @@ static struct semaphore doneSemaphore1;
 uint8_t counter = 0;
 void gpio_callback(uint gpio, uint32_t events)
 {
-    std::cout << "mosi: " << gpio_get(DAC_MOSI) << " cs: " << gpio_get(DAC_CS)<< " RESET: " << gpio_get(DAC_RESET)<< " enable: " << gpio_get(DAC_ENABLE) << " RSTSEL: " << gpio_get(DAC_RSTSEL) << std::endl;
-    //std::cout << "mosi: " << gpio_get(DISP_MOSI) << " cs: " << gpio_get(DISP_CS) << std::endl;
+    std::cout << "mosi: " << gpio_get(DAC_MOSI) << " cs: " << gpio_get(DAC_CS) << " RESET: " << gpio_get(DAC_RESET) << " enable: " << gpio_get(DAC_ENABLE) << " RSTSEL: " << gpio_get(DAC_RSTSEL) << std::endl;
+    // std::cout << "mosi: " << gpio_get(DISP_MOSI) << " cs: " << gpio_get(DISP_CS) << std::endl;
     counter++;
     if (counter == 8)
     {
@@ -107,7 +107,6 @@ void gpio_callback(uint gpio, uint32_t events)
         counter = 0;
     }
 }
-
 
 void ICALCULATE::startSemaphoreRelease()
 {
@@ -196,26 +195,12 @@ int main()
     SPIPORTS *dac_spi_ports = new SPIPORTS(DAC_SPI_CHANNEL, DAC_CS, DAC_SCK, DAC_MOSI);
     SPI *spidac = new SPI(DAC_FREQ, dac_spi_ports);
     IDAC *dac = new DAC(spidac);
+    dac->reset(HIGH);
     gpio_put(GREEN_LED_PIN, LOW);
     //! TESTING delete later
-    std::cout << "0x0000\n";
-    dac->setVoltageOnChannel(0x0000, DAC_COMM_WRITE_LOAD_ALLCHANNEL);
-    sleep_ms(1000);
-    std::cout << "0x00FF\n";
-    dac->setVoltageOnChannel(0x00FF, DAC_COMM_WRITE_LOAD_ALLCHANNEL);
-    sleep_ms(1000);
-    std::cout << "0x07FF\n";
-    dac->setVoltageOnChannel(0x07FF, DAC_COMM_WRITE_LOAD_ALLCHANNEL);
-    sleep_ms(1000);
-    std::cout << "0x0FFF\n";
-    dac->setVoltageOnChannel(0x0FFF, DAC_COMM_WRITE_LOAD_ALLCHANNEL);
-    sleep_ms(1000);
-    std::cout << "0x7FFF\n";
-    dac->setVoltageOnChannel(0x7FFF, DAC_COMM_WRITE_LOAD_ALLCHANNEL);
-    sleep_ms(1000);
-    std::cout << "0xFFFF\n";
-    dac->setVoltageOnChannel(0xFFFF, DAC_COMM_WRITE_LOAD_ALLCHANNEL);
-    sleep_ms(1000);
+    // std::cout << "0x0000\n";
+    // dac->setVoltageOnChannel(0x0000, DAC_COMM_WRITE_LOAD_ALLCHANNEL);
+    //! end delete
 
     // Switch controller
     IASWITCH *aswitch1 = new ASWITCH(RESISTOR_LOW, RESISTOR_MID, RESISTOR_HIGH, SWITHCH1_1, SWITHCH1_2);
@@ -244,25 +229,25 @@ int main()
     // display
     SPIPORTS *displ_spi_ports = new SPIPORTS(DISP_SPI_CHANNEL, DISP_CS, DISP_SCK, DISP_MOSI);
     SPI *spidispl = new SPI(DISP_FREQ, displ_spi_ports);
-    ILI9341 *driver = new CHARACTERDISPLAY(spidispl, 0x0000, 0xFFFF);
+    ILI9341 *driver = new CHARACTERDISPLAY(spidispl, commonClass->swap_bytes(0x0000), commonClass->swap_bytes(0x081F));
     std::cout << "TEST6" << std::endl;
 
+    /*
+        driver->fillColor();
+        std::cout << "fekete\n";
+        driver->fillColor(commonClass->swap_bytes(0x0000));
+        std::cout << "feher\n";
+        driver->fillColor(commonClass->swap_bytes(0xFFFF));
 
-    driver->fillColor();
-    std::cout << "fekete\n";
-    driver->fillColor(commonClass->swap_bytes(0x0000));
-    std::cout << "feher\n";
-    driver->fillColor(commonClass->swap_bytes(0xFFFF));
-
-    std::cout << "piros\n";
-    driver->fillColor(commonClass->swap_bytes(0xF800));
-    std::cout << "Sarga\n";
-    driver->fillColor(commonClass->swap_bytes(0xFE60));
-    std::cout << "kek\n";
+        std::cout << "piros\n";
+        driver->fillColor(commonClass->swap_bytes(0xF800));
+        std::cout << "Sarga\n";
+        driver->fillColor(commonClass->swap_bytes(0xFE60));
+        std::cout << "kek\n";
+        driver->fillColor(commonClass->swap_bytes(0x081F));
+    */
     driver->fillColor(commonClass->swap_bytes(0x081F));
-
-    driver->fillColor(commonClass->swap_bytes(0x081F));
-    driver->printLine("!!!!");
+    driver->printLine("|");
     driver->printLine("!!!!");
     driver->printLine("!!!!");
     driver->printLine("=");

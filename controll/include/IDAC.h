@@ -27,5 +27,17 @@
 class IDAC
 {
 public:
+    /*
+        Set voltage level on the DAC, with the above defines the command can be set and
+        the voltage is a 16 bit value, 16 bit is 3.3V
+        @param voltage: uint16_t set voltage level
+        @param command: uint_8 command for the data, for this usage of the defines is recommended
+    */
     virtual void setVoltageOnChannel(uint16_t voltage, uint8_t command) = 0;
+
+    /*
+    Set the DAC reset level
+    @param resetLvl:bool true=reset High, false= reset Low
+     */
+    virtual void reset(bool resetLvl) = 0;
 };

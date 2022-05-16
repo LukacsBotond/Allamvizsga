@@ -15,7 +15,7 @@ void CHARACTERDISPLAY::insertChar(uint8_t position, const uint8_t *charSet)
         std::cout << "mask" << (int)mask << std::endl;
         for (uint16_t i = 0; i < lineHeight; i++)
         {
-            int id = i * 240 + position * 8 + bit;
+            int id = i * lineWidth + position * 8 + bit;
             if (charSet[i] & mask)
                 row[id] = fg_Color;
             std::cout << "pos: " << (int)id << "color :" << (int)row[id] << std::endl;

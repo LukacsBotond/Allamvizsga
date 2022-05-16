@@ -70,6 +70,7 @@ class ILI9341
 protected:
   SPI *spi;
   const uint8_t lineHeight = 8;
+  const uint16_t lineWidth = ILI9341_TFTWIDTH;
   uint8_t currentLine;
   uint16_t rowSize;
   uint16_t *row;
