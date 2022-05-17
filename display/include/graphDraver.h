@@ -9,12 +9,12 @@
 class GRAPHDRAVER : public CHARACTERDISPLAY
 {
 private:
-    bool graph_mask[graph_Height][graph_Width]{0}; // this marks where the values are in the graph
-
-    double findMax(const std::vector<double> &y);
-    void convert_Array_To_graph_Mask(const std::vector<double> &y);
-    //void convert_Array_To_graph_Mask(std::vector<double> &x, const std::vector<double> &y);
-    void fill_Graph_Row();
+    // uint8_t graph_mask[graph_Height][graph_Width]{0}; // this marks where the values are in the graph
+    double MaxY = 0;
+    void findMax(const std::vector<double> &y);
+    // void convert_Array_To_graph_Mask(const std::vector<double> &y);
+    // void convert_Array_To_graph_Mask(std::vector<double> &x, const std::vector<double> &y);
+    void fill_Graph_Row(const std::vector<double> &y);
 
 public:
     GRAPHDRAVER(SPI *spi, uint16_t bg_Color, uint16_t fg_Color);
@@ -35,7 +35,7 @@ public:
     over 300 values, won't be visible on the screen anyway
     @param  x: const std::vector<double>, the x array, need to have the same number of elements as y
     */
-    //void plotArray(std::vector<double> &x, std::vector<double> &y);
+    // void plotArray(std::vector<double> &x, std::vector<double> &y);
 };
 
 GRAPHDRAVER::GRAPHDRAVER(SPI *spi, uint16_t bg_Color, uint16_t fg_Color) : CHARACTERDISPLAY(spi, bg_Color, fg_Color)
@@ -57,10 +57,11 @@ void GRAPHDRAVER::plotArray(const std::vector<double> &y)
     //* value will be between 0-100
     //! test, make the border
     std::fill_n(row, rowSize, bg_Color);
-    std::string maxstr = std::to_string(findMax(y));
-    convert_Array_To_graph_Mask(y);
-    // first line
-    // std::cout << "currentLine" << (int)currentLine << std::endl;
+    findMax(y);
+    std::string maxstr = std::to_string(MaxY);
+    // convert_Array_To_graph_Mask(y);
+    //  first line
+    //  std::cout << "currentLine" << (int)currentLine << std::endl;
     insertChar(0, transChartoCharSet(maxstr[0]));
     insertChar(1, transChartoCharSet(maxstr[1]));
 
@@ -69,7 +70,7 @@ void GRAPHDRAVER::plotArray(const std::vector<double> &y)
     {
         // std::cout << "currentLine" << (int)currentLine << std::endl;
         insertChar(2, transChartoCharSet('|'));
-        fill_Graph_Row();
+        fill_Graph_Row(y);
         writeLine();
         std::fill_n(row, rowSize, bg_Color);
         // sleep_ms(100);
@@ -90,11 +91,12 @@ void GRAPHDRAVER::plotArray(std::vector<double> &x, std::vector<double> &y)
 }
 */
 //* Private functions
-double GRAPHDRAVER::findMax(const std::vector<double> &y)
+void GRAPHDRAVER::findMax(const std::vector<double> &y)
 {
     auto max = max_element(std::begin(y), std::end(y));
-    return max[0];
+    MaxY = max[0];
 }
+/*
 // TODO fix eveything
 void GRAPHDRAVER::convert_Array_To_graph_Mask(const std::vector<double> &y)
 {
@@ -103,7 +105,7 @@ void GRAPHDRAVER::convert_Array_To_graph_Mask(const std::vector<double> &y)
     // double currpos = 0;
     for (uint16_t i = 0; i < graph_Width; i++)
     {
-        graph_mask[100][i] = true;
+        graph_mask[100][i] = 1;
         // currpos += step;
         // std::cout << "Currpos:" << currpos << " step " << step << "graph" << graph_mask[(int)y.at((int)currpos)][(int)currpos] << std::endl;
         // sleep_ms(5);
@@ -122,27 +124,27 @@ void GRAPHDRAVER::convert_Array_To_graph_Mask(const std::vector<double> &y)
             }
         }
         */
-}
-
-void GRAPHDRAVER::fill_Graph_Row()
+/*}
+ */
+void GRAPHDRAVER::fill_Graph_Row(const std::vector<double> &y)
 {
-    uint8_t startLine = this->currentLine;
-    for (uint8_t i = 0; i < 8; i++)
+    const uint8_t startLine = currentLine;
+    const uint ySize = y.size();
+    const double YStep = MaxY / (graph_Height / 8);
+    const double XStep = (double)ySize / graph_Width;
+    const double upperRange = MaxY - (YStep) * (double)(startLine);
+    const double lowerRange = MaxY - (YStep) * (double)(startLine + 1);
+    const double mult = (double)YStep / (double)7.0;
+    for (uint i = 0; i < ySize; i++)
     {
-        for (uint16_t j = 0; j < graph_Width; j++)
-        { // offset for the 3 starting character
-            int pos = (((i - startLine) * lineHeight) * lineWidth) + (j + 24);
-
-            if (graph_mask[i][j] > 0)
-            {
-                std::cout << "i" << i << "j" << j << " graph " << graph_mask[i][j] << " pos " << pos << std::endl;
-                this->row[pos] == this->fg_Color;
-            }
-            /* --the plotArray function already fills the background
-            else{
-                this->row[pos] == this->bg_Color;
-            }
-            */
+        if (y.at(i) >= lowerRange && y.at(i) <= upperRange)
+        {
+            double height = y.at(i) - lowerRange;
+            int Yposition = (7+(int)(height / mult) % 8) * lineWidth;
+            int pos = ( Yposition  + 24 + (double)(XStep * i));
+            //int pos = 0 + 24 + (double)(XStep * i);
+            std::cout << "XSTEP: " << XStep << " offset: " << (double)(XStep * i) << std::endl;
+            row[pos] = fg_Color;
         }
     }
 }
