@@ -140,10 +140,10 @@ void GRAPHDRAVER::fill_Graph_Row(const std::vector<double> &y)
         if (y.at(i) >= lowerRange && y.at(i) <= upperRange)
         {
             double height = y.at(i) - lowerRange;
-            int Yposition = (7 + (int)(height / mult) % 8) * lineWidth;
+            int Yposition = ((7 - (int)(height / mult))) * lineWidth;
             int pos = (Yposition + 24 + (double)(XStep * i));
             // int pos = 0 + 24 + (double)(XStep * i);
-            std::cout << "XSTEP: " << XStep << " offset: " << (double)(XStep * i) << std::endl;
+            std::cout << "XSTEP: " << XStep << " offset: " << (double)(XStep * i) << " YPosition: " << Yposition << std::endl;
             row[pos] = fg_Color;
         }
     }
