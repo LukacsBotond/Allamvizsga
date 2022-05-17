@@ -131,7 +131,7 @@ void GRAPHDRAVER::fill_Graph_Row(const std::vector<double> &y)
     const uint8_t startLine = currentLine;
     const uint ySize = y.size();
     const double YStep = MaxY / (graph_Height / 8);
-    const double XStep = (double)ySize / graph_Width;
+    const double XStep = graph_Width / (double)ySize;
     const double upperRange = MaxY - (YStep) * (double)(startLine);
     const double lowerRange = MaxY - (YStep) * (double)(startLine + 1);
     const double mult = (double)YStep / (double)7.0;
@@ -140,9 +140,9 @@ void GRAPHDRAVER::fill_Graph_Row(const std::vector<double> &y)
         if (y.at(i) >= lowerRange && y.at(i) <= upperRange)
         {
             double height = y.at(i) - lowerRange;
-            int Yposition = (7+(int)(height / mult) % 8) * lineWidth;
-            int pos = ( Yposition  + 24 + (double)(XStep * i));
-            //int pos = 0 + 24 + (double)(XStep * i);
+            int Yposition = (7 + (int)(height / mult) % 8) * lineWidth;
+            int pos = (Yposition + 24 + (double)(XStep * i));
+            // int pos = 0 + 24 + (double)(XStep * i);
             std::cout << "XSTEP: " << XStep << " offset: " << (double)(XStep * i) << std::endl;
             row[pos] = fg_Color;
         }
