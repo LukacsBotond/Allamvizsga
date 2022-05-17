@@ -230,7 +230,7 @@ int main()
     // display
     SPIPORTS *displ_spi_ports = new SPIPORTS(DISP_SPI_CHANNEL, DISP_CS, DISP_SCK, DISP_MOSI);
     SPI *spidispl = new SPI(DISP_FREQ, displ_spi_ports);
-    
+
     GRAPHDRAVER driver(spidispl, commonClass->swap_bytes(0x0000), commonClass->swap_bytes(0x081F));
     /*
     std::cout << "TEST6" << std::endl;
@@ -254,7 +254,7 @@ int main()
     driver.printLine("=");
     driver.printLine("almafa");
     */
-    std::vector<double> y{1, 2, 3, 50};
+    std::vector<double> y{1, 2, 3, 15, 23, 20, 15, 12, 32, 21, 25, 36, 32, 1, 4, 2, 3, 21, 32, 42, 32, 50};
     driver.plotArray(y);
 
 #endif
