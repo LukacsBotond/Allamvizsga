@@ -33,7 +33,7 @@ add_executable(src src.cpp
         #display
         display/ili9341.cpp
         display/characterDisplay.cpp
-        #display/graphDisplay.cpp
+        display/graphDisplay.cpp
 
         controll/spi.cpp
         controll/spiPorts.cpp
