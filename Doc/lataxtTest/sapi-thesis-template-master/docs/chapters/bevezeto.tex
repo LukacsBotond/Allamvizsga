@@ -1,4 +1,3 @@
-
 A mikrovezérlős rendszerek manapság az életünk minden részében megtalálhatóak, kis méretük, 
 alacsony áruk és meglehetősen nagy teljesítményükkel sok mindenre általánosan használhatóak. 
 Ez nagyban csökkenti a tervezési költségeket, mivel nem kell egy specifikus logikai áramkört 
@@ -13,16 +12,10 @@ mint az Analog Digital Converter amivel egy analóg jelet alakít egy digitális
 processzor fel tud majd dolgozni, ez legfőképpen azért van, mert nem mindenkinek van szüksége 
 mindenre így akinek szüksége van az egyszerűen az külsőleg csatolja hozzá. 
 
-Az összeállított rendszert szabadon lehet vezérelni így automatizálni lehet vele folyamatokat 
-amivel egyszerűsíti az emberek dolgát. Viszont nagyban gyorsítja a folyamatok sebességét és 
-pontosságát, miközben csökkenti a költségeket, mivel nem kell egy képzett dolgozó irányítsa, 
-egy ilyen példa a robotkarok irányítása, lehetséges lenne karok segítségével irányítani, 
-viszont ez lassú és költséges, mivel minden robotkar mellé kellene egy munkás aki közel sem 
-lenne elég nagy pontosságú. 
-
-Ezen kívül gyakran használják automatizált tesztelésekre is, mivel egyszerű megismételhető 
-teszteket végezni velük, miközben képesek valós időben mérni a rendszer viselkedését. Ennek 
-a feladatnak is ez a lényege, az alkatrészek tesztelése egy gyors és automatizált módon. 
+Az összeállított rendszert szabadon lehet vezérelni így automatizálni lehet vele folyamatokat,
+mivel egyszerű megismételhető teszteket végezni velük, miközben képesek valós időben mérni 
+a rendszer viselkedését. Ennek a feladatnak is ez a lényege, az alkatrészek tesztelése egy 
+gyors és automatizált módon. 
 
 
 \section{Téma meghatározása}
@@ -41,7 +34,7 @@ akkor az is letesztelhető.
 A teszternek 3 teszt terminálja van, ebbe kell az ismeretlen komponenst bekötni és képes 
 egyszerű elektronikai komponensek (ellenállás, dióda, tranzisztorok, stb.) automatikus 
 felismerését és az adatainak meghatározására. Viszont nem képes bonyolultabb áramkörök 
-azonosítására aminek összesen tübb mint 3 lába van.
+azonosítására aminek összesen több mint 3 lába van.
 
 Megvalósítás során a költégek csökkentése a cél, miközben a pontosság nem csökken nagyban. 
 Két verzió is összeállítható, az egyik egyszerű ellenállásokkal és a második egy DAC (Digital 
@@ -64,39 +57,3 @@ fontos, mivel az ellenállások lineárins összefüggést mutatnak a feszülts�
 
 A rendszer táplálása bármilyen USB csatlakozón keresztül lehetséges, mivel ez széles körben 
 megtatlálható vagy külső akkumulátor is megfelel amelynek van USB kimenete.
-
-\section{Hasonló eszközök}
-
-Egy hasonló rendszer már megvalósult \cite{similarSystem} ami egy Arduino\cite{ArduinoAtmega} 
-mikroprocesszoron alapul. Ez egy egyszerűbb rendszer, ami csupán ellenállásokat használ az 
-alkatrészek felismerésére és egy kijelzőt az adatok megjelenítésére. Ebből több fejlesztés is 
-kialakult, több minden tesztelésére és nagyobb pontosság elérésére, miközben a rendszer 
-egyszerűségét fenntartani. Ezek a rendszerek viszont nem használnak DAC-ot és ezért nem képesek 
-karakterisztika diagramot készíteni. Ezen kívül nem csatlakoztatható egyszerűen számítógéphez, 
-csupán újraprogramozás céljából, így minden esetben kell tartalmazzanak egy kijelzőt, ami 
-növeli a költségeket. Az általános működésük hasonló, mint ebben a projektben, viszont itt 
-precízen lehet változtatni a feszültséget, nem csak kapcsolni földre vagy tápfeszültségre.
-Az bekötése hasonlóképpen történik: lásd \ref{fig:basicTesterConnection}
-
-\begin{figure}[h]
-    \centering
-    \includegraphics[scale=0.3]{figures/images/literature/OrgTesterConnection.png}
-    \caption{Eredeti teszter bekötési rajza}
-    \label{fig:basicTesterConnection}
-\end{figure}
-
-Mindegyik GPIO pin lehet csatolva földre, vagy tápfeszültségre, de le is lehet kapcsolva, így 
-nem befolyásolja az áramkör működését. Az ADC pin meg lehet ADC üzemmódban, ilyenkor nem befolyásolja
-az áramkört, viszont lehet földre, vagy tápfeszültségre is kapcsolni, ilyen esetben port ellenállás
-nélkül csatolódik az áramkörre. Viszont ilyenkor kell figyelni a rövidzárra, mivel bármi be lehet
-kötve tesztelés céljából.
-
-Viszont szintén hordozható egy 9V-os elem segítsségével és az eredmények megjelennek egy
-kis LCD kijelzőn, ebből több féle verzió is létezik, van amely csak egy karakter kijelzőt
-használ, van amelyik egy színes kép kirajzolására is alkalmas kijelzőt alkalmaz. 
-
-A tesztelés néhány másodpercbe telik, nagy méretű kondenzátorok esetén telhet több időbe,
-viszont ebben az esetben csak annyi idő, míg a legkissebb ellenálláson keresztül képes feltölteni
-a kondenzátorot.
-
-Test \cite{sun2016gpio}
