@@ -17,7 +17,7 @@
 
 //* DIPSPLAY PINS
 #define DISP_SPI_CHANNEL 1
-#define DISP_FREQ 1000000
+#define DISP_FREQ UINT32_MAX
 #define DISP_CS 13
 #define DISP_SCK 14
 #define DISP_MOSI 15

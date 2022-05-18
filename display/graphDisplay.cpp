@@ -97,7 +97,7 @@ void GRAPHDISPLAY::fill_Graph_Row(const std::vector<double> &y)
             int Yposition = ((7 - (int)(height / mult))) * lineWidth;
             int pos = (Yposition + 24 + (double)(XStep * i));
             // int pos = 0 + 24 + (double)(XStep * i);
-            std::cout << "XSTEP: " << XStep << " offset: " << (double)(XStep * i) << " YPosition: " << Yposition << std::endl;
+            //std::cout << "XSTEP: " << XStep << " offset: " << (double)(XStep * i) << " YPosition: " << Yposition << std::endl;
             row[pos] = fg_Color;
         }
     }
