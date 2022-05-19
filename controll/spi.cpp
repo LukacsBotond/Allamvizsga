@@ -67,12 +67,13 @@ void SPI::write_data(const uint8_t *buffer, int bytes)
     spi_write_blocking(spi_Hw_inst, buffer, bytes);
     cs_deselect();
 }
+/*
 void SPI::write_data_continuous(uint8_t *buffer, int bytes)
 {
     changeFormat(false);
     spi_write_blocking(spi_Hw_inst, buffer, bytes);
 }
-
+*/
 void SPI::write_data(const uint16_t *buffer, int bytes)
 {
     changeFormat(true);
@@ -80,13 +81,13 @@ void SPI::write_data(const uint16_t *buffer, int bytes)
     spi_write16_blocking(spi_Hw_inst, buffer, bytes);
     cs_deselect();
 }
-
+/*
 void SPI::write_data_continuous(uint16_t *buffer, int bytes)
 {
     changeFormat(true);
     spi_write16_blocking(spi_Hw_inst, buffer, bytes);
 }
-
+*/
 void SPI::write_data(const uint32_t *buffer, int bytes)
 {
     for (int i = 0; i < bytes; i++)
