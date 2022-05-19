@@ -24,11 +24,12 @@ pico_sdk_init()
 add_executable(src src.cpp
         
         ADC/ADC.cpp
-        ADC/ADCCorrecter.cpp
-        Calculate/BaseCalculate.cpp
-        Calculate/BaseValues.cpp
-        Calculate/BaseCleanInput.cpp
-        Calculate/ICleanInput.cpp
+        #ADC/ADCCorrecter.cpp
+
+        #Calculate/BaseCalculate.cpp
+        #Calculate/BaseValues.cpp
+        #Calculate/BaseCleanInput.cpp
+        #Calculate/ICleanInput.cpp
 
         #display
         display/ili9341.cpp
@@ -37,8 +38,7 @@ add_executable(src src.cpp
 
         controll/spi.cpp
         controll/spiPorts.cpp
-        controll/BaseSwitchController.cpp
-        #controll/Aswitch.cpp
+        controll/ASwitchController.cpp
         controll/Aswitch.cpp
 
         common/common.cpp

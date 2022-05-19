@@ -6,10 +6,12 @@ class ISWITCHCONTROLLER
 {
 
 public:
-    // TODO implement this in CALCUATE class
-    // repeats the same output, 3 times for each ADC channel
-    // at the end of measurement sinks the current is it had capacitance
-    // virtual void SameOut3ChannelRepeat(uint8_t sw1P, uint8_t sw2P, uint8_t sw3P) = 0;
+    /*
+    uses bit masking to set the swithc pins, value is set by
+    0 | (sw1 << 16) | (sw2 << 18) | (sw3 << 20) where the sws can be between 0 and 3
+    @param value: const uint32_t the calculated value with the above function
+    */
+    virtual void setSwithcSetting(const uint8_t sw1, const uint8_t sw2, const uint8_t sw3) = 0;
 
     // @param swNum which switch we want to modify
     // @param mode to which mode

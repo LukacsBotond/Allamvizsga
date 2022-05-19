@@ -48,5 +48,5 @@ double ADCCORRECTER::getBaseValue(const int8_t swMode,const double reqVoltage,co
         }
     }
     throw CELL("Discharge capacitors before connecting it to the tester");
-    return -1;
+    //return -1;
 }
