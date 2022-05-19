@@ -27,9 +27,9 @@ add_executable(src src.cpp
         #ADC/ADCCorrecter.cpp
 
         #Calculate/BaseCalculate.cpp
-        #Calculate/BaseValues.cpp
-        #Calculate/BaseCleanInput.cpp
-        #Calculate/ICleanInput.cpp
+        Calculate/BaseValues.cpp
+        Calculate/BaseCleanInput.cpp
+        Calculate/ICleanInput.cpp
 
         #display
         display/ili9341.cpp
@@ -39,7 +39,7 @@ add_executable(src src.cpp
         controll/spi.cpp
         controll/spiPorts.cpp
         controll/ASwitchController.cpp
-        controll/Aswitch.cpp
+        #controll/Aswitch.cpp
 
         common/common.cpp
         

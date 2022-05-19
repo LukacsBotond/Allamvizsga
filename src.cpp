@@ -82,13 +82,12 @@ void testCasesCaller()
 //#include "ADC/include/ADCCorrecter.h"
 
 //#include "controll/include/BaseSwitch.h"
-#include "controll/include/Aswitch.h"
-#include "controll/include/ASwithcController.h"
+#include "controll/include/ASwitchController.h"
 #include "controll/include/DAC.h"
 
 //#include "Calculate/include/BaseCalculate.h"
-//#include "Calculate/include/BaseValues.h"
-//#include "Calculate/include/BaseCleanInput.h"
+#include "Calculate/include/BaseValues.h"
+#include "Calculate/include/BaseCleanInput.h"
 
 #include "common/include/common.h"
 
@@ -194,14 +193,14 @@ int main()
     //! end delete
 
     // Switch controller
-    IASWITCH *aswitch1 = new ASWITCH(RESISTOR_LOW, RESISTOR_MID, RESISTOR_HIGH, SWITHCH1_1, SWITHCH1_2);
-    IASWITCH *aswitch2 = new ASWITCH(RESISTOR_LOW, RESISTOR_MID, RESISTOR_HIGH, SWITHCH2_1, SWITHCH2_2);
-    IASWITCH *aswitch3 = new ASWITCH(RESISTOR_LOW, RESISTOR_MID, RESISTOR_HIGH, SWITHCH3_1, SWITHCH3_2);
-    ISWITCHCONTROLLER *controller = new ASWITCHCONTROLLER(aswitch1, aswitch2, aswitch3, dac);
-    //
-    //IVALUES *val = new BASEVALUES();
-    //ICLEANINPUT *cleanup = new BASECLEANINPUT();
-    // IADCORRECTER *adccorrecter = new ADCCORRECTER();
+    //IASWITCH *aswitch1 = new ASWITCH(RESISTOR_LOW, RESISTOR_MID, RESISTOR_HIGH, SWITHCH1_1, SWITHCH1_2);
+    //IASWITCH *aswitch2 = new ASWITCH(RESISTOR_LOW, RESISTOR_MID, RESISTOR_HIGH, SWITHCH2_1, SWITHCH2_2);
+    //IASWITCH *aswitch3 = new ASWITCH(RESISTOR_LOW, RESISTOR_MID, RESISTOR_HIGH, SWITHCH3_1, SWITHCH3_2);
+    ISWITCHCONTROLLER *controller = new ASWITCHCONTROLLER(dac);
+    
+    IVALUES *val = new BASEVALUES();
+    ICLEANINPUT *cleanup = new BASECLEANINPUT();
+    //IADCORRECTER *adccorrecter = new ADCCORRECTER();
 
     // ICALCULATE *calc = new BASECALCULATE(val, cleanup, controller, adccorrecter);
     /*

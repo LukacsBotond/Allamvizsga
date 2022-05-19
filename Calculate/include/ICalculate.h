@@ -4,8 +4,7 @@
 #include "../../ADC/include/ADCCorrecter.h"
 #include "./ICleanInput.h"
 #include "../../ADC/include/IADC.h"
-#include "../../controll/include/IAswitch.h"
-#include "../../controll/include/BaseSwithcController.h"
+#include "../../controll/include/ISwitchController.h"
 #include <vector>
 
 class IADCORRECTER;
