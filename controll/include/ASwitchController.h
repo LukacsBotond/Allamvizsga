@@ -9,7 +9,7 @@
 /*
     Measurement mode table
     mode   swSetting   voltages
-    0 ->    Z          0V
+    0 ->    0          0V
     1 ->    1          0V
     2 ->    1          3.3V
     3 ->    2          0V
@@ -18,22 +18,32 @@
     6 ->    3          3.3V
 */
 
+struct SwSettingVoltagePair
+{
+public:
+    uint8_t setting;
+    uint16_t voltage;
+};
+
 class ASWITCHCONTROLLER : public ISWITCHCONTROLLER
 {
 private:
+    std::map<uint8_t, SwSettingVoltagePair> Sw_translation_Map;
     IDAC *idac;
     uint8_t outPort1 = 0;
     uint8_t outPort2 = 0;
     uint8_t outPort3 = 0;
-    const uint32_t mask = 0 | (3 << SWITHCH1_1) | (3 << SWITHCH2_1) | (3 << SWITHCH3_1);
+    const uint32_t mask = 0x003f0000;
 
 public:
     explicit ASWITCHCONTROLLER(IDAC *idac);
     ~ASWITCHCONTROLLER();
     /*
-    uses bit masking to set the swithc pins, value is set by
-    0 | (sw1 << 16) | (sw2 << 18) | (sw3 << 20) where the sws can be between 0 and 3
-    @param value: const uint32_t the calculated value with the above function
+    With the switch mode as the parameter use the translation map to get the switch setting and
+    the supply voltage for that channel
+    @param sw1:const uint8_t swith mode for switch 1
+    @param sw2:const uint8_t swith mode for switch 2
+    @param sw3:const uint8_t swith mode for switch 3
     */
     void setSwithcSetting(const uint8_t sw1, const uint8_t sw2, const uint8_t sw3) override;
     /*@param swNum which switch we are intrested in
@@ -43,7 +53,7 @@ public:
     uint8_t getSwithcSetting(const uint8_t swNum) const override;
 
     /*
-        set voltage of the DAC, 
+        set voltage of the DAC,
         @param voltage: const uint16_t sets the voltage, 0xffff 3.3V, 0 0V
         @param command: can be found in #defines in IDAC.h
     */

@@ -145,20 +145,20 @@ void core1_entry()
 IADC *adc = new ADC();
 COMMON *commonClass = new COMMON();
 ICALCULATE *IADCORRECTER::icalculate = nullptr;
-//ICALCULATE *STATE::icalculate = nullptr;
+// ICALCULATE *STATE::icalculate = nullptr;
 IVALUES *ICALCULATE::values;
 ICLEANINPUT *ICALCULATE::cleanup;
-//ISWITCHCONTROLLER *ICALCULATE::controller;
-//IADCORRECTER *ICALCULATE::adccorrecter;
-//std::vector<std::string> STATE::usedModes = {};
+// ISWITCHCONTROLLER *ICALCULATE::controller;
+// IADCORRECTER *ICALCULATE::adccorrecter;
+// std::vector<std::string> STATE::usedModes = {};
 
 #endif // TESTS
 int main()
 {
-    vreg_set_voltage(VREG_VOLTAGE_1_30);
+    //vreg_set_voltage(VREG_VOLTAGE_1_30);
     stdio_init_all();
 
-    set_sys_clock_khz(280000, true);
+    //set_sys_clock_khz(280000, true);
 
     std::cout << "Test\n";
     sleep_ms(3000);
@@ -185,7 +185,7 @@ int main()
     SPIPORTS *dac_spi_ports = new SPIPORTS(DAC_SPI_CHANNEL, DAC_CS, DAC_SCK, DAC_MOSI);
     SPI *spidac = new SPI(DAC_FREQ, dac_spi_ports);
     IDAC *dac = new DAC(spidac);
-    dac->reset(HIGH);
+    //dac->reset(HIGH);
     gpio_put(GREEN_LED_PIN, LOW);
     //! TESTING delete later
     // std::cout << "0x0000\n";
@@ -193,14 +193,14 @@ int main()
     //! end delete
 
     // Switch controller
-    //IASWITCH *aswitch1 = new ASWITCH(RESISTOR_LOW, RESISTOR_MID, RESISTOR_HIGH, SWITHCH1_1, SWITHCH1_2);
-    //IASWITCH *aswitch2 = new ASWITCH(RESISTOR_LOW, RESISTOR_MID, RESISTOR_HIGH, SWITHCH2_1, SWITHCH2_2);
-    //IASWITCH *aswitch3 = new ASWITCH(RESISTOR_LOW, RESISTOR_MID, RESISTOR_HIGH, SWITHCH3_1, SWITHCH3_2);
+    // IASWITCH *aswitch1 = new ASWITCH(RESISTOR_LOW, RESISTOR_MID, RESISTOR_HIGH, SWITHCH1_1, SWITHCH1_2);
+    // IASWITCH *aswitch2 = new ASWITCH(RESISTOR_LOW, RESISTOR_MID, RESISTOR_HIGH, SWITHCH2_1, SWITHCH2_2);
+    // IASWITCH *aswitch3 = new ASWITCH(RESISTOR_LOW, RESISTOR_MID, RESISTOR_HIGH, SWITHCH3_1, SWITHCH3_2);
     ISWITCHCONTROLLER *controller = new ASWITCHCONTROLLER(dac);
-    
-    IVALUES *val = new BASEVALUES();
-    ICLEANINPUT *cleanup = new BASECLEANINPUT();
-    //IADCORRECTER *adccorrecter = new ADCCORRECTER();
+    controller->setSwithcSetting(6, 6, 6);
+    // IVALUES *val = new BASEVALUES();
+    // ICLEANINPUT *cleanup = new BASECLEANINPUT();
+    // IADCORRECTER *adccorrecter = new ADCCORRECTER();
 
     // ICALCULATE *calc = new BASECALCULATE(val, cleanup, controller, adccorrecter);
     /*
@@ -250,11 +250,10 @@ int main()
 
 #endif
 
-    vreg_set_voltage(VREG_VOLTAGE_0_85);
-    set_sys_clock_khz(16000, true);
-    stdio_init_all();
-
     std::cout << "Sleeping\n";
+    vreg_set_voltage(VREG_VOLTAGE_0_95);
+    set_sys_clock_khz(16000, true);
+
     while (1)
     {
         sleep_ms(5000);

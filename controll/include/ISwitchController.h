@@ -1,15 +1,27 @@
 #pragma once
 #include "./IAswitch.h"
 #include "pico/sem.h"
-
+/*
+    Measurement mode table
+    mode   swSetting   voltages
+    0 ->    0          0V
+    1 ->    1          0V
+    2 ->    1          3.3V
+    3 ->    2          0V
+    4 ->    2          3.3V
+    5 ->    3          0V
+    6 ->    3          3.3V
+*/
 class ISWITCHCONTROLLER
 {
 
 public:
     /*
-    uses bit masking to set the swithc pins, value is set by
-    0 | (sw1 << 16) | (sw2 << 18) | (sw3 << 20) where the sws can be between 0 and 3
-    @param value: const uint32_t the calculated value with the above function
+    With the switch mode as the parameter use the translation map to get the switch setting and
+    the supply voltage for that channel
+    @param sw1:const uint8_t swith mode for switch 1
+    @param sw2:const uint8_t swith mode for switch 2
+    @param sw3:const uint8_t swith mode for switch 3
     */
     virtual void setSwithcSetting(const uint8_t sw1, const uint8_t sw2, const uint8_t sw3) = 0;
 
