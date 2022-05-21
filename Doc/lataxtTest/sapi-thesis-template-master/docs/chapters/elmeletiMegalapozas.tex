@@ -1,3 +1,36 @@
+Első lépésként tanulmányoztam egy hasonló terméket, amely hasonlóan működik, 
+viszont kevesebb funkcionalitással. Ebből megismerve a működési elvét és ezt 
+fejlesztve terveztem meg a teszteremet. Legfontosabb része a teszternek egy 
+mikrovezérlő, amely a rendszer magját adja, erre a célra egy Raspberry Pi Pico-t 
+választottam, a nagyszámú GPIO-ja miatt, nagy teljesítménye miatt és nagy 
+sebességű beépített hardveres kommunikációs protokollokkal (SPI). Ezután egy 
+kijelző következett, amelyeken a teszter ki tudja jelezni az adatokat az adott 
+komponensről. 
+
+Erre a célra egy ILI9341 kijelzőt használtam, ez egy 2.2” méretű 
+színes TFT kijelző, és erre íródnak ki az adatok a felhasználó fele ami SPI-n 
+keresztül kommunikál a mikrovezérlővel. Ezen kívül  van 2 LED, amely a rendszer 
+státuszát jelzi egyszerű színkódokkal. 
+
+Az teszteléshez  szükséges áramkört a DAC segítségével történik és a mikrovezérlő 
+csak a feszültség értékeket nézi, erre a célra egy DAC8565 chipet használtam amely 
+szintél SPI-on 
+keresztül kommunikál a mikrovezérlővel. 
+
+Ennek 3 kimenete egy-egy 3 kimenetes 
+analóg kapcsolón keresztül különböző ellenállásokra kapcsolódnak a nagyobb 
+precizitás elérése érdekében és az esetleges rövidzár esetén is az áramerősség 
+biztonságos szinten tartásáért, minden esetben a létrehozott áramkörön lesz egy 
+ellenállás, ami az áramerősséget limitálja, hogy esetlegesen ne tegye tönkre a 
+tesztelés alatt levő alkatrészt. 
+
+A mikrovezérlőnek 3 ADC (analog-digital 
+converter) portja közvetlen rá van csatolva egy lábra ahová majd a tesztelni kívánt 
+komponens kerül. A rendszernek van egy külső referencia feszültsége, ami egy 
+stabil 3.3V-ot biztosít az ADC referenciaként és DAC referenciának.
+
+A pontos részleteket az a következőkben lesznek leírva.
+
 \section{Elméleti alapok}
 
 \subsection{Mikrovezők}
@@ -57,9 +90,9 @@ Viszont ez a valóságban nem ilyen egyszerű, mivel a komponensek amik az ADC-t
 felépítik nem tökéletesek így zajok és csúszások jelenhetnek meg. Ilyen hibák 
 lehetnek az offset hibák, ebben az esetben a végértékek nem felelnek meg az elvárt 
 értékeknek, ilyen példa a amikor 0V-os feszültség esetén az ADC nem 0-t térít 
-vissza, hanem egy nagyobb számot, míg Vref esetén egy kisebb értéket.
+vissza, hanem egy nagyobb számot, míg $V_{ref}$ esetén egy kisebb értéket.
 
-Az alábbi ábrán egy ilyen eset látható \ref{fig:ADC_Offset_Error} , a kék vonal az elvárt érték és a piros 
+Az alábbi ábrán egy ilyen eset látható [\ref{fig:ADC_Offset_Error}] , a kék vonal az elvárt érték és a piros 
 az aktuális érték, amit az ADC térít vissza a mérési tartományban. Ebben az 
 esetben csupán ez a hibája az ADC-nek az átláthatóság kedvéért. 
 
@@ -74,7 +107,7 @@ esetben csupán ez a hibája az ADC-nek az átláthatóság kedvéért.
 Másik jellegzetes hiba a nem linearitás, ennek jellemzője, hogy a mérési 
 tartományon belül még az offset hibát is figyelembe véve nem azt az eredményt 
 kapjuk, mint amit elvártunk amelyet nehezebb korrigálni szoftveresen, mivel amíg 
-az offset hibát egyszerűen lehet korrigálni csupán a 0 és Vref feszültség szintek 
+az offset hibát egyszerűen lehet korrigálni csupán a 0 és $V_{ref}$ feszültség szintek 
 megmérésével, addig ezt a hibát sokkal nehezebb kiküszöbölni, mivel az ADC 
 eredménye nem lineáris, így több ismert mérési pontot kell felvenni és a számítás 
 is sokkal bonyolultabbá válik. Ezen kívül lehetnek kvantálási hibák is, amikor az 
@@ -82,28 +115,61 @@ ADC egy bizonyos értéket sosem ad eredménynek, hanem a nála egyel kisebb/nag
 értéket. Ez nem okoz nagy gondot azoknál az ADC-nél ahol nagy a felbontás, viszont 
 az alacsony felbontású eszközök esetén nagyobb hibát eredményez.
 
+\subsection{Digital Analog Converter}
+
+A Digital Analog Converter feladata, hogy a processzor által értelmezhető digitális
+értékeketet analóg jelekké konvertálja amik a külső perifériáknak szükségesek.
+Gyakran használják ahol pontos analóg jeleket kell vezérelni, ilyen egy VGA jel
+vagy zene lejátszása, viszont bármire felhasználhatóak ahol az egyszerű digitális
+jelek nem elegendőek. Ebben a projektben az alkatrészek azonosítására és a 
+karakterisztika diagram kirajzolására van felhasználva.
+
+Működése hasonlóképpen működik, mind az Analog Digital Converter-é, viszont fordítva.
+Egyes DAC-eknek van belső referencia feszültségük, vagy kell külsőleg egyet alkalmazni.
+Ez a jel lesz DAC maximális analóg kimenete amikor a digitális bemeneten a maximális
+érték érkezik és 0V lesz a kimenete amikor 0 értékű digitális érték érkezik. Ideális
+esetben e két pont között az átmenet lineáris, így minden köztes értékre egy lineáris
+ősszefüggés alapján ki lehetne számolni [\ref{DACequation}], ahol D a digitális bemenet
+ami 0 és $2^{res}$ között kell legyen.
+\begin{equation}
+    \label{DACequation}
+    \begin{split}
+        V_{out} &= V_{ref} \frac{D}{2^{res}}
+    \end{split}
+    \end{equation}
+
 \section{Felhasznált technológiák}
 
-A megvalósításhoz szükséges egy processzor, erre egy Raspberry pi pico \cite{RaspberryPico} 
-mikrovezérlőt használtam. Erre a teljesítménye és alacsomy ára miatt került a választás.
 
-%Ez egy olcső, miközben viszonylag nagy teljesítményű mikrovezérlő,
-%2 hardwer szintű SPI \cite{SPIprotokol} csatornát és 3 darab 12 bites ADC-t tartalmaz.
-%Erre a választás azért került, mivel még a terv kigondolása előtt már tulajdonomban volt. ,
-%Hasonló mikrovezérlők vagy költségesebbek (pl. ESP32), vagy nagyon optimalizálni kellene a programot, 
-%hogy ne lépje túl a hardver limitációjait (pl. Arduino).
+\subsection{Raspberry pi pico}
 
-A projekt tartalmaz egy ILI9341 \cite{ILI9341Datasheet} színes kijelzőt is, erre a nagy kijelző méret és 
-nagy felbontás miatt esett a választás, hogy majd könnyedén látható legyen a mérés eredménye.
+Ez a teszter legfontosabb eleme, ez a vezéreli a teszter többi részét. A Raspberry 
+által kifejlesztve, viszont nem, mint a többi termékük ezen nem fut egy operációs 
+rendszer és használható, mint egy számítógép, hanem mint egy hagyományos 
+mikrovezérlő. A mikrovezérlő magját egy Dual-core Arm Cortex M0+ processzor, 
+aminek a frekvenciáját dinamikusan változtatható 16Mhz és akár 280Mhz közt. A 
+memóriája is elegendő 264KB of SRAM a változók tárolására a program futása során 
+és 2MB Flash memória a program kód tárolására. Lehetőség van csak RAM-ból futtatni 
+is a kódot, ilyenkor nagyobb órajel is elérhető ami elérheti a 450Mhz-et is.
 
-Ezen kívül használtam egy DAC8565 digital-alalóg átalakító, TS5A3357 analóg kapcsolót, és egy LP2950CZ-3.3
-3.3V-os feszültség referenciát.
+A vezérlő úgy van megtervezve, hogy THC (Through Hole Component) és SMT 
+(Surface Mount Component) komponensként is lehet alkalmazni, 
+ezt a castellated pinnekel éri el, amelyeket lehet forrasztani közvetlen SMT 
+komponensként és a pinek távolsága annyi, mint egy átlagos breadboard sortávja így 
+egy male-male header forrasztásával breadboardon is alkalmazható. 
 
-A pontos részleteket az a következőkben lesznek leírva.
+Hardveresen 
+megtalálható 2xSPI, 2xI2C, 2xUART, 3x12-bit ADC, 16xszabályozható PWM csatorna és 
+összesen 26 GPIO van kivezetve a felhasználó fele. Egy pin több dologra is képes 
+ez az alábbi pinout diagrammon is látható. Programozás során beállítható, hogy 
+USB-t használja soros portként így egyszerűen használható egy számítógéppel való 
+kommunikációra. Megtalálható 8 PIO (programable I/O) amivel hardveres protokollokat 
+lehet létrehozni, ha valami egyedi kell egy különleges komponens vezérlésére. 
+
 
 \section{A rendszer Blokk váza}
 
-Az alábbi árbán \ref{fig:blockDiagramm} lárható a rendszer blockDiagrammja, a fő vezérlő jelekkel.
+Az alábbi árbán [\ref{fig:blockDiagramm}] lárható a rendszer blockDiagrammja, a fő vezérlő jelekkel.
 A rendszer 2 SPI perifériával kommunikál, ezek a kijelző és a DAC, az analóg kapcsoló vezérlő jelei 
 egyszerű digitális jelek, mint ahogyan a LED vezérlő jelei. A teszter socket mindhárom lába egy-egy ADC
 csatornához van csatlakoztatva, ezen méri a mikrovezérlő a tesztelés során a feszültség szinteket.
@@ -142,7 +208,7 @@ karakterisztika diagramot készíteni. Ezen kívül nem csatlakoztatható egysze
 csupán újraprogramozás céljából, így minden esetben kell tartalmazzanak egy kijelzőt, ami 
 növeli a költségeket. Az általános működésük hasonló, mint ebben a projektben, viszont itt 
 precízen lehet változtatni a feszültséget, nem csak kapcsolni földre vagy tápfeszültségre.
-Az bekötése hasonlóképpen történik: lásd \ref{fig:basicTesterConnection}
+Az bekötése hasonlóképpen történik: lásd [\ref{fig:basicTesterConnection}]
 
 \begin{figure}[h]
     \centering

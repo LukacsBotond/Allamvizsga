@@ -10,12 +10,23 @@ private:
 public:
     explicit DAC(SPI *spi);
     ~DAC();
+    /*
+    Set voltage level on the DAC, with the above defines the command can be set and
+    the voltage is a 16 bit value, 16 bit is 3.3V
+    @param voltage: uint16_t set voltage level
+    @param command: uint_8 command for the data, for this usage of the defines is recommended
+    */
     void setVoltageOnChannel(uint16_t voltage, uint8_t command) override;
+    /*
+    Set the DAC reset level
+    @param resetLvl: bool true=reset High, false= reset Low
+    */
     void reset(bool resetLvl) override;
 };
 
 DAC::DAC(SPI *spi) : spi(spi)
 {
+    // inicialize GPIO pins
     gpio_init(DAC_LDAC);
     gpio_init(DAC_RESET);
     gpio_init(DAC_ENABLE);
@@ -36,7 +47,6 @@ DAC::DAC(SPI *spi) : spi(spi)
     uint32_t merged = DAC_INTERNAL_REFERENCE_ALLW_DOWN;
     this->spi->write_data(&merged, 1);
     // inicialize with 0
-    // setVoltageOnChannel(0, DAC_COMM_WRITE_LOAD_ALLCHANNEL);
     merged = ((uint32_t)(DAC_COMM_WRITE_LOAD_ALLCHANNEL << 16)) | (uint16_t)0;
     this->spi->write_data(&merged, 1);
 }

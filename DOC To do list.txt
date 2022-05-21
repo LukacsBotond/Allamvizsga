@@ -1,0 +1,15 @@
+----------------------------------Elmélet
+
+egyenlőség az ADC számításához.
+
+pico leírása
+
+ILI9341 leírása
+
+DAC leírása
+
+Kapcsoló leírása
+
+
+
+

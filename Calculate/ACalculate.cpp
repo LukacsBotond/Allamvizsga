@@ -34,20 +34,19 @@ void ACALCULATE::SameOut3ChannelRepeat(const uint8_t sw1, const uint8_t sw2, con
     {
         // chose which ADC channel to read from
         multicore_fifo_push_blocking((i + 1) % 3);
-        controller->setSwithcSetting(1, sw1);
-        controller->setSwithcSetting(2, sw2);
-        controller->setSwithcSetting(3, sw3);
-        
+        controller->setSwithcSetting(sw1,sw2,sw3);
+        //controller->setSwithcSetting(1, sw1);
+        //controller->setSwithcSetting(2, sw2);
+        //controller->setSwithcSetting(3, sw3);
+
         // start ADCc
         this->startSemaphoreRelease();
-        controller->setSwithcSetting(sw1,sw2,sw3);
-
         // WAIT for ADC
         this->doneSemaphoreAquire();
 
-        // uint16_t *capture_buf = adc->getCaptureBuff();
-        // uint16_t CAPTURE_DEPTH = adc->getCaptureDepth();
-        valuesVector.push_back(cleanup->AVGVoltage(adccorrecter->offsetCorrection(adc->getCaptureBuff(), adc->getCaptureDepth()), adc->getCaptureDepth()));
+        uint16_t *capture_buf = adc->getCaptureBuff();
+        uint16_t CAPTURE_DEPTH = adc->getCaptureDepth();
+        valuesVector.push_back(cleanup->AVGVoltage(adccorrecter->offsetCorrection(capture_buf, CAPTURE_DEPTH), capture_buf));
         // calculateResult();
         /*
         adc->printSamples();
@@ -63,9 +62,7 @@ void ACALCULATE::SameOut3ChannelRepeat(const uint8_t sw1, const uint8_t sw2, con
         }
 */
         // drain
-        controller->setSwithcSetting(1, 5);
-        controller->setSwithcSetting(2, 5);
-        controller->setSwithcSetting(3, 5);
+        controller->setSwithcSetting(1,1,1);
     }
     if (!setMeasurement(measurement, valuesVector))
         std::cerr << "ACALCULATE addMeasurement fail" << std::endl;
