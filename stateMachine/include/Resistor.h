@@ -13,7 +13,7 @@ private:
     bool checkReverse(const std::string measurementNormal, const std::string measurementReverse);
 
 public:
-    RESISTOR(ICALCULATE *icalculate);
+    explicit RESISTOR(ICALCULATE *icalculate);
     ~RESISTOR();
 
     //*check order
@@ -49,11 +49,9 @@ RESISTOR::~RESISTOR()
 bool RESISTOR::check()
 {
     bool flag = false;
-    std::string modes[] = {"250", "450", "205", "405", "025", "045"};
-    std::string modesRev[] = {"520", "540", "502", "504", "052", "054"};
-    // std::string modes[] = {"205","405"};
-    // std::string modesRev[] = {"502", "504"};
-    for (int8_t i = 0; i < 6; i++)
+    std::string modes[] = {"210", "410", "610", "201", "401", "601", "021", "041", "061"};
+    std::string modesRev[] = {"120", "140", "160", "102", "104", "106", "012", "014", "016"};
+    for (int8_t i = 0; i < 9; i++)
     {
         try
         {
@@ -73,8 +71,10 @@ bool RESISTOR::check()
         catch (NOTHINGCONNECTED &e)
         {
             std::cout << e.what() << std::endl;
+            std::cout << "HERE end1\n";
         }
     }
+    std::cout << "HERE end2\n";
     return flag;
 }
 
@@ -84,6 +84,11 @@ void RESISTOR::calculate()
     // TODO implement
     if (check())
     {
+        for (int i = 0; i < usedModes.size(); i++)
+        {
+            std::cout << usedModes.at(i) << " ";
+        }
+
         std::cout << "RESISTANCE: " << icalculate->calcResistance(this->usedModes) << std::endl;
     }
     else

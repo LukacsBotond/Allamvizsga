@@ -24,11 +24,11 @@ pico_sdk_init()
 add_executable(src src.cpp
         
         ADC/ADC.cpp
-        #ADC/ADCCorrecter.cpp
+        ADC/ADCCorrecter.cpp
 
-        #Calculate/BaseCalculate.cpp
+        Calculate/ACalculate.cpp
         Calculate/BaseValues.cpp
-        Calculate/BaseCleanInput.cpp
+        Calculate/ACleanInput.cpp
         Calculate/ICleanInput.cpp
 
         #display
@@ -46,8 +46,8 @@ add_executable(src src.cpp
         stateMachine/machineStates.cpp
 
         # test cases
-        Tests/BaseCleanInputTest.cpp
-        Tests/TestPrinter.cpp
+        #Tests/BaseCleanInputTest.cpp
+        #Tests/TestPrinter.cpp
         )
 
 pico_set_program_name(src "src")

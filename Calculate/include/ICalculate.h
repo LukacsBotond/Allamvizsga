@@ -36,7 +36,7 @@ public:
         @param valuesVector: vector<double>, stores the 3 values measured on each pin
         @return bool if it was succesfull
     */    
-    virtual bool setMeasurement(const std::string &measurement, std::vector<double> valuesVector) = 0;
+    virtual bool setMeasurement(const std::string &measurement, const std::vector<double> &valuesVector) = 0;
     
     /*
         Deletes all stored measurements

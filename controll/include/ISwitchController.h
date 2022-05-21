@@ -30,5 +30,7 @@ public:
     //* if incorrect value was given it van generate a NOTSUPPOSEDTOREACHTHIS exception
     virtual uint8_t getSwithcSetting(const uint8_t swNum) const = 0;
 
-    virtual void setVoltage(const uint16_t voltage,const  uint8_t command) = 0;
+    virtual uint getTotResistor(uint8_t usedMode) = 0;
+
+    virtual void setVoltage(const uint16_t voltage, const uint8_t command) = 0;
 };

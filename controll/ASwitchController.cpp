@@ -48,6 +48,7 @@ void ASWITCHCONTROLLER::setSwithcSetting(const uint8_t sw1, const uint8_t sw2, c
 
 uint8_t ASWITCHCONTROLLER::getSwithcSetting(uint8_t swNum) const
 {
+
     switch (swNum)
     {
     case 1:
@@ -58,6 +59,24 @@ uint8_t ASWITCHCONTROLLER::getSwithcSetting(uint8_t swNum) const
         return outPort3;
     default:
         throw NOTSUPPOSEDTOREACHTHIS("BaseSwitch getSwitchSetting out of range 0-3 only, got" + swNum);
+    }
+}
+
+uint ASWITCHCONTROLLER::getTotResistor(uint8_t usedMode)
+{
+    uint8_t resistorId = Sw_translation_Map.at(usedMode).setting;
+    switch (resistorId)
+    {
+    case 0:
+        return UINT32_MAX;
+    case 1:
+        return RESISTOR_LOW;
+    case 2:
+        return RESISTOR_MID;
+    case 3:
+        return RESISTOR_HIGH;
+    default:
+        throw NOTSUPPOSEDTOREACHTHIS("getResistor, not supposed to reach this");
     }
 }
 

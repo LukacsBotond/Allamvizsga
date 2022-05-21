@@ -30,23 +30,34 @@ void ACALCULATE::SameOut3ChannelRepeat(const uint8_t sw1, const uint8_t sw2, con
     measurement += std::to_string(sw3);
     // std::cout << "test measurement, sw settings: " << measurement << "\n";
     //  todo input chech, no short circuits
-    for (int i = 0; i < 3; i++)
+    for (uint8_t i = 0; i < 3; i++)
     {
         // chose which ADC channel to read from
-        multicore_fifo_push_blocking((i + 1) % 3);
-        controller->setSwithcSetting(sw1,sw2,sw3);
-        //controller->setSwithcSetting(1, sw1);
-        //controller->setSwithcSetting(2, sw2);
-        //controller->setSwithcSetting(3, sw3);
+        // multicore_fifo_push_blocking(((-i) + 2) % 3);//reverse order
+        if (i == 0)
+        {
+            multicore_fifo_push_blocking(2);
+        }
+        if (i == 1)
+        {
+            multicore_fifo_push_blocking(1);
+        }
+        if (i == 2)
+        {
+            multicore_fifo_push_blocking(0);
+        }
+
+        controller->setSwithcSetting(sw1, sw2, sw3);
 
         // start ADCc
+        
         this->startSemaphoreRelease();
         // WAIT for ADC
         this->doneSemaphoreAquire();
-
+        
         uint16_t *capture_buf = adc->getCaptureBuff();
         uint16_t CAPTURE_DEPTH = adc->getCaptureDepth();
-        valuesVector.push_back(cleanup->AVGVoltage(adccorrecter->offsetCorrection(capture_buf, CAPTURE_DEPTH), capture_buf));
+        valuesVector.push_back(cleanup->AVGVoltage(adccorrecter->offsetCorrection(capture_buf, CAPTURE_DEPTH), CAPTURE_DEPTH));
         // calculateResult();
         /*
         adc->printSamples();
@@ -62,7 +73,7 @@ void ACALCULATE::SameOut3ChannelRepeat(const uint8_t sw1, const uint8_t sw2, con
         }
 */
         // drain
-        controller->setSwithcSetting(1,1,1);
+        controller->setSwithcSetting(1, 1, 1);
     }
     if (!setMeasurement(measurement, valuesVector))
         std::cerr << "ACALCULATE addMeasurement fail" << std::endl;
@@ -91,15 +102,22 @@ double ACALCULATE::calcResistance(std::vector<std::string> &measurements)
         //   std::cout << "store: " << store << std::endl;
 
         //    measurementData = this->values->getMeasurement(measurements[i]);
-        measurementData = this->values->getMeasurement(measurements[i]);
+        try
+        {
+            measurementData = this->values->getMeasurement(measurements[i]);
+        }
+        catch (NOSUCHMEASUREMENT &e)
+        {
+            std::cout << e.what() << std::endl;
+        }
         // first port is not used
         if (measurements[i][0] - '0' == 0)
         {
-            mAmper = (3.3 - measurementData[1]) / this->controller->getTotResistorFromMode(measurements[i][1] - '0');
+            mAmper = (3.3 - measurementData[1]) / this->controller->getTotResistor(measurements[i][1] - '0');
         }
         else
         { // 2. or 3. is not used
-            mAmper = (3.3 - measurementData[0]) / this->controller->getTotResistorFromMode(measurements[i][0] - '0');
+            mAmper = (3.3 - measurementData[0]) / this->controller->getTotResistor(measurements[i][0] - '0');
         }
         if (mAmper > bestmAmper)
         {
@@ -107,9 +125,9 @@ double ACALCULATE::calcResistance(std::vector<std::string> &measurements)
             bestMeasurement = measurements[i];
         }
     }
-    // this->values->printMeasurements();
 
-    // std::cout << "bestMeasurement: " << bestMeasurement <<" mAmper: " << bestmAmper << std::endl;
+    // this->values->printMeasurements();
+    // std::cout << "bestMeasurement: " << bestMeasurement << " mAmper: " << bestmAmper << std::endl;
 
     measurementData = this->values->getMeasurement(bestMeasurement);
     // first port is not used
@@ -133,6 +151,7 @@ double ACALCULATE::calcResistance(std::vector<std::string> &measurements)
             // std::cout << "voltage drop on 1. resistor:" << 3.3 - measurementData[0] << std::endl;
             // std::cout << "voltage drop on unkown resistor:" << voltageDrop << std::endl;
             // std::cout << "voltage drop on 2. resistor:" << measurementData[2] << std::endl;
+
             return ((voltageDrop) / bestmAmper);
         }
         else
@@ -151,21 +170,16 @@ double ACALCULATE::calcResistance(std::vector<std::string> &measurements)
 
 std::vector<double> ACALCULATE::getMeasurement(const std::string &measurement) const
 {
-    // std::cout << "measurementClaculate get: "
-    //           << " val: " << measurement << "LENGHT:" << measurement.size() << std::endl;
     return this->values->getMeasurement(measurement);
 }
 
-bool ACALCULATE::setMeasurement(const std::string &measurement, std::vector<double> valuesVector)
+bool ACALCULATE::setMeasurement(const std::string &measurement, const std::vector<double> &valuesVector)
 {
-    // std::cout << "measurementCalculate set: "
-    //          << " val: " << measurement << "LENGHT:" << measurement.size() << std::endl;
     return this->values->addMeasurement(measurement, valuesVector);
 }
 
 void ACALCULATE::cleanMesurements()
 {
-    // std::cout << "measurementCalculate clear: \n";
     return this->values->cleanMeasurements();
 }
 
@@ -173,21 +187,3 @@ bool ACALCULATE::IsAnythingConnected(const double avgVoltage, const uint8_t port
 {
     return this->cleanup->IsAnythingConnected(avgVoltage, portMode);
 }
-
-/*
-//* --------------------- Private functions -------------
-void ACALCULATE::calculateResult()
-{
-    uint16_t *capture_buf = adc->getCaptureBuff();
-    uint16_t CAPTURE_DEPTH = adc->getCaptureDepth();
-    // std::cout << cleanup->AVGVoltage(capture_buf, CAPTURE_DEPTH) << std::endl;
-    //  uint8_t sw1Out = controller->getSwithcSetting(1);// aswitch1->getOutput();
-    //  uint8_t sw2Out = controller->getSwithcSetting(2);//aswitch2->getOutput();
-    //  uint8_t sw3Out = controller->getSwithcSetting(3);//aswitch3->getOutput();
-    uint res1 = controller->getswTotResistorSetting(1);
-    uint res2 = controller->getswTotResistorSetting(2);
-    uint res3 = controller->getswTotResistorSetting(3);
-
-    // std::cout << "ActiveResistances: sw1: " << res1 << " sw2: " << res2 << " sw3: " << res3 << std::endl;
-}
-*/

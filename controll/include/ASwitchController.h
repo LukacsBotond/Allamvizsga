@@ -52,6 +52,7 @@ public:
     */
     uint8_t getSwithcSetting(const uint8_t swNum) const override;
 
+    uint getTotResistor(uint8_t usedMode) override;
     /*
         set voltage of the DAC,
         @param voltage: const uint16_t sets the voltage, 0xffff 3.3V, 0 0V

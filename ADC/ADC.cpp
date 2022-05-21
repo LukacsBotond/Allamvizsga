@@ -52,7 +52,7 @@ void ADC::setupFIFO()
         false // Keep full 12 bits of each sample
     );
     // set channel to what core 0 requires
-    if (multicore_fifo_rvalid())
+    while(multicore_fifo_rvalid())
     {
         int chan = multicore_fifo_pop_blocking();
         setADCSelect(chan);

@@ -27,7 +27,7 @@
 
 //* DAC pins
 #define DAC_SPI_CHANNEL 0
-#define DAC_FREQ 2
+#define DAC_FREQ UINT16_MAX
 #define DAC_SCK 2
 #define DAC_MOSI 3
 #define DAC_LDAC 4

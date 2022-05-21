@@ -94,9 +94,6 @@ void SPI::write_data(const uint32_t *buffer, int bytes)
     {
         uint8_t command = (uint8_t)(buffer[i] >> 16);
         uint16_t voltage = (uint16_t)buffer[i];
-        cout << "SPI 32 bit data: " << hex << int(command) << " // " << hex << int(voltage) << endl;
-        cout << dec << (int)0 << std::endl;
-        sleep_ms(100);
         command = command >> 1;
         voltage = voltage >> 1;
         changeFormat(false);
