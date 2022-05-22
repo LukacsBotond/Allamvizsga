@@ -50,28 +50,15 @@ void ACALCULATE::SameOut3ChannelRepeat(const uint8_t sw1, const uint8_t sw2, con
         controller->setSwithcSetting(sw1, sw2, sw3);
 
         // start ADCc
-        
+
         this->startSemaphoreRelease();
         // WAIT for ADC
         this->doneSemaphoreAquire();
-        
+
         uint16_t *capture_buf = adc->getCaptureBuff();
         uint16_t CAPTURE_DEPTH = adc->getCaptureDepth();
         valuesVector.push_back(cleanup->AVGVoltage(adccorrecter->offsetCorrection(capture_buf, CAPTURE_DEPTH), CAPTURE_DEPTH));
-        // calculateResult();
-        /*
-        adc->printSamples();
-        std::cout << "corrected:\n";
-        capture_buf = adccorrecter->offsetCorrection(capture_buf, CAPTURE_DEPTH);
-        for (int index = 0; index < adc->getCaptureDepth(); index++)
-        {
-            std::cout << capture_buf[index] << " ";
-            if (index % 20 == 19)
-            {
-                std::cout << std::endl;
-            }
-        }
-*/
+
         // drain
         controller->setSwithcSetting(1, 1, 1);
     }
@@ -88,7 +75,6 @@ double ACALCULATE::calcResistance(std::vector<std::string> &measurements)
         std::cout << "no measurements were given\n";
         throw NOSUCHMEASUREMENT("ACALCULATE calcResistance empty measurements vector");
     }
-
     std::vector<double> measurementData;
     // double voltageDrop = 0;
     double mAmper;
@@ -97,11 +83,6 @@ double ACALCULATE::calcResistance(std::vector<std::string> &measurements)
     std::string bestMeasurement = measurements.at(0);
     for (int i = 0; i < measurements.size(); i += 2)
     {
-        // std::cout << "measurementCalculate: " << i << " val: " << measurements[i] << "LENGHT:" << measurements.size() << std::endl;
-        //  std::string store = "405";
-        //   std::cout << "store: " << store << std::endl;
-
-        //    measurementData = this->values->getMeasurement(measurements[i]);
         try
         {
             measurementData = this->values->getMeasurement(measurements[i]);
@@ -168,6 +149,37 @@ double ACALCULATE::calcResistance(std::vector<std::string> &measurements)
     }
 }
 
+double ACALCULATE::diodeThreshold(std::string &measurement)
+{
+    std::vector<double> measurementData;
+    double voltageDrop;
+    measurementData = this->values->getMeasurement(measurement);
+    if (measurement[0] - '0' == 0) // 0 is not used
+    {
+        voltageDrop = measurementData[1] - measurementData[2];
+        if (voltageDrop < 0) // if negative make it positive
+            voltageDrop *= -1;
+        return voltageDrop;
+    }
+    else // 2. or 3. is not used
+    {
+        if (measurement[1] - '0' == 0) // 2. is not used
+        {
+            voltageDrop = measurementData[0] - measurementData[2];
+            if (voltageDrop < 0) // if negative make it positive
+                voltageDrop *= -1;
+            return voltageDrop;
+        }
+        else
+        { // 3. is not used
+            voltageDrop = measurementData[0] - measurementData[1];
+            if (voltageDrop < 0) // if negative make it positive
+                voltageDrop *= -1;
+            return voltageDrop;
+        }
+    }
+    return 0;
+}
 std::vector<double> ACALCULATE::getMeasurement(const std::string &measurement) const
 {
     return this->values->getMeasurement(measurement);

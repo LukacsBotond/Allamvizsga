@@ -9,7 +9,8 @@ class DIODE : public STATE
 private:
     /* data */
 public:
-    DIODE(ICALCULATE *icalculate);
+    DIODE() {}
+    explicit DIODE(ICALCULATE *icalculate);
     ~DIODE();
     /*
     1st pin if used then check 2nd then 3rd
@@ -24,13 +25,37 @@ public:
     checks which pins were used be calling the check() function then find the best
     diode mode for the calculation
     */
-    void calculate() override;
+    std::map<std::string, double> calculate() override;
 };
 
-DIODE::DIODE(/* args */)
+DIODE::DIODE(ICALCULATE *icalculate)
 {
+    this->icalculate = icalculate;
 }
 
-DIODE::~DIODE(ICALCULATE *icalculate)
+bool DIODE::check()
 {
+    for (uint i = 0; i < usedModes.size(); i += 2)
+    {
+        if (!checkReverse(usedModes[i], usedModes[i + 1]))
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+std::map<std::string, double> DIODE::calculate()
+{
+    std::map<std::string, double> ret;
+    for (uint i = 0; i < usedModes.size(); i += 2)
+    {
+        if (!checkReverse(usedModes[i], usedModes[i + 1]))
+        {
+            ret["fw"] = icalculate->diodeThreshold(usedModes[i]);
+            ret["bw"] = icalculate->diodeThreshold(usedModes[i + 1]);
+            return ret;
+        }
+    }
+    return ret;
 }

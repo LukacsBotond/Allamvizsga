@@ -92,6 +92,7 @@ void testCasesCaller()
 
 #include "stateMachine/include/Machine.h"
 #include "stateMachine/include/Resistor.h"
+#include "stateMachine/include/Diode.h"
 
 static struct semaphore startSemaphore1;
 static struct semaphore doneSemaphore1;
@@ -202,17 +203,28 @@ int main()
 
     MACHINE *machine = new MACHINE();
     machine->setState(new RESISTOR(calc));
-    try
+    while (true)
     {
-        machine->calculate();
-        std::cout << "HERE end\n";
-    }
-    catch (POSSIBLYDIODE &e)
-    {
-        std::cout << e.what() << std::endl;
-    }
-    catch(NOTARESISTOR &e){
-        std::cout << e.what() << std::endl;
+        try
+        {
+            std::map<std::string, double> ret = machine->calculate();
+            gpio_put(GREEN_LED_PIN, LOW);
+            for (auto it : ret)
+            {
+                std::cout << it.first << " " << it.second << std::endl;
+            }
+        }
+        catch (POSSIBLYDIODE &e)
+        {
+            std::cout << e.what() << std::endl;
+            machine->setState(new DIODE(calc));
+            continue;
+        }
+        catch (NOTARESISTOR &e)
+        {
+            std::cout << e.what() << std::endl;
+        }
+        break;
     }
 
     gpio_put(GREEN_LED_PIN, LOW);
