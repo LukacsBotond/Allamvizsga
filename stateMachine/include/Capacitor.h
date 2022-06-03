@@ -24,8 +24,13 @@ CAPACITOR::CAPACITOR(ICALCULATE *icalculate)
 
 bool CAPACITOR::check()
 {
-    calculate();
-    if (results.count("Capacitance0 nF") > 0 || results.count("Capacitance1 nF") > 0 || results.count("Capacitance2 nF") > 0)
+    try
+    {
+        this->icalculate->CalcCapacitance_nF(this->icalculate->ChannelMeasure(6, 1, 0, 2, false), adc->getCaptureDepth(), adc->get_clkHz(), 6);
+        this->icalculate->CalcCapacitance_nF(this->icalculate->ChannelMeasure(1, 6, 0, 1, false), adc->getCaptureDepth(), adc->get_clkHz(), 6);
+        this->icalculate->CalcCapacitance_nF(this->icalculate->ChannelMeasure(0, 1, 6, 0, false), adc->getCaptureDepth(), adc->get_clkHz(), 6);
+    }
+    catch (CAPACITORSLOWCHARGE &e)
     {
         return true;
     }
@@ -35,11 +40,11 @@ bool CAPACITOR::check()
 void CAPACITOR::calculate()
 {
     // std::map<std::string, double> ret;
-    std::string modes[] = {"610", "210"};
+    std::string modes[] = {"610", "210", "160", "120", "016", "012"};
     int div[] = {96, 96 * 10, 96 * 100, 96 * 1000, 96 * 10000, 96 * 100000};
     double get;
     uint8_t measuredPort = 2;
-    for (int8_t i = 0; i < 3; i++)
+    for (int8_t i = 0; i < 6; i++)
     {
         for (int8_t j = 0; j < 6; j++)
         {
@@ -48,10 +53,10 @@ void CAPACITOR::calculate()
             try
             {
                 // std::cout << "Capacitance: " << this->icalculate->CalcCapacitance_nF(this->icalculate->ChannelMeasure(modes[i][0] - '0', modes[i][1] - '0', modes[i][2] - '0', measuredPort, false), adc->getCaptureDepth(), adc->get_clkHz(), measuredPort);
-                double result = this->icalculate->CalcCapacitance_nF(this->icalculate->ChannelMeasure(modes[i][0] - '0', modes[i][1] - '0', modes[i][2] - '0', measuredPort, false), adc->getCaptureDepth(), adc->get_clkHz(), modes[i][2 - measuredPort] - '0');
+                double result = this->icalculate->CalcCapacitance_nF(this->icalculate->ChannelMeasure(modes[i][0] - '0', modes[i][1] - '0', modes[i][2] - '0', i / 2, false), adc->getCaptureDepth(), adc->get_clkHz(), modes[i][2 - i / 2] - '0');
                 if (result > 10)
                 { // less than 10nF is just too small
-                    results["Capacitance" + std::to_string(measuredPort) + " nF"] = result;
+                    results["Capacitance" + std::to_string(i / 2) + " nF"] = result;
                 }
                 return;
             }
