@@ -31,7 +31,7 @@ public:
     @return double: resistor value
     *THROWS a NOTARESISTOR exception
     */
-    std::map<std::string , double> calculate() override;
+    void calculate() override;
 };
 
 RESISTOR::RESISTOR(ICALCULATE *icalculate)
@@ -68,20 +68,15 @@ bool RESISTOR::check()
     return flag;
 }
 
-std::map<std::string , double> RESISTOR::calculate()
+void RESISTOR::calculate()
 {
-    std::map<std::string , double> ret;
     if (check())
     {
-        ret["resistance"] = icalculate->calcResistance(this->usedModes);
-        return ret;
+        results["resistance"] = icalculate->calcResistance(this->usedModes);
     }
     else
     {
         std::cout << "NO resistor found\n";
         throw NOTARESISTOR("NO PIN IS USED");
     }
-    return ret;
 }
-
-//* --------------------- Private functions -------------

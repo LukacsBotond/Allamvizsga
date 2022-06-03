@@ -3,6 +3,7 @@
 #include "ADC/include/ADC.h"
 #include "controll/include/IAswitch.h"
 #include "./common/include/common.h"
+#include "./Calculate/include/ICleanInput.h"
 
 //* power level
 #define HIGH 1
@@ -63,6 +64,9 @@ extern IADC *adc;
 
 class COMMON;
 extern COMMON *commonClass;
+
+class ICLEANINPUT;
+extern ICLEANINPUT *cleanInput;
 
 //!DEBUG
 

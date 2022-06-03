@@ -16,8 +16,8 @@ SPI::SPI(int frekv, SPIPORTS *portsIn) : mode(false)
         spi_Hw_inst = spi0;
     }
     spi_init(spi_Hw_inst, frekv);
-    int baudrate = spi_set_baudrate(spi_Hw_inst, frekv);
-    std::cout << "baudrate: " << baudrate << std::endl;
+    spi_set_baudrate(spi_Hw_inst, frekv);
+    //std::cout << "baudrate: " << baudrate << std::endl;
     gpio_set_function(ports->sck, GPIO_FUNC_SPI);
     gpio_set_function(ports->mosi, GPIO_FUNC_SPI);
 
@@ -26,7 +26,7 @@ SPI::SPI(int frekv, SPIPORTS *portsIn) : mode(false)
     gpio_set_dir(ports->cs, GPIO_OUT);
     gpio_put(ports->cs, LOW);
 
-    printer();
+    //printer();
 }
 
 SPI::~SPI()

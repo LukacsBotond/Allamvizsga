@@ -13,7 +13,7 @@ void ADCCORRECTER::init()
     {
         std::cout << "Cell found \n";
     }
-    std::cout << "gnd offset: " << gndOffset << "VCCoffset: " << VCCOffset << std::endl;
+    //std::cout << "gnd offset: " << gndOffset << "VCCoffset: " << VCCOffset << std::endl;
 }
 
 uint16_t *ADCCORRECTER::offsetCorrection(uint16_t *samples, const uint16_t samplesSize)
@@ -32,9 +32,7 @@ uint16_t *ADCCORRECTER::offsetCorrection(uint16_t *samples, const uint16_t sampl
 //* --------------------- Private functions -------------
 double ADCCORRECTER::getBaseValue(const int8_t swMode, const double reqVoltage, const bool bigger)
 {
-    // get "GND" measurement
     icalculate->SameOut3ChannelRepeat(swMode, swMode, swMode);
-    std::cout << "start calibration\n";
     std::vector<double> measurement = icalculate->getMeasurement(std::to_string(swMode) + std::to_string(swMode) + std::to_string(swMode));
     icalculate->values->printMeasurements();
     for (int i = 0; i < 3; i++)

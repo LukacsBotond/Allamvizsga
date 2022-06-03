@@ -14,8 +14,9 @@ public:
   ~MACHINE();
 
   bool check();
-  std::map<std::string, double> calculate();
+  void calculate();
   void setState(STATE *state);
+  std::map<std::string, double> getResult();
 };
 
 MACHINE::MACHINE()
@@ -33,13 +34,18 @@ bool MACHINE::check()
   return state->check();
 }
 
-std::map<std::string, double> MACHINE::calculate()
+void MACHINE::calculate()
 {
-  return state->calculate();
+  state->calculate();
 }
 
 void MACHINE::setState(STATE *state)
 {
   delete this->state;
   this->state = state;
+}
+
+std::map<std::string, double> MACHINE::getResult()
+{
+  return state->getResults();
 }

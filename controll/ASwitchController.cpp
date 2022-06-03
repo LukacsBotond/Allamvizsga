@@ -38,7 +38,7 @@ void ASWITCHCONTROLLER::prepareSwitchSetting(const uint8_t sw1, const uint8_t sw
     outPort2 = sw2;
     outPort3 = sw3;
     // set supply voltage
-    std::cout << Sw_translation_Map[sw1].voltage << " " << Sw_translation_Map[sw2].voltage << " " << Sw_translation_Map[sw3].voltage << std::endl;
+    // std::cout << Sw_translation_Map[sw1].voltage << " " << Sw_translation_Map[sw2].voltage << " " << Sw_translation_Map[sw3].voltage << std::endl;
     setVoltage(Sw_translation_Map[sw1].voltage, DAC_COMM_WRITE_BUFF_B);
     setVoltage(Sw_translation_Map[sw2].voltage, DAC_COMM_WRITE_BUFF_C);
     setVoltage(Sw_translation_Map[sw3].voltage, DAC_COMM_WRITE_BUFF_LOAD_ALL_D);
@@ -69,6 +69,7 @@ uint8_t ASWITCHCONTROLLER::getSwithcSetting(uint8_t swNum) const
 uint ASWITCHCONTROLLER::getTotResistor(uint8_t usedMode)
 {
     uint8_t resistorId = Sw_translation_Map.at(usedMode).setting;
+    std::cout << "used Resistor: " << (int)resistorId << " usedMode" << (int)usedMode << std::endl;
     switch (resistorId)
     {
     case 0:

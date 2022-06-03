@@ -12,21 +12,29 @@
 #include "Global.h"
 #include "test.h"
 
+#ifndef TESTS
+static struct semaphore startSemaphore1;
+static struct semaphore doneSemaphore1;
+
+static struct semaphore prepstartSemaphore1;
+static struct semaphore prepdoneSemaphore1;
+#endif
 // when main core starts the semaphore it prints
 void core1_entry()
 {
+    sleep_ms(1000);
     // gpio_set_irq_enabled_with_callback(DAC_SCK, GPIO_IRQ_EDGE_FALL, true, &gpio_callback);
-    // adc->setupFIFO();
-    std::cout << "ADC start! \n";
     adc->set_clkDiv(0);
 
     while (1)
     {
-        sem_acquire_blocking(&startSemaphore1);
-
-        // sleep_us(200);
+        sem_acquire_blocking(&prepstartSemaphore1);
 
         adc->setupFIFO();
+        sem_release(&prepdoneSemaphore1);
+
+        sem_acquire_blocking(&startSemaphore1);
+
         adc->start_freeRunning();
         // adc->printSamples();
         sem_release(&doneSemaphore1);
@@ -121,14 +129,15 @@ int main()
 {
     // vreg_set_voltage(VREG_VOLTAGE_1_30);
     stdio_init_all();
-
+    sleep_ms(3000);
     // set_sys_clock_khz(280000, true);
 
     std::cout << "Test\n";
     sem_init(&startSemaphore1, 0, 1);
     sem_init(&doneSemaphore1, 0, 1);
+    sem_init(&prepstartSemaphore1, 0, 1);
+    sem_init(&prepdoneSemaphore1, 0, 1);
     multicore_launch_core1(core1_entry);
-    sleep_ms(3000);
 
     gpio_init(RED_LED_PIN);
     gpio_init(GREEN_LED_PIN);
@@ -138,7 +147,6 @@ int main()
 
     gpio_put(RED_LED_PIN, LOW);
     gpio_put(GREEN_LED_PIN, HIGH);
-    std::cout << "Test\n";
 #ifdef TESTS
 
     testCasesCaller();

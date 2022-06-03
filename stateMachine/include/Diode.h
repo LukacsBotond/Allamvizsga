@@ -9,7 +9,6 @@ class DIODE : public STATE
 private:
     /* data */
 public:
-    DIODE() {}
     explicit DIODE(ICALCULATE *icalculate);
     ~DIODE();
     /*
@@ -25,7 +24,7 @@ public:
     checks which pins were used be calling the check() function then find the best
     diode mode for the calculation
     */
-    std::map<std::string, double> calculate() override;
+    void calculate() override;
 };
 
 DIODE::DIODE(ICALCULATE *icalculate)
@@ -45,17 +44,14 @@ bool DIODE::check()
     return false;
 }
 
-std::map<std::string, double> DIODE::calculate()
+void DIODE::calculate()
 {
-    std::map<std::string, double> ret;
     for (uint i = 0; i < usedModes.size(); i += 2)
     {
         if (!checkReverse(usedModes[i], usedModes[i + 1]))
         {
-            ret["fw"] = icalculate->diodeThreshold(usedModes[i]);
-            ret["bw"] = icalculate->diodeThreshold(usedModes[i + 1]);
-            return ret;
+            results["fw"] = icalculate->diodeThreshold(usedModes[i]);
+            results["bw"] = icalculate->diodeThreshold(usedModes[i + 1]);
         }
     }
-    return ret;
 }

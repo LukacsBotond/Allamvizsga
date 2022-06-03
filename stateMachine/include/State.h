@@ -12,6 +12,8 @@ class STATE
 protected:
     static ICALCULATE *icalculate;
     static std::vector<std::string> usedModes;
+    static std::map<std::string, double> results;
+
 public:
     STATE(/* args */)
     {
@@ -19,10 +21,17 @@ public:
     }
     ~STATE() {}
     virtual bool check() = 0;
-    virtual std::map<std::string , double> calculate() = 0;
+    virtual void calculate() = 0;
+
+    std::map<std::string, double> getResults();
     std::vector<double> getMeasurement(std::string measurement);
     bool checkReverse(const std::string &measurementNormal, const std::string &measurementReverse);
 };
+
+std::map<std::string, double> STATE::getResults()
+{
+    return results;
+}
 
 std::vector<double> STATE::getMeasurement(std::string measurement)
 {
@@ -46,13 +55,6 @@ bool STATE::checkReverse(const std::string &measurementNormal, const std::string
     std::vector<double> measurementDataNormal = getMeasurement(measurementNormal);
     std::vector<double> measurementDataReverse = getMeasurement(measurementReverse);
 
-    //! DELETE
-    std::cout << "measurementDataNormal " << measurementDataNormal[0] << " " << measurementDataNormal[1] << " " << measurementDataNormal[2] << std::endl;
-    std::cout << "measurementDataReverse " << measurementDataReverse[0] << " " << measurementDataReverse[1] << " " << measurementDataReverse[2] << std::endl;
-    std::cout << "measurementNormal " << measurementNormal << ": " << icalculate->IsAnythingConnected(measurementDataNormal.at(0), measurementNormal[0] - '0') << " " << icalculate->IsAnythingConnected(measurementDataNormal.at(1), measurementNormal[1] - '0') << " " << icalculate->IsAnythingConnected(measurementDataNormal.at(2), measurementNormal[2] - '0') << std::endl;
-    std::cout << "measurementReverse " << measurementReverse << ": " << icalculate->IsAnythingConnected(measurementDataReverse.at(0), measurementReverse[0] - '0') << " " << icalculate->IsAnythingConnected(measurementDataReverse.at(1), measurementReverse[1] - '0') << " " << icalculate->IsAnythingConnected(measurementDataReverse.at(2), measurementReverse[2] - '0') << std::endl;
-    //! DELETE END
-
     // first port is not used
     if (measurementNormal[0] - '0' == 0)
     {
@@ -64,7 +66,6 @@ bool STATE::checkReverse(const std::string &measurementNormal, const std::string
         }
         else
         {
-            std::cout << " 1-2 " << (measurementDataNormal.at(1) - measurementDataNormal.at(2)) << " " << (measurementDataReverse.at(1) - measurementDataReverse.at(2)) << std::endl;
             return commonClass->roughlyEqual((measurementDataNormal.at(1) - measurementDataNormal.at(2)), (measurementDataReverse.at(1) - measurementDataReverse.at(2)));
         }
     }
@@ -82,7 +83,6 @@ bool STATE::checkReverse(const std::string &measurementNormal, const std::string
             }
             else
             {
-                std::cout << " 0-2 " << (measurementDataNormal.at(0) - measurementDataNormal.at(2)) << " " << (measurementDataReverse.at(0) - measurementDataReverse.at(2)) << std::endl;
                 return commonClass->roughlyEqual((measurementDataNormal.at(0) - measurementDataNormal.at(2)), (measurementDataReverse.at(0) - measurementDataReverse.at(2)));
             }
         }
@@ -98,9 +98,9 @@ bool STATE::checkReverse(const std::string &measurementNormal, const std::string
             }
             else
             {
-                std::cout << " 0-1 " << (measurementDataNormal.at(0) - measurementDataNormal.at(1)) << " " << (measurementDataReverse.at(0) - measurementDataReverse.at(1)) << std::endl;
                 return commonClass->roughlyEqual((measurementDataNormal.at(0) - measurementDataNormal.at(1)), (measurementDataReverse.at(0) - measurementDataReverse.at(1)));
             }
         }
     }
 }
+

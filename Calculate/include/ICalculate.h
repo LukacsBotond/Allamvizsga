@@ -13,13 +13,11 @@ class ICALCULATE
 protected:
 public:
     static IVALUES *values;
-    static ICLEANINPUT *cleanup;
     static ISWITCHCONTROLLER *controller;
     static IADCORRECTER *adccorrecter;
     virtual ~ICALCULATE() {}
 
-
-    virtual double ChannelMeasure(const uint8_t sw1, const uint8_t sw2, const uint8_t sw3,uint32_t channelId,  bool saveMeasurement = true) = 0;
+    virtual uint16_t *ChannelMeasure(const uint8_t sw1, const uint8_t sw2, const uint8_t sw3, uint32_t channelId, bool saveMeasurement = true) = 0;
 
     virtual std::vector<double> SameOut3ChannelRepeat(const uint8_t sw1, const uint8_t sw2, const uint8_t sw3, bool saveMeasurement = true) = 0;
 
@@ -46,6 +44,8 @@ public:
 
         @return std::vector<double> the avaraged voltage of that setting if exist THROW NOSUCHMEASUREMENT if there is no such saved measurement
     */
+
+    virtual double CalcCapacitance_nF(uint16_t *samples, uint16_t CAPTURE_DEPTH, double sapleRate, const uint8_t swMode) = 0;
     virtual std::vector<double> getMeasurement(const std::string &measurement) const = 0;
 
     /*

@@ -70,13 +70,15 @@ void ICALCULATE::doneSemaphoreAquire(bool prep)
 
 IADC *adc = new ADC();
 COMMON *commonClass = new COMMON();
+ICLEANINPUT *cleanInput = new ACLEANINPUT();
 ICALCULATE *IADCORRECTER::icalculate = nullptr;
 
 IVALUES *ICALCULATE::values;
-ICLEANINPUT *ICALCULATE::cleanup;
+// ICLEANINPUT *ICALCULATE::cleanup;
 ISWITCHCONTROLLER *ICALCULATE::controller;
 IADCORRECTER *ICALCULATE::adccorrecter;
 std::vector<std::string> STATE::usedModes = {};
+std::map<std::string, double> STATE::results = {};
 ICALCULATE *STATE::icalculate = nullptr;
 
 //! Test classes
@@ -91,18 +93,21 @@ void testCasesCaller()
     // Switch controller
     ISWITCHCONTROLLER *controller = new ASWITCHCONTROLLER(dac);
     IVALUES *val = new BASEVALUES();
-    ICLEANINPUT *cleanup = new ACLEANINPUT();
     IADCORRECTER *adccorrecter = new ADCCORRECTER();
 
-    ICALCULATE *calc = new ACALCULATE(val, cleanup, controller, adccorrecter);
-    std::cout << "Test0\n";
+    ICALCULATE *calc = new ACALCULATE(val, controller, adccorrecter);
     MACHINE *machine = new MACHINE();
     machine->setState(new CAPACITOR(calc));
-    std::cout << "Test1\n";
     sleep_ms(100);
     // TESTPRINTER *testprinter = new TESTPRINTER();
-    std::cout << "Test2\n";
-    machine->check();
+
+    machine->calculate();
+    std::map<std::string, double> ret = machine->getResult();
+    gpio_put(GREEN_LED_PIN, LOW);
+    for (auto it : ret)
+    {
+        std::cout << it.first << " " << it.second << std::endl;
+    }
     gpio_put(GREEN_LED_PIN, LOW);
 }
 

@@ -1,10 +1,9 @@
 #include "./include/ACalculate.h"
 #include "../Global.h"
 
-ACALCULATE::ACALCULATE(IVALUES *values, ICLEANINPUT *cleanup, ISWITCHCONTROLLER *controller, IADCORRECTER *adccorrecter)
+ACALCULATE::ACALCULATE(IVALUES *values, ISWITCHCONTROLLER *controller, IADCORRECTER *adccorrecter)
 {
     this->values = values;
-    this->cleanup = cleanup;
     this->controller = controller;
     this->adccorrecter = adccorrecter;
 #ifndef ADCDISABLE // disables the correction if the ADC is disabled
@@ -16,43 +15,45 @@ ACALCULATE::ACALCULATE(IVALUES *values, ICLEANINPUT *cleanup, ISWITCHCONTROLLER 
 ACALCULATE::~ACALCULATE()
 {
     delete values;
-    delete cleanup;
     delete controller;
     delete adccorrecter;
 }
 
-double ACALCULATE::ChannelMeasure(const uint8_t sw1, const uint8_t sw2, const uint8_t sw3, uint32_t channelId, bool saveMeasurement)
+uint16_t *ACALCULATE::ChannelMeasure(const uint8_t sw1, const uint8_t sw2, const uint8_t sw3, uint32_t channelId, bool saveMeasurement)
 {
-    double value;
+    /*
     std::string measurement;
     measurement = std::to_string(sw1);
     measurement += std::to_string(sw2);
     measurement += std::to_string(sw3);
     std::cout << "test measurement, sw settings: " << measurement << "\n";
+    */
     multicore_fifo_push_blocking(channelId);
-    // start ADCc
+    // prepare measuring
+    this->startSemaphoreRelease(true);
+    // std::cout << "ACALCULATE startPrepare\n";
     controller->prepareSwitchSetting(sw1, sw2, sw3);
 
+    // measure
     this->startSemaphoreRelease();
-    sleep_us(2500);
+    // std::cout << "ACALCULATE startMeasure\n";
     controller->setSwithcSetting(sw1, sw2, sw3);
-    
+
     // WAIT for ADC
     this->doneSemaphoreAquire();
-
+    this->doneSemaphoreAquire(true);
     uint16_t *capture_buf = adc->getCaptureBuff();
     uint16_t CAPTURE_DEPTH = adc->getCaptureDepth();
-    value = cleanup->AVGVoltage(adccorrecter->offsetCorrection(capture_buf, CAPTURE_DEPTH), CAPTURE_DEPTH);
 
-    //! delete
-    adc->printSamples();
-    sleep_ms(200);
-    //! end delete
-
+    /*
+        //! delete
+        adc->printSamples();
+        sleep_ms(200);
+        //! end delete
+    */
     // drain
     controller->setSwithcSetting(0, 0, 0);
-
-    return value;
+    return adccorrecter->offsetCorrection(capture_buf, CAPTURE_DEPTH);
 }
 std::vector<double> ACALCULATE::SameOut3ChannelRepeat(const uint8_t sw1, const uint8_t sw2, const uint8_t sw3, bool saveMeasurement)
 {
@@ -61,10 +62,11 @@ std::vector<double> ACALCULATE::SameOut3ChannelRepeat(const uint8_t sw1, const u
     measurement = std::to_string(sw1);
     measurement += std::to_string(sw2);
     measurement += std::to_string(sw3);
-    std::cout << "test measurement, sw settings: " << measurement << "\n";
+    uint16_t CAPTURE_DEPTH = adc->getCaptureDepth();
+    //std::cout << "test measurement, sw settings: " << measurement << "\n";
     for (uint8_t i = 3; i >= 1; --i)
     {
-        valuesVector.push_back(this->ChannelMeasure(sw1, sw2, sw3, i - 1, saveMeasurement));
+        valuesVector.push_back(cleanInput->AVGVoltage(this->ChannelMeasure(sw1, sw2, sw3, i - 1, saveMeasurement), CAPTURE_DEPTH));
     }
     if (saveMeasurement)
     {
@@ -186,6 +188,30 @@ double ACALCULATE::diodeThreshold(std::string &measurement)
     return 0;
 }
 
+double ACALCULATE::CalcCapacitance_nF(uint16_t *samples, uint16_t CAPTURE_DEPTH, double sapleRate, const uint8_t swMode)
+{
+    uint ChargeTime_ns = 0;
+    uint ticktime = 1000000000 / (sapleRate);
+    if (samples[CAPTURE_DEPTH - 2] < 3000)
+    {
+        //std::cout << "Capacitor charge too slowly, decrease the resistance or the sample frequency" << std::endl;
+        throw CAPACITORSLOWCHARGE("Capacitor charge too slowly, decrease the resistance or the sample frequency");
+    }
+
+    for (uint i = 0; i < CAPTURE_DEPTH; i++)
+    {
+        ChargeTime_ns += ticktime;
+        if (samples[i] >= 2855)
+        {
+            break;
+        }
+    }
+
+    //std::cout << "ChargeTime_us: " << ChargeTime_ns << " resistance " << this->controller->getTotResistor(swMode) <<" ticTime: " << ticktime << std::endl;
+
+    return ChargeTime_ns/this->controller->getTotResistor(swMode);
+}
+
 std::vector<double> ACALCULATE::getMeasurement(const std::string &measurement) const
 {
     return this->values->getMeasurement(measurement);
@@ -203,5 +229,5 @@ void ACALCULATE::cleanMesurements()
 
 bool ACALCULATE::IsAnythingConnected(const double avgVoltage, const uint8_t portMode)
 {
-    return this->cleanup->IsAnythingConnected(avgVoltage, portMode);
+    return cleanInput->IsAnythingConnected(avgVoltage, portMode);
 }
