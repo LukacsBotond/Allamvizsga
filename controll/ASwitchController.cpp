@@ -32,17 +32,21 @@ ASWITCHCONTROLLER::~ASWITCHCONTROLLER()
     delete idac;
 }
 
-void ASWITCHCONTROLLER::setSwithcSetting(const uint8_t sw1, const uint8_t sw2, const uint8_t sw3)
+void ASWITCHCONTROLLER::prepareSwitchSetting(const uint8_t sw1, const uint8_t sw2, const uint8_t sw3)
 {
     outPort1 = sw1;
     outPort2 = sw2;
     outPort3 = sw3;
     // set supply voltage
+    std::cout << Sw_translation_Map[sw1].voltage << " " << Sw_translation_Map[sw2].voltage << " " << Sw_translation_Map[sw3].voltage << std::endl;
     setVoltage(Sw_translation_Map[sw1].voltage, DAC_COMM_WRITE_BUFF_B);
     setVoltage(Sw_translation_Map[sw2].voltage, DAC_COMM_WRITE_BUFF_C);
     setVoltage(Sw_translation_Map[sw3].voltage, DAC_COMM_WRITE_BUFF_LOAD_ALL_D);
+}
+
+void ASWITCHCONTROLLER::setSwithcSetting(const uint8_t sw1, const uint8_t sw2, const uint8_t sw3)
+{
     // set switch
-    gpio_put_masked(this->mask, 0);
     gpio_put_masked(this->mask, 0 | (Sw_translation_Map[sw1].setting << 16) | (Sw_translation_Map[sw2].setting << 18) | (Sw_translation_Map[sw3].setting << 20));
 }
 

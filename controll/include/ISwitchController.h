@@ -17,6 +17,14 @@ class ISWITCHCONTROLLER
 
 public:
     /*
+    sets the voltage in DAC, but don't open the analog swich yet, so there will be less delay
+    when measuring starts
+    @param sw1:const uint8_t swith mode for switch 1
+    @param sw2:const uint8_t swith mode for switch 2
+    @param sw3:const uint8_t swith mode for switch 3
+    */
+    virtual void prepareSwitchSetting(const uint8_t sw1, const uint8_t sw2, const uint8_t sw3) = 0;
+    /*
     With the switch mode as the parameter use the translation map to get the switch setting and
     the supply voltage for that channel
     @param sw1:const uint8_t swith mode for switch 1

@@ -41,6 +41,7 @@ double ADCCORRECTER::getBaseValue(const int8_t swMode, const double reqVoltage, 
     {
         if ((measurement.at(0) < reqVoltage || measurement.at(1) < reqVoltage || measurement.at(2) < reqVoltage) ^ bigger)
         { // wait till a potential capacitor discharges
+            measurement = icalculate->getMeasurement(std::to_string(swMode) + std::to_string(swMode) + std::to_string(swMode));
             sleep_ms(250);
         }
         else // voltage reached the desierable level so start measurement

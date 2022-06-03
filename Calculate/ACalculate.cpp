@@ -21,51 +21,57 @@ ACALCULATE::~ACALCULATE()
     delete adccorrecter;
 }
 
-void ACALCULATE::SameOut3ChannelRepeat(const uint8_t sw1, const uint8_t sw2, const uint8_t sw3)
+double ACALCULATE::ChannelMeasure(const uint8_t sw1, const uint8_t sw2, const uint8_t sw3, uint32_t channelId, bool saveMeasurement)
+{
+    double value;
+    std::string measurement;
+    measurement = std::to_string(sw1);
+    measurement += std::to_string(sw2);
+    measurement += std::to_string(sw3);
+    std::cout << "test measurement, sw settings: " << measurement << "\n";
+    multicore_fifo_push_blocking(channelId);
+    // start ADCc
+    controller->prepareSwitchSetting(sw1, sw2, sw3);
+
+    this->startSemaphoreRelease();
+    sleep_us(2500);
+    controller->setSwithcSetting(sw1, sw2, sw3);
+    
+    // WAIT for ADC
+    this->doneSemaphoreAquire();
+
+    uint16_t *capture_buf = adc->getCaptureBuff();
+    uint16_t CAPTURE_DEPTH = adc->getCaptureDepth();
+    value = cleanup->AVGVoltage(adccorrecter->offsetCorrection(capture_buf, CAPTURE_DEPTH), CAPTURE_DEPTH);
+
+    //! delete
+    adc->printSamples();
+    sleep_ms(200);
+    //! end delete
+
+    // drain
+    controller->setSwithcSetting(0, 0, 0);
+
+    return value;
+}
+std::vector<double> ACALCULATE::SameOut3ChannelRepeat(const uint8_t sw1, const uint8_t sw2, const uint8_t sw3, bool saveMeasurement)
 {
     std::vector<double> valuesVector;
     std::string measurement;
     measurement = std::to_string(sw1);
     measurement += std::to_string(sw2);
     measurement += std::to_string(sw3);
-    // std::cout << "test measurement, sw settings: " << measurement << "\n";
-    //  todo input chech, no short circuits
-    for (uint8_t i = 0; i < 3; i++)
+    std::cout << "test measurement, sw settings: " << measurement << "\n";
+    for (uint8_t i = 3; i >= 1; --i)
     {
-        // chose which ADC channel to read from
-        // multicore_fifo_push_blocking(((-i) + 2) % 3);//reverse order
-        if (i == 0)
-        {
-            multicore_fifo_push_blocking(2);
-        }
-        if (i == 1)
-        {
-            multicore_fifo_push_blocking(1);
-        }
-        if (i == 2)
-        {
-            multicore_fifo_push_blocking(0);
-        }
-
-        controller->setSwithcSetting(sw1, sw2, sw3);
-
-        // start ADCc
-
-        this->startSemaphoreRelease();
-        // WAIT for ADC
-        this->doneSemaphoreAquire();
-
-        uint16_t *capture_buf = adc->getCaptureBuff();
-        uint16_t CAPTURE_DEPTH = adc->getCaptureDepth();
-        valuesVector.push_back(cleanup->AVGVoltage(adccorrecter->offsetCorrection(capture_buf, CAPTURE_DEPTH), CAPTURE_DEPTH));
-
-        // drain
-        controller->setSwithcSetting(1, 1, 1);
+        valuesVector.push_back(this->ChannelMeasure(sw1, sw2, sw3, i - 1, saveMeasurement));
     }
-    if (!setMeasurement(measurement, valuesVector))
-        std::cerr << "ACALCULATE addMeasurement fail" << std::endl;
-
-    // values->printMeasurements();
+    if (saveMeasurement)
+    {
+        if (!setMeasurement(measurement, valuesVector))
+            std::cerr << "ACALCULATE addMeasurement fail" << std::endl;
+    }
+    return valuesVector;
 }
 
 double ACALCULATE::calcResistance(std::vector<std::string> &measurements)
@@ -76,7 +82,6 @@ double ACALCULATE::calcResistance(std::vector<std::string> &measurements)
         throw NOSUCHMEASUREMENT("ACALCULATE calcResistance empty measurements vector");
     }
     std::vector<double> measurementData;
-    // double voltageDrop = 0;
     double mAmper;
     double bestmAmper = 0;
     double voltageDrop = 0;
@@ -180,6 +185,7 @@ double ACALCULATE::diodeThreshold(std::string &measurement)
     }
     return 0;
 }
+
 std::vector<double> ACALCULATE::getMeasurement(const std::string &measurement) const
 {
     return this->values->getMeasurement(measurement);

@@ -18,7 +18,10 @@ public:
     static IADCORRECTER *adccorrecter;
     virtual ~ICALCULATE() {}
 
-    virtual void SameOut3ChannelRepeat(const uint8_t sw1, const uint8_t sw2, const uint8_t sw3) = 0;
+
+    virtual double ChannelMeasure(const uint8_t sw1, const uint8_t sw2, const uint8_t sw3,uint32_t channelId,  bool saveMeasurement = true) = 0;
+
+    virtual std::vector<double> SameOut3ChannelRepeat(const uint8_t sw1, const uint8_t sw2, const uint8_t sw3, bool saveMeasurement = true) = 0;
 
     /*
         Give a set of measurement modes where the component is a resistor and calculate
@@ -58,8 +61,8 @@ public:
     */
     virtual void cleanMesurements() = 0;
 
-    void startSemaphoreRelease();
-    void doneSemaphoreAquire();
+    void startSemaphoreRelease(bool prep = false);
+    void doneSemaphoreAquire(bool prep = false);
 
     // ICLEANINPUT interface
     virtual bool IsAnythingConnected(const double avgVoltage, const uint8_t portMode) = 0;

@@ -10,69 +10,34 @@
 #include <vector>
 
 #include "Global.h"
+#include "test.h"
 
-#ifdef TESTS
-//! Test classes
-
-#include "ADC/include/ADC.h"
-#include "controll/include/Aswitch.h"
-#include "controll/include/BaseSwithcController.h"
-#include "Tests/include/TestPrinter.h"
-#include "Tests/include/BaseCleanInputTest.h"
-#include "Tests/include/ADCTest.h"
-#include "Calculate/include/BaseCalculate.h"
-#include "Calculate/include/BaseValues.h"
-#include "Tests/include/BaseCalculateTest.h"
-
-void ICALCULATE::startSemaphoreRelease()
+// when main core starts the semaphore it prints
+void core1_entry()
 {
-    sem_release(&startSemaphore1);
+    // gpio_set_irq_enabled_with_callback(DAC_SCK, GPIO_IRQ_EDGE_FALL, true, &gpio_callback);
+    // adc->setupFIFO();
+    std::cout << "ADC start! \n";
+    adc->set_clkDiv(0);
+
+    while (1)
+    {
+        sem_acquire_blocking(&startSemaphore1);
+
+        // sleep_us(200);
+
+        adc->setupFIFO();
+        adc->start_freeRunning();
+        // adc->printSamples();
+        sem_release(&doneSemaphore1);
+    }
+
+    while (1)
+    {
+        sleep_ms(1000);
+    }
 }
 
-void ICALCULATE::doneSemaphoreAquire()
-{
-    sem_acquire_blocking(&doneSemaphore1);
-}
-
-IADC *adc = new ADC();
-COMMON *commonClass = new COMMON();
-ICALCULATE *IADCORRECTER::icalculate = nullptr;
-// ICALCULATE *STATE::icalculate = nullptr;
-IVALUES *ICALCULATE::values;
-ICLEANINPUT *ICALCULATE::cleanup;
-ISWITCHCONTROLLER *ICALCULATE::controller;
-IADCORRECTER *ICALCULATE::adccorrecter;
-void testCasesCaller()
-{
-    IASWITCH *aswitch1 = new ASWITCH(RESISTOR_LOW, RESISTOR_MID, RESISTOR_HIGH, SWITHCH1_1, SWITHCH1_2);
-    IASWITCH *aswitch2 = new ASWITCH(RESISTOR_LOW, RESISTOR_MID, RESISTOR_HIGH, SWITHCH2_1, SWITHCH2_2);
-    IASWITCH *aswitch3 = new ASWITCH(RESISTOR_LOW, RESISTOR_MID, RESISTOR_HIGH, SWITHCH3_1, SWITHCH3_2);
-    std::cout << "Test1\n";
-    sleep_ms(100);
-    TESTPRINTER *testprinter = new TESTPRINTER();
-    IVALUES *val = new BASEVALUES();
-    ICLEANINPUT *cleanup = new BASECLEANINPUT();
-    IADCORRECTER *adccorrecter = new ADCCORRECTER();
-    std::cout << "Test2\n";
-    ISWITCHCONTROLLER *controller = new BASESWITCHCONTROLLER(aswitch1, aswitch2, aswitch3);
-    ICALCULATE *basecalculate = new BASECALCULATE(val, cleanup, controller, adccorrecter);
-    BASECLEANINPUT *cleanuptest = new BASECLEANINPUT();
-    std::cout << "Test3\n";
-    /*
-    std::cout << "BaseCleanInput Test\n";
-    sleep_ms(1000);
-    BaseCleanInputTest testCleanup(cleanuptest, testprinter);
-    std::cout << "ADC Tests\n";
-    sleep_ms(1000);
-    ADCTest adctest(testprinter);
-    std::cout << "BaseCalculate Tests\n";
-    sleep_ms(1000);
-    */
-    BaseCalculateTest calculatetest(basecalculate, testprinter);
-}
-
-//! END test cases
-#endif // TESTS
 #ifndef TESTS
 #include "display/include/ili9341.h"
 #include "display/include/characterDisplay.h"
@@ -93,9 +58,13 @@ void testCasesCaller()
 #include "stateMachine/include/Machine.h"
 #include "stateMachine/include/Resistor.h"
 #include "stateMachine/include/Diode.h"
+#include "stateMachine/include/Capacitor.h"
 
 static struct semaphore startSemaphore1;
 static struct semaphore doneSemaphore1;
+
+static struct semaphore prepstartSemaphore1;
+static struct semaphore prepdoneSemaphore1;
 
 /*
 uint8_t counter = 0;
@@ -112,36 +81,27 @@ void gpio_callback(uint gpio, uint32_t events)
 }
 */
 
-void ICALCULATE::startSemaphoreRelease()
+void ICALCULATE::startSemaphoreRelease(bool prep)
 {
-    sem_release(&startSemaphore1);
-}
-
-void ICALCULATE::doneSemaphoreAquire()
-{
-    sem_acquire_blocking(&doneSemaphore1);
-}
-
-// when main core starts the semaphore it prints
-void core1_entry()
-{
-    // gpio_set_irq_enabled_with_callback(DAC_SCK, GPIO_IRQ_EDGE_FALL, true, &gpio_callback);
-    // adc->setupFIFO();
-    std::cout << "ADC start! \n";
-    adc->set_clkDiv(0);
-
-    while (1)
+    if (prep)
     {
-        sem_acquire_blocking(&startSemaphore1);
-        adc->setupFIFO();
-        adc->start_freeRunning();
-        // adc->printSamples();
-        sem_release(&doneSemaphore1);
+        sem_release(&prepstartSemaphore1);
     }
-
-    while (1)
+    else
     {
-        sleep_ms(1000);
+        sem_release(&startSemaphore1);
+    }
+}
+
+void ICALCULATE::doneSemaphoreAquire(bool prep)
+{
+    if (prep)
+    {
+        sem_acquire_blocking(&prepdoneSemaphore1);
+    }
+    else
+    {
+        sem_acquire_blocking(&doneSemaphore1);
     }
 }
 
@@ -169,13 +129,6 @@ int main()
     sem_init(&doneSemaphore1, 0, 1);
     multicore_launch_core1(core1_entry);
     sleep_ms(3000);
-    std::cout << "Test\n";
-#ifdef TESTS
-
-    testCasesCaller();
-
-#endif // DEBUG
-#ifndef TESTS
 
     gpio_init(RED_LED_PIN);
     gpio_init(GREEN_LED_PIN);
@@ -185,7 +138,13 @@ int main()
 
     gpio_put(RED_LED_PIN, LOW);
     gpio_put(GREEN_LED_PIN, HIGH);
+    std::cout << "Test\n";
+#ifdef TESTS
 
+    testCasesCaller();
+
+#endif // DEBUG
+#ifndef TESTS
     // DAC
     SPIPORTS *dac_spi_ports = new SPIPORTS(DAC_SPI_CHANNEL, DAC_CS, DAC_SCK, DAC_MOSI);
     SPI *spidac = new SPI(DAC_FREQ, dac_spi_ports);
@@ -203,6 +162,7 @@ int main()
 
     MACHINE *machine = new MACHINE();
     machine->setState(new RESISTOR(calc));
+
     while (true)
     {
         try

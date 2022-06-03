@@ -68,7 +68,7 @@ extern COMMON *commonClass;
 
 //if commented out then the normal program runs without test cases
 //if not then only the test cases run
-//#define TESTS
+#define TESTS
 
 //disables ADC read
 //#define ADCDISABLE
