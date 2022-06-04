@@ -63,7 +63,17 @@ std::vector<double> ACALCULATE::SameOut3ChannelRepeat(const uint8_t sw1, const u
     measurement += std::to_string(sw2);
     measurement += std::to_string(sw3);
     uint16_t CAPTURE_DEPTH = adc->getCaptureDepth();
-    //std::cout << "test measurement, sw settings: " << measurement << "\n";
+    // std::cout << "test measurement, sw settings: " << measurement << "\n";
+
+    // if there is a measurement then just use that instead the slower measuring
+    try
+    {
+        return this->getMeasurement(measurement);
+    }
+    catch (NOSUCHMEASUREMENT &e)
+    {
+    }
+    
     for (uint8_t i = 3; i >= 1; --i)
     {
         valuesVector.push_back(cleanInput->AVGVoltage(this->ChannelMeasure(sw1, sw2, sw3, i - 1, saveMeasurement), CAPTURE_DEPTH));
@@ -194,7 +204,7 @@ double ACALCULATE::CalcCapacitance_nF(uint16_t *samples, uint16_t CAPTURE_DEPTH,
     uint ticktime = 1000000000 / (sapleRate);
     if (samples[CAPTURE_DEPTH - 2] < 3000)
     {
-        //std::cout << "Capacitor charge too slowly, decrease the resistance or the sample frequency" << std::endl;
+        // std::cout << "Capacitor charge too slowly, decrease the resistance or the sample frequency" << std::endl;
         throw CAPACITORSLOWCHARGE("Capacitor charge too slowly, decrease the resistance or the sample frequency");
     }
 
@@ -207,9 +217,9 @@ double ACALCULATE::CalcCapacitance_nF(uint16_t *samples, uint16_t CAPTURE_DEPTH,
         }
     }
 
-    //std::cout << "ChargeTime_us: " << ChargeTime_ns << " resistance " << this->controller->getTotResistor(swMode) <<" ticTime: " << ticktime << std::endl;
+    // std::cout << "ChargeTime_us: " << ChargeTime_ns << " resistance " << this->controller->getTotResistor(swMode) <<" ticTime: " << ticktime << std::endl;
 
-    return ChargeTime_ns/this->controller->getTotResistor(swMode);
+    return ChargeTime_ns / this->controller->getTotResistor(swMode);
 }
 
 std::vector<double> ACALCULATE::getMeasurement(const std::string &measurement) const

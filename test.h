@@ -37,6 +37,7 @@
 #include "stateMachine/include/Resistor.h"
 #include "stateMachine/include/Diode.h"
 #include "stateMachine/include/Capacitor.h"
+#include "stateMachine/include/Transistor.h"
 
 static struct semaphore startSemaphore1;
 static struct semaphore doneSemaphore1;
@@ -97,7 +98,8 @@ void testCasesCaller()
 
     ICALCULATE *calc = new ACALCULATE(val, controller, adccorrecter);
     MACHINE *machine = new MACHINE();
-    machine->setState(new CAPACITOR(calc));
+    //machine->setState(new CAPACITOR(calc));
+    machine->setState(new TRANSISTOR(calc));
     sleep_ms(100);
     // TESTPRINTER *testprinter = new TESTPRINTER();
 
