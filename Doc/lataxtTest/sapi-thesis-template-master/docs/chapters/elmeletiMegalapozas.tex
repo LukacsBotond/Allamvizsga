@@ -143,7 +143,7 @@ ami 0 és $2^{res}$ között kell legyen.
 
 \subsection{Raspberry pi pico}
 
-Ez a teszter legfontosabb eleme, ez a vezéreli a teszter többi részét. A Raspberry 
+Ez a teszter legfontosabb eleme [\ref{fig:Pico_pinout}], ez a vezéreli a teszter többi részét. A Raspberry 
 által kifejlesztve, viszont nem, mint a többi termékük ezen nem fut egy operációs 
 rendszer és használható, mint egy számítógép, hanem mint egy hagyományos 
 mikrovezérlő. A mikrovezérlő magját egy Dual-core Arm Cortex M0+ processzor, 
@@ -166,9 +166,46 @@ USB-t használja soros portként így egyszerűen használható egy számítóg�
 kommunikációra. Megtalálható 8 PIO (programable I/O) amivel hardveres protokollokat 
 lehet létrehozni, ha valami egyedi kell egy különleges komponens vezérlésére. 
 
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.2]{images/literature/pico-pinout.png}
+    \caption{Pico pinout}
+    \label{fig:Pico_pinout}
+\end{figure}
+
+
 \subsection{ILI9341 kijelző}
 
-Az adatok kijelzésére egy 
+Az adatok kijelzésére egy ILI9341 [\ref{fig:ILI9341 kijelző}] kijelzőt használtam.
+Egy egyszerűbb kijelző is megfelene a célra, akár csupán egy karaktereket megjelenítő
+kijelző is elegendő lenne a célra, ha nem kellene a karakterisztika diagramm. A 
+célra megfelene egy egyszerű OLED kijelző is. Viszont ez a kijelző már a rendelkezésre
+állt a projekt tervezése előtt is, így fel lehetett használni a kijelzőt erre a 
+projektre.
+Ezen fognak megjelenni az mérés eredményei, mint a komponens értékei, a lábkiosztása
+és a karakterisztika diagramja. A képernyő képes 16 bites színes kép megjelenítésére,
+viszont ez nem fontos ennél a projektnél. Viszont a nagy 240*320 as felbontása és
+a 2.2" kijelző mérete nagyban segít, hogy könnyen olvasható legyen. A kijelző rendelkezik
+beépített háttérvilágítással is, így fényes helyen is jól látható.
+A kijelző SPI protokollon keresztül kommunikál a mikorvezérlővel és rendkívűl stabil,
+akár 68Mhz-es órajellel is stabilan és megbízhatóan megkapja az adatokat a mikrovezérlőtől.
+Ennek az eredménye a rendkívűl gyors képernyő váltás, így a felhasználó nem kell
+arra várjon, hogy az adatok megjelenjenek a kijelzőn.
+Az adatok beírása pixel szinten történik amelyek a kijelző memóriájában elmentődnek, 
+előre meg kell határozni, hogy milyen
+zónában történik az írás és azután lehetséges csak az adat küldése és belsőleg automatikusan
+a kövekező mezőt címzi meg, ahogy megérkezett az adat az előzőnek. Ennek az eredménye,
+hogy írás során nem kell figyelembe tartani a kijelző belső memória címét, csak az 
+adat sorrendjét. Ez egyszerűsíti a programozó dolgát és csökkenti a küldési
+időt.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.5]{images/literature/ILI9341.png}
+    \caption{ILI9341 kijelző}
+    \label{fig:ILI9341 kijelző}
+\end{figure}
 
 \section{A rendszer Blokk váza}
 
