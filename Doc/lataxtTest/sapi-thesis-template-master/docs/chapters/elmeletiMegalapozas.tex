@@ -183,6 +183,7 @@ kijelző is elegendő lenne a célra, ha nem kellene a karakterisztika diagramm.
 célra megfelene egy egyszerű OLED kijelző is. Viszont ez a kijelző már a rendelkezésre
 állt a projekt tervezése előtt is, így fel lehetett használni a kijelzőt erre a 
 projektre.
+
 Ezen fognak megjelenni az mérés eredményei, mint a komponens értékei, a lábkiosztása
 és a karakterisztika diagramja. A képernyő képes 16 bites színes kép megjelenítésére,
 viszont ez nem fontos ennél a projektnél. Viszont a nagy 240*320 as felbontása és
@@ -192,6 +193,7 @@ A kijelző SPI protokollon keresztül kommunikál a mikorvezérlővel és rendk�
 akár 68Mhz-es órajellel is stabilan és megbízhatóan megkapja az adatokat a mikrovezérlőtől.
 Ennek az eredménye a rendkívűl gyors képernyő váltás, így a felhasználó nem kell
 arra várjon, hogy az adatok megjelenjenek a kijelzőn.
+
 Az adatok beírása pixel szinten történik amelyek a kijelző memóriájában elmentődnek, 
 előre meg kell határozni, hogy milyen
 zónában történik az írás és azután lehetséges csak az adat küldése és belsőleg automatikusan
@@ -206,6 +208,33 @@ időt.
     \caption{ILI9341 kijelző}
     \label{fig:ILI9341 kijelző}
 \end{figure}
+
+\subsection{Digital Analog Converter}
+
+Az analóg jelek generálására egy DAC8565IAPWR [\cite{DAC}] van alkalmazva, 
+amelynek felbontása 16 bit.
+Ennek 4 egymástól független kimenete van, amelyek belsőleg bufferelve vannak,
+így terhelés esetén sem változik. 
+
+A DAC-nak van egy belső 2.5V-os feszültség referenciája,
+viszont ez külsőleg felülírható egy külső feszültség referenciával. Ebben az 
+esetben szükség volt erre, mivel a leljes ADC mérési tartományra szükség van
+ami 3.3V. Ez egy egyszerű 3.3V-os feszültség referenciával lett elérve, viszont
+ebben az eseten egy parancsot kell küldeni a DAC-nak, hogy a külső referenciát használja,
+mivel nem áll át automatikusan, rövid időre nem gond, hogy mindkettő aktív, viszont
+nem ajánlott huzamosabb ideig ilyen helyzetben tartani.
+
+A DAC SPI protokollt használ amiből 8 bit a parancs bit és 16 bit az adat.
+Lehetőség van az adatok azonnali betöltésére és a kimenet változtatására, és
+arra is van lehetőség, hogy csak az adatot elmentse és egyszerre frissítse az
+ősszes kimenetet. Erre lehetőség van szoftveresen is, amit az SPI parancs
+részében lehet kódolni, ebben a projekt esetében is ez van alkalmazva. 
+
+
+
+
+
+
 
 \section{A rendszer Blokk váza}
 
