@@ -45,6 +45,22 @@ void core1_entry()
     }
 }
 
+void printResult(std::map<std::string, double> ret)
+{
+    std::cout << "Print Resulst\n";
+    //std::map<std::string, double> ret = machine->getResult();
+    gpio_put(GREEN_LED_PIN, LOW);
+    for (auto it : ret)
+    {
+        std::cout << it.first << " " << it.second << std::endl;
+    }
+
+    for (auto it : STATE::usedPins)
+    {
+        std::cout << it.first << " " << it.second << std::endl;
+    }
+}
+
 #ifndef TESTS
 #include "display/include/ili9341.h"
 #include "display/include/characterDisplay.h"

@@ -117,6 +117,11 @@ void testCasesCaller()
         // std::cout << e.what() << std::endl;
         machine->setState(new DIODE(calc));
         machine->calculate();
+        // check if 2 inverse diode
+        if (STATE::usedPins.at(0).size() > 1 || STATE::usedPins.at(1).size() > 1)
+        {
+            printResult(machine->getResult());
+        }
         machine->setState(new TRANSISTOR(calc));
         machine->calculate();
     }
@@ -129,6 +134,8 @@ void testCasesCaller()
         std::cout << e.what() << std::endl;
     }
 
+    printResult(machine->getResult());
+    /*
     std::cout << "Print Resulst\n";
     std::map<std::string, double> ret = machine->getResult();
     gpio_put(GREEN_LED_PIN, LOW);
@@ -141,16 +148,7 @@ void testCasesCaller()
     {
         std::cout << it.first << " " << it.second << std::endl;
     }
-
-    /*
-        std::map<std::string, double> ret = machine->getResult();
-        gpio_put(GREEN_LED_PIN, LOW);
-        for (auto it : ret)
-        {
-            std::cout << it.first << " " << it.second << std::endl;
-        }
-        gpio_put(GREEN_LED_PIN, LOW);
-        */
+    */
 }
 
 //! END test cases

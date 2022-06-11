@@ -4,6 +4,7 @@
 #include "controll/include/IAswitch.h"
 #include "./common/include/common.h"
 #include "./Calculate/include/ICleanInput.h"
+#include <map>
 
 //* power level
 #define HIGH 1
@@ -67,6 +68,8 @@ extern COMMON *commonClass;
 
 class ICLEANINPUT;
 extern ICLEANINPUT *cleanInput;
+
+void printResult(std::map<std::string, double> ret);
 
 //!DEBUG
 
