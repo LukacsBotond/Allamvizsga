@@ -48,12 +48,12 @@ bool RESISTOR::check()
     {
         try
         {
-            std::cout << "reverseCheck: mode" << modes[i] << " " << modesRev[i] << " " << std::endl;
+            //std::cout << "reverseCheck: mode" << modes[i] << " " << modesRev[i] << " " << std::endl;
             if (!checkReverse(modes[i], modesRev[i]))
             {
                 usedModes.push_back(modes[i]);
                 usedModes.push_back(modesRev[i]);
-                std::cout << "REVERSE CHECK FAILED, POSSIBLY DIODE OR SIMILAR\n";
+                //std::cout << "REVERSE CHECK FAILED, POSSIBLY DIODE OR SIMILAR\n";
                 throw POSSIBLYDIODE("reverse check failed with port modes:" + modes[i] + modesRev[i]);
             }
             usedModes.push_back(modes[i]);
@@ -62,7 +62,7 @@ bool RESISTOR::check()
         }
         catch (NOTHINGCONNECTED &e)
         {
-            std::cout << e.what() << std::endl;
+            //std::cout << e.what() << std::endl;
         }
     }
     return flag;
@@ -73,10 +73,11 @@ void RESISTOR::calculate()
     if (check())
     {
         results["resistance"] = icalculate->calcResistance(this->usedModes);
+        setUsedPins(usedModes.at(0),'R');
     }
     else
     {
-        std::cout << "NO resistor found\n";
+        //std::cout << "NO resistor found\n";
         throw NOTARESISTOR("NO PIN IS USED");
     }
 }

@@ -7,7 +7,8 @@
 class DIODE : public STATE
 {
 private:
-    /* data */
+    void setUsedPins(const std::string &usedMode);
+
 public:
     explicit DIODE(ICALCULATE *icalculate);
     ~DIODE();
@@ -46,12 +47,42 @@ bool DIODE::check()
 
 void DIODE::calculate()
 {
+
     for (uint i = 0; i < usedModes.size(); i += 2)
     {
         if (!checkReverse(usedModes[i], usedModes[i + 1]))
         {
-            results["fw"] = icalculate->diodeThreshold(usedModes[i]);
-            results["bw"] = icalculate->diodeThreshold(usedModes[i + 1]);
+            double val = icalculate->diodeThreshold(usedModes[i]);
+            if (val < 3)
+            {
+                results["fw"] = val;
+                setUsedPins(usedModes[i]);
+            }
+            val = icalculate->diodeThreshold(usedModes[i + 1]);
+            if (val < 3)
+            {
+                results["bw"] = val;
+                setUsedPins(usedModes[i]);
+            }
+        }
+    }
+}
+
+//* private
+void DIODE::setUsedPins(const std::string &usedMode)
+{
+    for (int i = 0; i < 3; i++)
+    {
+        int tmpMode = usedMode[i] - '0';
+        // current flows from this direction so anode
+        if (tmpMode % 2 == 0 && tmpMode > 0)
+        {
+            usedPins[i] += 'A';
+        }
+        // cathode
+        if (tmpMode % 2 == 1)
+        {
+            usedPins[i] += 'C';
         }
     }
 }

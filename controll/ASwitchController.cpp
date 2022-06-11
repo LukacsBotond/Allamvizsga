@@ -69,7 +69,6 @@ uint8_t ASWITCHCONTROLLER::getSwithcSetting(uint8_t swNum) const
 uint ASWITCHCONTROLLER::getTotResistor(uint8_t usedMode)
 {
     uint8_t resistorId = Sw_translation_Map.at(usedMode).setting;
-    std::cout << "used Resistor: " << (int)resistorId << " usedMode" << (int)usedMode << std::endl;
     switch (resistorId)
     {
     case 0:

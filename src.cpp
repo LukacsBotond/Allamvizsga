@@ -22,7 +22,6 @@ static struct semaphore prepdoneSemaphore1;
 // when main core starts the semaphore it prints
 void core1_entry()
 {
-    sleep_ms(1000);
     // gpio_set_irq_enabled_with_callback(DAC_SCK, GPIO_IRQ_EDGE_FALL, true, &gpio_callback);
     adc->set_clkDiv(0);
 

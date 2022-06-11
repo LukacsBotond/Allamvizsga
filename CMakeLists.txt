@@ -42,8 +42,6 @@ add_executable(src src.cpp
         #controll/Aswitch.cpp
 
         common/common.cpp
-        
-        stateMachine/machineStates.cpp
 
         # test cases
         #Tests/BaseCleanInputTest.cpp

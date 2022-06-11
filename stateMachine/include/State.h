@@ -9,10 +9,15 @@
 
 class STATE
 {
+public:
+    static std::map<int, std::string> usedPins;
+    static std::map<std::string, double> results;
+
 protected:
     static ICALCULATE *icalculate;
     static std::vector<std::string> usedModes;
-    static std::map<std::string, double> results;
+    void setUsedPins(const std::string &usedMode, char mode);
+    std::vector<int> usedPinsFindByValue(const std::string &value);
 
 public:
     STATE(/* args */)
@@ -104,3 +109,38 @@ bool STATE::checkReverse(const std::string &measurementNormal, const std::string
     }
 }
 
+//*protected
+void STATE::setUsedPins(const std::string &usedMode, char mode)
+{
+    if (usedMode[0] != '0')
+    {
+        usedPins[0] = mode;
+    }
+    if (usedMode[1] != '0')
+    {
+        usedPins[1] = mode;
+    }
+    if (usedMode[2] != '0')
+    {
+        usedPins[2] = mode;
+    }
+}
+
+std::vector<int> STATE::usedPinsFindByValue(const std::string &value)
+{
+    /*
+    for (auto it : STATE::usedPins)
+    {
+        std::cout << it.first << " " << it.second << std::endl;
+    }
+*/
+    std::vector<int> ret;
+    for (auto &it : usedPins)
+    {
+        if (it.second == value)
+        {
+            ret.push_back(it.first);
+        }
+    }
+    return ret;
+}

@@ -80,6 +80,7 @@ ISWITCHCONTROLLER *ICALCULATE::controller;
 IADCORRECTER *ICALCULATE::adccorrecter;
 std::vector<std::string> STATE::usedModes = {};
 std::map<std::string, double> STATE::results = {};
+std::map<int, std::string> STATE::usedPins = {};
 ICALCULATE *STATE::icalculate = nullptr;
 
 //! Test classes
@@ -98,19 +99,58 @@ void testCasesCaller()
 
     ICALCULATE *calc = new ACALCULATE(val, controller, adccorrecter);
     MACHINE *machine = new MACHINE();
-    //machine->setState(new CAPACITOR(calc));
-    machine->setState(new TRANSISTOR(calc));
-    sleep_ms(100);
-    // TESTPRINTER *testprinter = new TESTPRINTER();
 
-    machine->calculate();
+    // machine->setState(new CAPACITOR(calc));
+    // machine->calculate();
+    // machine->setState(new TRANSISTOR(calc));
+    // machine->calculate();
+
+    try
+    {
+        machine->setState(new RESISTOR(calc));
+        machine->calculate();
+        machine->setState(new CAPACITOR(calc));
+        machine->calculate();
+    }
+    catch (POSSIBLYDIODE &e) // diode path
+    {
+        // std::cout << e.what() << std::endl;
+        machine->setState(new DIODE(calc));
+        machine->calculate();
+        machine->setState(new TRANSISTOR(calc));
+        machine->calculate();
+    }
+    catch (NOTARESISTOR &e) // nothing found
+    {
+        std::cout << e.what() << std::endl;
+    }
+    catch (const std::exception &e)
+    {
+        std::cout << e.what() << std::endl;
+    }
+
+    std::cout << "Print Resulst\n";
     std::map<std::string, double> ret = machine->getResult();
     gpio_put(GREEN_LED_PIN, LOW);
     for (auto it : ret)
     {
         std::cout << it.first << " " << it.second << std::endl;
     }
-    gpio_put(GREEN_LED_PIN, LOW);
+
+    for (auto it : STATE::usedPins)
+    {
+        std::cout << it.first << " " << it.second << std::endl;
+    }
+
+    /*
+        std::map<std::string, double> ret = machine->getResult();
+        gpio_put(GREEN_LED_PIN, LOW);
+        for (auto it : ret)
+        {
+            std::cout << it.first << " " << it.second << std::endl;
+        }
+        gpio_put(GREEN_LED_PIN, LOW);
+        */
 }
 
 //! END test cases

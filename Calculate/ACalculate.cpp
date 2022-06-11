@@ -73,7 +73,7 @@ std::vector<double> ACALCULATE::SameOut3ChannelRepeat(const uint8_t sw1, const u
     catch (NOSUCHMEASUREMENT &e)
     {
     }
-    
+
     for (uint8_t i = 3; i >= 1; --i)
     {
         valuesVector.push_back(cleanInput->AVGVoltage(this->ChannelMeasure(sw1, sw2, sw3, i - 1, saveMeasurement), CAPTURE_DEPTH));
@@ -123,10 +123,6 @@ double ACALCULATE::calcResistance(std::vector<std::string> &measurements)
             bestMeasurement = measurements[i];
         }
     }
-
-    // this->values->printMeasurements();
-    // std::cout << "bestMeasurement: " << bestMeasurement << " mAmper: " << bestmAmper << std::endl;
-
     measurementData = this->values->getMeasurement(bestMeasurement);
     // first port is not used
     if (bestMeasurement[0] - '0' == 0)
@@ -134,9 +130,6 @@ double ACALCULATE::calcResistance(std::vector<std::string> &measurements)
         voltageDrop = measurementData[1] - measurementData[2];
         if (voltageDrop < 0) // if negative make it positive
             voltageDrop *= -1;
-        // std::cout << "voltage drop on 1. resistor:" << 3.3 - measurementData[1] << std::endl;
-        // std::cout << "voltage drop on unkown resistor:" << voltageDrop << std::endl;
-        // std::cout << "voltage drop on 2. resistor:" << measurementData[2] << std::endl;
         return ((voltageDrop) / bestmAmper);
     }
     else
@@ -146,10 +139,6 @@ double ACALCULATE::calcResistance(std::vector<std::string> &measurements)
             voltageDrop = measurementData[0] - measurementData[2];
             if (voltageDrop < 0) // if negative make it positive
                 voltageDrop *= -1;
-            // std::cout << "voltage drop on 1. resistor:" << 3.3 - measurementData[0] << std::endl;
-            // std::cout << "voltage drop on unkown resistor:" << voltageDrop << std::endl;
-            // std::cout << "voltage drop on 2. resistor:" << measurementData[2] << std::endl;
-
             return ((voltageDrop) / bestmAmper);
         }
         else
@@ -157,10 +146,6 @@ double ACALCULATE::calcResistance(std::vector<std::string> &measurements)
             voltageDrop = measurementData[0] - measurementData[1];
             if (voltageDrop < 0) // if negative make it positive
                 voltageDrop *= -1;
-            // std::cout << "voltage drop on 1. resistor:" << 3.3 - measurementData[0] << std::endl;
-            // std::cout << "voltage drop on unkown resistor:" << voltageDrop << std::endl;
-            // std::cout << "voltage drop on 2. resistor:" << measurementData[1] << std::endl;
-
             return ((voltageDrop) / bestmAmper);
         }
     }
