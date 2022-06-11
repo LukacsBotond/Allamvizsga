@@ -43,10 +43,12 @@ bool TRANSISTOR::check()
         if (pnp)
         {
             std::cout << "pnp\n";
+            setResults(false);
         }
         if (npn)
         {
             std::cout << "npn\n";
+            setResults(true);
         }
     }
     return npn || pnp;
@@ -59,8 +61,30 @@ void TRANSISTOR::calculate()
 
 //* private
 
-void TRANSISTOR::setResults(bool npn){
-
+void TRANSISTOR::setResults(bool npn)
+{
+    std::vector<int> gate;
+    std::cout << "printResults \n";
+    if (npn)
+    {
+        gate = this->usedPinsFindByValue("");
+        std::cout << "collector:" << gate.at(0) << std::endl;
+        this->usedPins[gate.at(0)] = "C";
+        gate = this->usedPinsFindByValue("A");
+        this->usedPins[gate.at(0)] = "B";
+        gate = this->usedPinsFindByValue("C");
+        this->usedPins[gate.at(0)] = "E";
+    }
+    else
+    { // pnp
+        gate = this->usedPinsFindByValue("");
+        std::cout << "collector:" << gate.at(0) << std::endl;
+        this->usedPins[gate.at(0)] = "C";
+        gate = this->usedPinsFindByValue("C");
+        this->usedPins[gate.at(0)] = "B";
+        gate = this->usedPinsFindByValue("A");
+        this->usedPins[gate.at(0)] = "E";
+    }
 }
 
 bool TRANSISTOR::transTestStart(const std::string &gateMode, int gatePin)
@@ -87,8 +111,8 @@ bool TRANSISTOR::transTest(const std::string &gateMode, int gatePin, const std::
 {
 
     std::string modes[2];
-    // icalculate->cleanMesurements();
-    // std::cout << "gatePin: " << gatePin << std::endl;
+    icalculate->cleanMesurements();
+    std::cout << "gatePin: " << gatePin << std::endl;
     for (int i = 0; i < 2; i++)
     {
         int baseIndex = 0;
@@ -112,9 +136,11 @@ bool TRANSISTOR::transTest(const std::string &gateMode, int gatePin, const std::
         icalculate->SameOut3ChannelRepeat(modes[i][0] - '0', modes[i][1] - '0', modes[i][2] - '0', true);
         if (!checkIfTransistorIsOn(modes[i], gatePin))
         {
+            icalculate->values->printMeasurements();
             return false;
         }
     }
+    icalculate->values->printMeasurements();
     return true;
 }
 
@@ -134,7 +160,7 @@ bool TRANSISTOR::checkIfTransistorIsOn(const std::string &mode, int gatePin)
 bool TRANSISTOR::checkIfTransistorIsOnHelper(double volt1, double volt2)
 {
     double dif = volt1 - volt2;
-    std::cout << "volt dif: " << dif << std::endl;
+    // std::cout << "volt dif: " << dif << std::endl;
     if (!icalculate->IsAnythingConnected(volt1, 6) || !icalculate->IsAnythingConnected(volt1, 6))
     {
         return false;
