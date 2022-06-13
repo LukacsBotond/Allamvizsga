@@ -17,6 +17,7 @@ public:
   void calculate();
   void setState(STATE *state);
   std::map<std::string, double> getResult();
+  std::string getMainResult();
 };
 
 MACHINE::MACHINE()
@@ -48,4 +49,9 @@ void MACHINE::setState(STATE *state)
 std::map<std::string, double> MACHINE::getResult()
 {
   return state->getResults();
+}
+
+std::string MACHINE::getMainResult()
+{
+  return state->mainResult;
 }

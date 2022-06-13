@@ -22,7 +22,6 @@ void CHARACTERDISPLAY::insertChar(uint8_t position, const uint8_t *charSet)
             int id = i * lineWidth + position * 8 + bit;
             if (charSet[i] & mask)
                 row[id] = fg_Color;
-            //std::cout << "pos: " << (int)id << "color :" << (int)row[id] << std::endl;
         }
     }
 }
@@ -42,14 +41,6 @@ void CHARACTERDISPLAY::printLine(const std::string &str)
     {
         //std::cout << str[i] << " kodolva: ";
         insertChar(i, transChartoCharSet(str[i]));
-        /*
-        for (int j = 0; j < 8; j++)
-        {
-            std::cout << (int)charset[j] << " ";
-        }
-        std::cout << std::endl;
-        */
     }
-    // dumpRow();
     writeLine();
 }

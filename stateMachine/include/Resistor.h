@@ -71,10 +71,11 @@ bool RESISTOR::check()
 void RESISTOR::calculate()
 {
     this->results.clear();
-    this->results["Resistor"] = 0;
+
     if (check())
     {
         results["resistance"] = icalculate->calcResistance(this->usedModes);
+        this->mainResult = "Resistor";
         setUsedPins(usedModes.at(0),'R');
     }
     else

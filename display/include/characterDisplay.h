@@ -7,6 +7,8 @@ protected:
     void insertChar(uint8_t position, const uint8_t *charSet);
     uint16_t bg_Color;
     uint16_t fg_Color;
+    const uint8_t *transChartoCharSet(const char character) const;
+
     const uint8_t charset[95][8] =
         {{//
           0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00},
@@ -208,7 +210,6 @@ public:
     CHARACTERDISPLAY(SPI *spi, uint16_t bg_Color, uint16_t fg_Color);
     ~CHARACTERDISPLAY();
     // translates char to a printable character
-    const uint8_t *transChartoCharSet(const char character) const;
 
     /*
         Prints a string to a line on the screen.

@@ -166,14 +166,11 @@ void ILI9341::writeLine()
 // TODO whatewer this is NOT doing
 void ILI9341::fillRestScreen(uint16_t color)
 {
-    /*
-    display->changeFormat(true);
-    if (currentLine >= ILI9341::height / lineHeight)
+    std::fill_n(row, rowSize, color);
+    while(currentLine < this->maxLineNr)
     {
-        return;
+        writeLine();
     }
-    display->changeFormat(false);
-    */
 }
 
 void ILI9341::fillColor(uint16_t color)

@@ -45,20 +45,30 @@ void core1_entry()
     }
 }
 
-void printResult(const std::map<std::string, double> &ret)
+void printResult(const std::map<std::string, double> &ret, const std::string &mainResult)
 {
     std::cout << "Print Results\n";
-    //std::map<std::string, double> ret = machine->getResult();
+    SPIPORTS *displ_spi_ports = new SPIPORTS(DISP_SPI_CHANNEL, DISP_CS, DISP_SCK, DISP_MOSI);
+    SPI *spidispl = new SPI(DISP_FREQ, displ_spi_ports);
+    GRAPHDISPLAY driver(spidispl, 0x0000, commonClass->swap_bytes(0x081F));
+    // std::map<std::string, double> ret = machine->getResult();
     gpio_put(GREEN_LED_PIN, LOW);
+
+    std::cout <<mainResult << std::endl;
+    driver.printLine(mainResult);
+
     for (auto it : ret)
     {
         std::cout << it.first << " " << it.second << std::endl;
+        driver.printLine(it.first + " " + std::to_string(it.second));
     }
 
     for (auto it : STATE::usedPins)
     {
         std::cout << it.first << " " << it.second << std::endl;
+        driver.printLine(std::to_string(it.first) + " " + it.second);
     }
+    driver.fillRestScreen(0x0000);
 }
 
 #ifndef TESTS

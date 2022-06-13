@@ -71,8 +71,8 @@ protected:
   SPI *spi;
   const uint8_t lineHeight = 8;
   const uint16_t lineWidth = ILI9341_TFTWIDTH;
-  const uint8_t maxLineNr = ILI9341_TFTHEIGHT / 8;
-  uint8_t currentLine;
+  const uint8_t maxLineNr = ILI9341_TFTHEIGHT / lineHeight;
+  uint8_t currentLine = 0;
   const uint16_t rowSize = lineHeight * ILI9341_TFTWIDTH;
   uint16_t *row;
 

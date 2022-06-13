@@ -69,13 +69,13 @@ extern COMMON *commonClass;
 class ICLEANINPUT;
 extern ICLEANINPUT *cleanInput;
 
-void printResult(const std::map<std::string, double> &ret);
+void printResult(const std::map<std::string, double> &ret, const std::string &mainResult);
 
-//!DEBUG
+//! DEBUG
 
-//if commented out then the normal program runs without test cases
-//if not then only the test cases run
+// if commented out then the normal program runs without test cases
+// if not then only the test cases run
 #define TESTS
 
-//disables ADC read
+// disables ADC read
 //#define ADCDISABLE

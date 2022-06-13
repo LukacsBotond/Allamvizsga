@@ -81,6 +81,7 @@ IADCORRECTER *ICALCULATE::adccorrecter;
 std::vector<std::string> STATE::usedModes = {};
 std::map<std::string, double> STATE::results = {};
 std::map<int, std::string> STATE::usedPins = {};
+std::string STATE::mainResult = "Unknown part";
 ICALCULATE *STATE::icalculate = nullptr;
 
 //! Test classes
@@ -119,7 +120,7 @@ void testCasesCaller()
         // check if 2 inverse diode
         if (STATE::usedPins.at(0).size() > 1 || STATE::usedPins.at(1).size() > 1)
         {
-            printResult(machine->getResult());
+            printResult(machine->getResult(), machine->getMainResult());
         }
         machine->setState(new TRANSISTOR(calc));
         machine->calculate();
@@ -133,7 +134,7 @@ void testCasesCaller()
         std::cout << e.what() << std::endl;
     }
 
-    printResult(machine->getResult());
+    printResult(machine->getResult(), machine->getMainResult());
     /*
     std::cout << "Print Resulst\n";
     std::map<std::string, double> ret = machine->getResult();

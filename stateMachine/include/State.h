@@ -12,7 +12,7 @@ class STATE
 public:
     static std::map<int, std::string> usedPins;
     static std::map<std::string, double> results;
-
+    static std::string mainResult;
 protected:
     static ICALCULATE *icalculate;
     static std::vector<std::string> usedModes;

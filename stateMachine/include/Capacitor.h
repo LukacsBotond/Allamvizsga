@@ -55,7 +55,7 @@ void CAPACITOR::calculate()
                 if (result > 10)
                 { // less than 10nF is just too small
                     this->results.clear();
-                    this->results["Capacitor"] = 0;
+                    this->mainResult = "Capacitor";
                     results["Capacitance" + std::to_string(i / 2) + " nF"] = result;
                     setUsedPins(modes[i],'C');
                 }

@@ -53,7 +53,7 @@ void DIODE::calculate()
         if (!checkReverse(usedModes[i], usedModes[i + 1]))
         {
             double val = icalculate->diodeThreshold(usedModes[i]);
-            this->results["Diode"] = 0;
+            this->mainResult = "Diode";
             if (val < 3)
             {
                 results["fw"] = val;

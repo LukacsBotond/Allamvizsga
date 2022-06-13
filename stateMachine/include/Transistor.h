@@ -99,15 +99,16 @@ void TRANSISTOR::setResults(bool npn, double HFe)
     this->usedPins[collectorPin] = "C";
     this->usedPins[gatePin] = "B";
     this->usedPins[emmiterPin] = "E";
-    results["HFe"] = HFe;
+
     if (npn)
     {
-        this->results["pnp"] = 0;
+        this->mainResult = "npn transistor";
     }
     else
     { // pnp
-        this->results["npn"] = 0;
+        this->mainResult = "pnp transistor";
     }
+    results["HFe"] = HFe;
 }
 
 bool TRANSISTOR::transTestStart(const std::string &gateMode, int gatePin)
