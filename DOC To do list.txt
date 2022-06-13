@@ -1,0 +1,17 @@
+----------------------------------Elmélet
+
+Kapcsoló leírása
+
+
+reszletes terv
+
+tobb pcb
+
+szim, ltspice
+
+uzembe helyezes
+
+kod, mukodes
+
+
+konyv SPI

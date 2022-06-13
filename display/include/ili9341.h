@@ -1,10 +1,8 @@
 #pragma once
 
-#include <stdint.h>
-#include "pico/stdlib.h"
-#include "hardware/spi.h"
 #include "../../controll/include/spi.h"
 #include "../../controll/include/spiPorts.h"
+#include <iostream>
 
 #define ILI9341_TFTWIDTH 320  ///< ILI9341 max TFT width
 #define ILI9341_TFTHEIGHT 240 ///< ILI9341 max TFT height
@@ -67,12 +65,40 @@
 #define ILI9341_GMCTRN1 0xE1 ///< Negative Gamma Correction \
                              //#define ILI9341_PWCTR6     0xFC
 
-class ILI9341 : public SPI
+class ILI9341
 {
+protected:
+  SPI *spi;
+  const uint8_t lineHeight = 8;
+  const uint16_t lineWidth = ILI9341_TFTWIDTH;
+  const uint8_t maxLineNr = ILI9341_TFTHEIGHT / lineHeight;
+  uint8_t currentLine = 0;
+  const uint16_t rowSize = lineHeight * ILI9341_TFTWIDTH;
+  uint16_t *row;
+
 public:
-  ILI9341();
+  explicit ILI9341(SPI *spi);
   ~ILI9341();
 
   void set_command(const uint8_t cmd);
   void command_param(const uint8_t data);
+  void set_Continous_Write_Area(const uint16_t caset_Start = 0x0000,
+                                const uint16_t caset_End = 0x013f,
+                                const uint16_t paset_Start = 0x0000,
+                                const uint16_t paset_End = 0x00ef);
+
+  void writeLine();
+
+  void fillRestScreen(const uint16_t color = 0x0000);
+  //* crears the screen with a set color
+  void fillColor(const uint16_t color = 0x0000);
+
+  //* DEBUG
+  void dumpRow();
+
+  /*
+    //* NOT IMPLEMENTED FUNCTIONS IN THIS CLASS
+    virtual const uint8_t *transChartoCharSet(const char character) const = 0;
+    virtual void printLine(const std::string &str) =0;
+    */
 };

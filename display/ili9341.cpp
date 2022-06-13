@@ -7,7 +7,7 @@
 #include "../Global.h"
 
 /*
- 
+
  (pin 1) VCC        5V/3.3V power input
  (pin 2) GND        Ground
  (pin 3) CS         LCD chip select signal, low level enable
@@ -17,43 +17,53 @@
  (pin 7) SCK        SPI bus clock signal
  (pin 8) LED        Backlight control; if not controlled, connect 3.3V always bright
  (pin 9) SDO(MISO)  SPI bus read data signal; optional
- 
+
  */
 /*
 ili9341_config_t ili9341_config = {
-	.port = spi0,
-	.pin_miso = 4,
-	.pin_cs = 5,
-	.pin_sck = 6,
-	.pin_mosi = 7,
-	.pin_reset = 8,
-	.pin_dc = 9
+    .port = spi0,
+    .pin_miso = 4,
+    .pin_cs = 5,
+    .pin_sck = 6,
+    .pin_mosi = 7,
+    .pin_reset = 8,
+    .pin_dc = 9
 };
 */
 
-ILI9341::ILI9341() : SPI(DISP_FREQ, SPIPORTS(DISP_SPI_CHANNEL, DISP_MISO, DISP_CS, DISP_SCK, DISP_MOSI, DISP_RESET, DISP_DC))
+ILI9341::ILI9341(SPI *spi) : spi(spi)
 {
-    //spiPorts* tmp = new spiPorts(0, 10, 13, 14, 15, 12, 11);
-    //SPIPORTS *tmpPorts = new SPIPORTS(0, 4, 5, 6, 7, 8, 9);
-    //spi_instance = new SPI(300, tmpPorts);
-    //delete tmpPorts;
+    // spiPorts* tmp = new spiPorts(0, 10, 13, 14, 15, 12, 11);
+    // SPIPORTS *tmpPorts = new SPIPORTS(0, 4, 5, 6, 7, 8, 9);
+    // spi_instance = new SPI(300, tmpPorts);
+    // delete tmpPorts;
+    // high = command, low = data
+
+    gpio_init(DISP_DC);
+    gpio_set_dir(DISP_DC, GPIO_OUT);
+    gpio_put(DISP_DC, LOW);
+
+    // Reset is active-low
+    gpio_init(DISP_RESET);
+    gpio_set_dir(DISP_RESET, GPIO_OUT);
+    gpio_put(DISP_RESET, HIGH);
+
     sleep_ms(10);
-    gpio_put(ports->reset, LOW);
+    gpio_put(DISP_RESET, LOW);
     sleep_ms(10);
-    gpio_put(ports->reset, HIGH);
-    changeFormat(false);
-    set_command(0x01); //soft reset
+    gpio_put(DISP_RESET, HIGH);
+    set_command(0x01); // soft reset
     sleep_ms(100);
     set_command(ILI9341_GAMMASET);
     command_param(0x01);
     uint8_t tmp[]{0x0f, 0x31, 0x2b, 0x0c, 0x0e, 0x08, 0x4e, 0xf1, 0x37, 0x07, 0x10, 0x03, 0x0e, 0x09, 0x00};
     // positive gamma correction
     set_command(ILI9341_GMCTRP1);
-    write_data(tmp, 15);
+    spi->write_data(tmp, 15);
     uint8_t tmp1[]{0x00, 0x0e, 0x14, 0x03, 0x11, 0x07, 0x31, 0xc1, 0x48, 0x08, 0x0f, 0x0c, 0x31, 0x36, 0x0f};
     // negative gamma correction
     set_command(ILI9341_GMCTRN1);
-    write_data(tmp1, 15);
+    spi->write_data(tmp1, 15);
     // memory access control
     set_command(ILI9341_MADCTL);
     command_param(0x48);
@@ -74,9 +84,9 @@ ILI9341::ILI9341() : SPI(DISP_FREQ, SPIPORTS(DISP_SPI_CHANNEL, DISP_MISO, DISP_C
     set_command(ILI9341_DISPON);
     //
 
-    //landscape mode
+    // landscape mode
     set_command(ILI9341_MADCTL);
-    command_param(0b11110100);
+    command_param(0b00110100);
 
     // column address set
     set_command(ILI9341_CASET);
@@ -93,16 +103,93 @@ ILI9341::ILI9341() : SPI(DISP_FREQ, SPIPORTS(DISP_SPI_CHANNEL, DISP_MISO, DISP_C
     command_param(0xef); // end column -> 239
 
     set_command(ILI9341_RAMWR);
+
+    this->currentLine = 0;
+    this->row = new uint16_t[rowSize];
+}
+
+ILI9341::~ILI9341()
+{
+    delete row;
 }
 
 void ILI9341::set_command(uint8_t cmd)
 {
-    gpio_put(ports->dc, LOW);
-    write_data(&cmd, 1);
-    gpio_put(ports->dc, HIGH);
+    gpio_put(DISP_DC, LOW);
+    spi->write_data(&cmd, 1);
+    gpio_put(DISP_DC, HIGH);
 }
 
 void ILI9341::command_param(uint8_t data)
 {
-    write_data(&data, 1);
+    spi->write_data(&data, 1);
+}
+
+void ILI9341::set_Continous_Write_Area(const uint16_t caset_Start,
+                                       const uint16_t caset_End,
+                                       const uint16_t paset_Start,
+                                       const uint16_t paset_End)
+{
+    /*
+    uint8_t upper_Part = (uint8_t)caset_Start >> 8;
+    uint8_t lower_Part = (uint8_t)caset_Start;
+    // column address set
+    set_command(ILI9341_CASET);
+    command_param(upper_Part);
+    command_param(lower_Part); // start page
+    upper_Part = (uint8_t)caset_End >> 8;
+    lower_Part = (uint8_t)caset_End;
+    command_param(upper_Part);
+    command_param(lower_Part); // end page -> 319
+
+    // page address set
+    set_command(ILI9341_PASET);
+    upper_Part = (uint8_t)paset_Start >> 8;
+    lower_Part = (uint8_t)paset_Start;
+    command_param(upper_Part);
+    command_param(lower_Part); // start column
+    upper_Part = (uint8_t)paset_End >> 8;
+    lower_Part = (uint8_t)paset_End;
+    command_param(upper_Part);
+    command_param(lower_Part); // end column -> 239
+*/
+    set_command(ILI9341_RAMWR);
+    currentLine = 0;
+}
+
+void ILI9341::writeLine()
+{
+    spi->write_data(row, rowSize);
+    currentLine++;
+}
+
+// TODO whatewer this is NOT doing
+void ILI9341::fillRestScreen(uint16_t color)
+{
+    std::fill_n(row, rowSize, color);
+    while(currentLine < this->maxLineNr)
+    {
+        writeLine();
+    }
+}
+
+void ILI9341::fillColor(uint16_t color)
+{
+    set_command(ILI9341_RAMWR);
+    int pixels = ILI9341_TFTWIDTH * ILI9341_TFTHEIGHT;
+    for (int i = 0; i < pixels; i++)
+    {
+        spi->write_data(&color, 1);
+    }
+}
+
+//* DEBUG
+void ILI9341::dumpRow()
+{
+    std::cout << "character write dump row\n";
+    for (int i = 0; i < rowSize; i++)
+    {
+        std::cout << row[i] << " ";
+        sleep_ms(1);
+    }
 }

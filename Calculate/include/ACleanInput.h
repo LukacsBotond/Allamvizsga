@@ -3,7 +3,7 @@
 #include "./ICleanInput.h"
 #include "../../Exceptions/include/NoSuchMeasurement.h"
 
-class BASECLEANINPUT : public ICLEANINPUT
+class ACLEANINPUT : public ICLEANINPUT
 {
 
 public:

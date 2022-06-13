@@ -22,30 +22,29 @@ pico_sdk_init()
 # Add executable. Default name is the project name, version 0.1
 
 add_executable(src src.cpp
+        
         ADC/ADC.cpp
         ADC/ADCCorrecter.cpp
-        Calculate/BaseCalculate.cpp
+
+        Calculate/ACalculate.cpp
         Calculate/BaseValues.cpp
-        Calculate/BaseCleanInput.cpp
+        Calculate/ACleanInput.cpp
         Calculate/ICleanInput.cpp
 
+        #display
         display/ili9341.cpp
-        display/displayDriver.cpp
         display/characterDisplay.cpp
         display/graphDisplay.cpp
 
         controll/spi.cpp
         controll/spiPorts.cpp
-        controll/BaseSwitchController.cpp
+        controll/ASwitchController.cpp
         #controll/Aswitch.cpp
-        controll/BaseSwitch.cpp
 
         common/common.cpp
-        
-        stateMachine/machineStates.cpp
 
         # test cases
-        Tests/BaseCleanInputTest.cpp
+        #Tests/BaseCleanInputTest.cpp
         Tests/TestPrinter.cpp
         )
 

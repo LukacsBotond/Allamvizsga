@@ -18,5 +18,5 @@ public:
     virtual double getTotSwitchResistance() const = 0;
 
     //@param mode, from which mode calculate the port resistance
-    virtual double getTotSwitchResistanceFromMode(uint8_t mode) const = 0;
+    virtual double getTotSwitchResistance(uint8_t mode) const = 0;
 };

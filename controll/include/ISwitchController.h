@@ -1,37 +1,44 @@
 #pragma once
 #include "./IAswitch.h"
 #include "pico/sem.h"
-
+/*
+    Measurement mode table
+    mode   swSetting   voltages
+    0 ->    0          0V
+    1 ->    1          0V
+    2 ->    1          3.3V
+    3 ->    2          0V
+    4 ->    2          3.3V
+    5 ->    3          0V
+    6 ->    3          3.3V
+*/
 class ISWITCHCONTROLLER
 {
 
 public:
-    // TODO implement this in CALCUATE class
-    // repeats the same output, 3 times for each ADC channel
-    // at the end of measurement sinks the current is it had capacitance
-    // virtual void SameOut3ChannelRepeat(uint8_t sw1P, uint8_t sw2P, uint8_t sw3P) = 0;
+    /*
+    sets the voltage in DAC, but don't open the analog swich yet, so there will be less delay
+    when measuring starts
+    @param sw1:const uint8_t swith mode for switch 1
+    @param sw2:const uint8_t swith mode for switch 2
+    @param sw3:const uint8_t swith mode for switch 3
+    */
+    virtual void prepareSwitchSetting(const uint8_t sw1, const uint8_t sw2, const uint8_t sw3) = 0;
+    /*
+    With the switch mode as the parameter use the translation map to get the switch setting and
+    the supply voltage for that channel
+    @param sw1:const uint8_t swith mode for switch 1
+    @param sw2:const uint8_t swith mode for switch 2
+    @param sw3:const uint8_t swith mode for switch 3
+    */
+    virtual void setSwithcSetting(const uint8_t sw1, const uint8_t sw2, const uint8_t sw3) = 0;
 
-    // @param swNum which switch we want to modify
-    // @param mode to which mode
-    //* if incorrect value was given it van generate a NOTSUPPOSEDTOREACHTHIS exception
-    virtual void setSwithcSetting(const uint8_t swNum, const uint8_t mode) = 0;
     //@param swNum which switch we are intrested in
     //@return that switch operating mode
     //* if incorrect value was given it van generate a NOTSUPPOSEDTOREACHTHIS exception
     virtual uint8_t getSwithcSetting(const uint8_t swNum) const = 0;
 
-    //@param swNum from which switch we require the resistor value
-    //@param resistorNr which resistor 0-3
-    // return the selecter resistor value in Ohm
-    //* if incorrect value was given it van generate a NOTSUPPOSEDTOREACHTHIS exception
-    virtual uint getResistorSetting(const uint8_t swNum, const uint8_t resistorNr) const = 0;
+    virtual uint getTotResistor(uint8_t usedMode) = 0;
 
-    //@param swNum from which switch we require the resistor value
-    // return the selecter resistor value in Ohm
-    //* if incorrect value was given it van generate a NOTSUPPOSEDTOREACHTHIS exception
-    virtual double getswTotResistorSetting(const uint8_t swNum) const = 0;
-
-    //@param swMode mode in which the switch was used
-    //@return returns the port resistance in that mode
-    virtual double getTotResistorFromMode(const uint8_t mode) const = 0;
+    virtual void setVoltage(const uint16_t voltage, const uint8_t command) = 0;
 };

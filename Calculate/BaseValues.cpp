@@ -14,12 +14,12 @@ double BASEVALUES::getResistance() const
 bool BASEVALUES::addMeasurement(const std::string &measurement, const std::vector<double> values)
 {
 
-    //std::cout << "addMeasurementValues: " << measurement << std::endl;
+    // std::cout << "addMeasurementValues: " << measurement << std::endl;
     if (values.size() != 3)
         return false;
 
     int beforeSize = this->measurements.size();
-    this->measurements.insert({measurement, values});
+    this->measurements[measurement] = values;
 
     if (beforeSize == this->measurements.size())
         return false;
@@ -28,8 +28,8 @@ bool BASEVALUES::addMeasurement(const std::string &measurement, const std::vecto
 
 std::vector<double> BASEVALUES::getMeasurement(const std::string &measurement) const
 {
-    //std::cout << "measurementValues: "
-    //          << " val: " << measurement << "LENGHT:" << measurement.size() << std::endl;
+    // std::cout << "measurementValues: "
+    //           << " val: " << measurement << "LENGHT:" << measurement.size() << std::endl;
     if (measurement.size() != 3)
         throw NOSUCHMEASUREMENT("BASEVALUES the seach string is not 3 length, string: " + measurement + "|\n");
     auto pos = this->measurements.find(measurement);
@@ -53,8 +53,8 @@ void BASEVALUES::cleanMeasurements()
 
 void BASEVALUES::printMeasurements()
 {
-    for (auto it = measurements.cbegin(); it != measurements.cend(); ++it)
+    for (auto it : measurements)
     {
-        std::cout << it->first << " " << it->second.at(0) << " " << it->second.at(1) << " " << it->second.at(2) << "\n";
+        std::cout << it.first << " " << it.second.at(0) << " " << it.second.at(1) << " " << it.second.at(2) << std::endl;
     }
 }

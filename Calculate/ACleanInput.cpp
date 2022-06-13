@@ -1,6 +1,6 @@
-#include "./include/BaseCleanInput.h"
+#include "./include/ACleanInput.h"
 
-bool BASECLEANINPUT::IsAnythingConnected(const double avgVoltage, const uint8_t portMode) const
+bool ACLEANINPUT::IsAnythingConnected(const double avgVoltage, const uint8_t portMode) const
 {
     // port sends 3.3V on a pin, if it passes through a resistor without voltage
     // drop then there is nothing connected or high impedance as trying
@@ -9,10 +9,10 @@ bool BASECLEANINPUT::IsAnythingConnected(const double avgVoltage, const uint8_t 
     {
         return (avgVoltage > 3);
     }
-    if (portMode == 2 || portMode == 4)
+    if (portMode % 2 == 1) // pin is on ground
     {
-        return (avgVoltage < 3.1);
+        return (avgVoltage > 0.1);
     }
     //
-    return (avgVoltage > 0.1);
+    return (avgVoltage < 3.1);
 }
