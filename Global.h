@@ -69,7 +69,7 @@ extern COMMON *commonClass;
 class ICLEANINPUT;
 extern ICLEANINPUT *cleanInput;
 
-void printResult(std::map<std::string, double> ret);
+void printResult(const std::map<std::string, double> &ret);
 
 //!DEBUG
 

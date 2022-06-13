@@ -34,7 +34,6 @@ double ADCCORRECTER::getBaseValue(const int8_t swMode, const double reqVoltage, 
 {
     icalculate->SameOut3ChannelRepeat(swMode, swMode, swMode);
     std::vector<double> measurement = icalculate->getMeasurement(std::to_string(swMode) + std::to_string(swMode) + std::to_string(swMode));
-    icalculate->values->printMeasurements();
     for (int i = 0; i < 30; i++)
     {
         if ((measurement.at(0) < reqVoltage || measurement.at(1) < reqVoltage || measurement.at(2) < reqVoltage) ^ bigger)

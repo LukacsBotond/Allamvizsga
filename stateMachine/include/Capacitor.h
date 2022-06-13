@@ -54,6 +54,8 @@ void CAPACITOR::calculate()
                 double result = this->icalculate->CalcCapacitance_nF(this->icalculate->ChannelMeasure(modes[i][0] - '0', modes[i][1] - '0', modes[i][2] - '0', i / 2, false), adc->getCaptureDepth(), adc->get_clkHz(), modes[i][2 - i / 2] - '0');
                 if (result > 10)
                 { // less than 10nF is just too small
+                    this->results.clear();
+                    this->results["Capacitor"] = 0;
                     results["Capacitance" + std::to_string(i / 2) + " nF"] = result;
                     setUsedPins(modes[i],'C');
                 }

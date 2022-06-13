@@ -53,6 +53,7 @@ void DIODE::calculate()
         if (!checkReverse(usedModes[i], usedModes[i + 1]))
         {
             double val = icalculate->diodeThreshold(usedModes[i]);
+            this->results["Diode"] = 0;
             if (val < 3)
             {
                 results["fw"] = val;
@@ -71,6 +72,7 @@ void DIODE::calculate()
 //* private
 void DIODE::setUsedPins(const std::string &usedMode)
 {
+    this->results.clear();
     for (int i = 0; i < 3; i++)
     {
         int tmpMode = usedMode[i] - '0';

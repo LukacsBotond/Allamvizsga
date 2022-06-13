@@ -45,9 +45,9 @@ void core1_entry()
     }
 }
 
-void printResult(std::map<std::string, double> ret)
+void printResult(const std::map<std::string, double> &ret)
 {
-    std::cout << "Print Resulst\n";
+    std::cout << "Print Results\n";
     //std::map<std::string, double> ret = machine->getResult();
     gpio_put(GREEN_LED_PIN, LOW);
     for (auto it : ret)

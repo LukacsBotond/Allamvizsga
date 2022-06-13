@@ -20,10 +20,7 @@ protected:
     std::vector<int> usedPinsFindByValue(const std::string &value);
 
 public:
-    STATE(/* args */)
-    {
-        icalculate = nullptr;
-    }
+    STATE();
     ~STATE() {}
     virtual bool check() = 0;
     virtual void calculate() = 0;
@@ -32,6 +29,11 @@ public:
     std::vector<double> getMeasurement(std::string measurement);
     bool checkReverse(const std::string &measurementNormal, const std::string &measurementReverse);
 };
+
+STATE::STATE(/* args */)
+{
+    icalculate = nullptr;
+}
 
 std::map<std::string, double> STATE::getResults()
 {
@@ -128,12 +130,12 @@ void STATE::setUsedPins(const std::string &usedMode, char mode)
 
 std::vector<int> STATE::usedPinsFindByValue(const std::string &value)
 {
-    /*
+
     for (auto it : STATE::usedPins)
     {
         std::cout << it.first << " " << it.second << std::endl;
     }
-*/
+
     std::vector<int> ret;
     for (auto &it : usedPins)
     {

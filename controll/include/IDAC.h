@@ -1,6 +1,7 @@
 #pragma once
 
 #include "./spi.h"
+#include "../../Calculate/include/ICalculate.h"
 
 #define DAC_INTERNAL_REFERENCE_ALLW_DOWN 0x00012000
 #define DAC_INTERNAL_REFERENCE_DEF_UP 0x00010000
@@ -40,4 +41,6 @@ public:
     @param resetLvl:bool true=reset High, false= reset Low
      */
     virtual void reset(bool resetLvl) = 0;
+
+    virtual void characteristicDiagramm(ICALCULATE* icalculate) = 0;
 };

@@ -100,10 +100,9 @@ void testCasesCaller()
     ICALCULATE *calc = new ACALCULATE(val, controller, adccorrecter);
     MACHINE *machine = new MACHINE();
 
-    // machine->setState(new CAPACITOR(calc));
-    // machine->calculate();
-    // machine->setState(new TRANSISTOR(calc));
-    // machine->calculate();
+    STATE::usedPins[0] = "";
+    STATE::usedPins[1] = "";
+    STATE::usedPins[2] = "";
 
     try
     {

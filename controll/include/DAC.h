@@ -2,6 +2,8 @@
 
 #include "./IDAC.h"
 #include "./spi.h"
+#include "./PID.h"
+
 class DAC : public IDAC
 {
 private:
@@ -22,6 +24,8 @@ public:
     @param resetLvl: bool true=reset High, false= reset Low
     */
     void reset(bool resetLvl) override;
+
+    void characteristicDiagramm(ICALCULATE* icalculate) override;
 };
 
 DAC::DAC(SPI *spi) : spi(spi)
@@ -65,4 +69,9 @@ void DAC::setVoltageOnChannel(uint16_t voltage, uint8_t command)
 void DAC::reset(bool resetLvl)
 {
     gpio_put(DAC_RESET, resetLvl);
+}
+
+void DAC::characteristicDiagramm(ICALCULATE* icalculate){
+    PID pid(4,1,1,1);
+    
 }
