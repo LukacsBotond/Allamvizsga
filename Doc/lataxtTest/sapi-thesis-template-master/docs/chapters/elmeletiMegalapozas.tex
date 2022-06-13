@@ -230,6 +230,25 @@ arra is van lehetőség, hogy csak az adatot elmentse és egyszerre frissítse a
 ősszes kimenetet. Erre lehetőség van szoftveresen is, amit az SPI parancs
 részében lehet kódolni, ebben a projekt esetében is ez van alkalmazva. 
 
+\subsection{Analóg kapcsoló}
+
+Mindegyik analóg jelet egyszerre 1 ellenálláson kereszül rá kell kapcsolni a komponensre,
+viszont az ellenállás váltható kell legyen mérés közben, nagy sebességgel, így a manuális
+kapcsolás nem lehetséges. Erre a célra egy analóg kapcsoló van alaklmazva amely egy közös
+bemenetet 3 különböző kimenetre képes kapcsolni, melyeken az ellenállások találhatóak.
+A kimenet kiválasztása nem használ kommunikációs protokollt, csak a "IN" portokra érkező
+digitális jelek segítségével történik. Minden esetben maximálisan 1 kimenet aktív a többi
+a nyílt áramkörben van és arra is van lehetőség, hogy a bemenet 1 kimenetre 
+se legyen kapcsolva. A kimenet kiválasztása a kövekező táblázattal lehetséges.
+[\ref{fig:ASwitchFuntionTable}]
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.3]{images/literature/ASwitchFunctionTable.png}
+    \caption{Analóg kapcsoló funkcionális táblázata}
+    \label{fig:ASwitchFuntionTable}
+\end{figure}
+
 
 
 
@@ -255,15 +274,10 @@ másik eszköz felé.
 
 \begin{figure}[h]
     \centering
-    \includegraphics[scale=0.3]{figures/images/literature/blockDiagramm.png}
+    \includegraphics[scale=0.3]{images/literature/blockDiagramm.png}
     \caption{A rendszer block váza}
     \label{fig:blockDiagramm}
 \end{figure}
-
-
-
-
-
 
 
 \section{Hasonló eszközök}
@@ -281,7 +295,7 @@ Az bekötése hasonlóképpen történik: lásd [\ref{fig:basicTesterConnection}
 
 \begin{figure}[h]
     \centering
-    \includegraphics[scale=0.3]{figures/images/literature/OrgTesterConnection.png}
+    \includegraphics[scale=0.3]{images/literature/OrgTesterConnection.png}
     \caption{Eredeti teszter bekötési rajza}
     \label{fig:basicTesterConnection}
 \end{figure}
