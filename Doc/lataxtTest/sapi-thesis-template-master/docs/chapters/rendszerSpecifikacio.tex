@@ -1,6 +1,6 @@
 \section{Mérő áramkör}
 
-A rendszer hasonlóan épül fel, mint a példaként használt rendszer [\cite{similarSystem}], viszont néhány módosítással.
+A rendszer hasonlóan épül fel, mint a példaként használt rendszer \cite{similarSystem}, viszont néhány módosítással.
 Viszont az elméleti alapja hasonló. A komponens lábára egy ellenálláson keresztül feszültséget kapcsolva és a 
 feszültség mérésével az ellenállás után meg lehet állapítani az áramerősséget és a feszültség esést a komponensen.
 Ezekből az értékekből számítások segítségével ki lehet számolni, hogy mi az ismeretlen komponens (ennek a leírása
@@ -100,5 +100,24 @@ csatlakoztatva van, így az áramkör működőképes. A végső áramkör a kö
     \caption{A kész áramkör}
     \label{fig:Aramkor}
 \end{figure}
+
+\section{Szimulációk}
+
+A szimulációra az LTspice \cite{LTspice} alkalmazást használtam, 
+amelyben felépítettem a mérő áramkört és ellenőriztem, hogy az elméleti
+mérési módszer alkalmas-e a mérés elvégzésére, és az értékek milyen
+tartományban vannak, mivel a rendszer nem eléggé érzékeny, hogy a precíz
+értékeket pontosan megadja, így olyan módszer kell ahol a tolerancia nagyobb.
+Egy ilyen példa az áramerősség mérése amit a port ellenállást használja az
+áramerősség meghatározására, viszont kis ellenállás esetén a
+feszültség esés az ellenálláson alacsony áram esetén nem mérhető pontosan.
+Ezért ilyen esetben nagyobb port ellenállást kell alkalmazni, hogy mérhető 
+legyen a feszültség esés.
+
+A program képes az időben változó feszültségeket is mérni, így
+meg lehet tudni, hogy milyen idő intervalumban kell nézni és hogy
+a komponensek időben mennyire befolyásolják a mérést. Ez 
+legfőképpen a kondenzátorok mérésekor volt fontos, hogy megbizonyodjak
+a mérések valóságosságáról.
 
 
