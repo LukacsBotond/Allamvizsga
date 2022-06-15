@@ -1,3 +1,167 @@
+\section{Rendszer Követelmények}
+
+\subsection{Funkcionális követelmények}
+
+A rendszer elvár egy 2 vagy 3 lábbal renddelkező alkatsész csatlakoztatását a 
+teszter sockethez, olyan módon, hogy elektronikusan is csatolva legyen. 
+Az alkatrész lehet ellenállás, kondenzátok, dióda vagy tranzisztor, viszont a 
+rendszer csak maximális feszültsége 3.3V, így amennyiben nagyobb nyitó
+feszültség szükséges az alkatrésznel akkor abban az esetben nem képes
+detektálni azt.
+
+A rendszer fő követelménye a tesztelés leegyszerősítése, így egy átlagos,
+elektronikai imeretekkel nem rendelkező felhasználó is egy rövid 2 perces 
+bemutató után is magabiztosan tudja használni. Ezt a felháló által élérhető
+bemenetek csökkentésével lett elérve, mivel a felhasználó könnyebben 
+tud egy olyan eszközt használni ahol a bemenetek száma minimális.
+
+A tesztelés az indulástól kezdve automatikus, így tesztelés során a felhasználó
+nem kell semmit se tegyen, a tesztelés vége a 2 jelző LED felkapcsolósóval van
+jelezve és az eredmények a rendszeren megtalálható kijelzőn jelennek meg és 
+amennyiben a rendszer egy számítógéphez van csatolva abban az esetben 
+a Serial porton keresztül itt is megjelennek az eredmények.
+
+\subsection{Nem funkcionális követelmények}
+
+A rendszer lehetőleg nagy gyorsaságú legyen, mivel ha sok időt venne igénybe
+a mérés akkor abban az esetben gyorsabb lenne leolvasni az alkatrész azonosítóját
+és az interneten rákeresni, vagy kézzel lemérni egy multiméter segítségével.
+A mérés átlagosan 3 másodperc alatt el kell végezzen egy teljes azonosítást. 
+Ez a legtöbb esetben rövidebb idő, csupán
+a nagy méretű kondenzátorok esetében lehetséges ennek túllépése.
+
+A rendszer egyedülálló módon is alkalmazható akár egy külső 
+akkumulátorról is táplálva, így nincs operációs rendszer követelménye
+az alapszintű működéshez.
+
+Hordozhatóség is elengedhetetlen, hogy könnyedén mindig kéznél legyen.
+Ezért esett a választás az USB-n keresztül való táplálásra, mivel ez 
+manapság sokkal elterjedtebb, mint az eredeti tranzisztor teszter ami egy
+9V-os elemet használ ami kevésbé gyakori és elem lévén le tud merülni, pont 
+akkor amikor a legjobban kellene.
+
+A rendszer tervezésekor, mivel ez egy mikrovezérlőn fut így a 
+tárhely és memória limitált. Amiből a legfontosabb a memória, ebből 
+csupán 264KB található, így figyelembe kellett ezt tartani. Itt 
+legfőképpen a kijelzőn volt szükség az optimalizációra, mivel 
+lehetséges lett volna, hogy a nagy része csak a kijelzővel lett volna elfoglalva.
+
+A mérés során a pontosság nem a legfőbb kritérium, viszont egy megközelítő
+értéket kell adjon. Az értékek +-10 százalékban eltérhetnek a valós értéktől, 
+ami még mindig elégséges az azonosításra. 
+
+A projekt verziókövető rendszer jelenlét mellett készült, amivel
+vissza lehetett állítani esetlegesen elrontott fájlokat működő állapotába
+és egy biztonsági másolatkéni is szolgált.
+
+\section{A rendszer Blokk váza}
+
+Az alábbi árbán [\ref{fig:blockDiagramm}] látható a rendszer blokk Diagramja, a fő vezérlő jelekkel.
+A rendszer 2 SPI perifériával kommunikál, ezek a kijelző és a DAC, az analóg kapcsoló vezérlő jelei 
+egyszerű digitális jelek, mint ahogyan a LED vezérlő jelei. A teszter socket mindhárom lába egy-egy ADC
+csatornához van csatlakoztatva, ezen méri a mikrovezérlő a tesztelés során a feszültség szinteket.
+A kapcsoló a RUN bemenetre van kapcsolva, ez engedélyezi a mikrovezérlő futását amíg feszültség érték 
+található rajta vagy nincs bekötve. Amennyiben ez földre kerül akkor a mikrovezérlő leáll és restellődik.
+
+A rendszerhez működéséhez szükséges egy 5V-os feszültség forrás, ez lehet egy általános USB
+tápforrás, vagy lehetséges direkt 5V csatlakoztatása is. Az áramerősség alacsony, így nem közelíti
+meg az 500mA-es áramerősség határt amit egy átlagos USB képes leadni. Külső akkumulátorról
+is táplálható. Amennyiben egy számítógéphez, vagy egy olyan eszközhöz van csatolva ami képes 
+a serial portot olvasni akkor a mérési eredményeket automatikusan elküldi azon keresztül a 
+másik eszköz felé. 
+
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.3]{images/literature/blockDiagramm.png}
+    \caption{A rendszer blokk váza}
+    \label{fig:blockDiagramm}
+\end{figure}
+
+\section{A rendszer osztály diagrammjai}
+
+\subsection{Kijelző vezérlő}
+
+Az alábbi ábrán[\ref{fig:displayClassDiagram}] a kijelző vezérlésért felelős osztályok láthatóak.
+Ez a rendszer többi részétől elszigetelt rész, amely csupán 
+megkapja az eredményeket a mérések után és megjeleníti azt.
+
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.4]{images/diagrams/displayClassDiagram.png}
+    \caption{A kijelző osztály diagramja}
+    \label{fig:displayClassDiagram}
+\end{figure}
+
+Az ILI9341 osztály az alapszintű vezérlésért felelős, itt csak az 
+adat küldési funkcionalitás és a képernyő inicializásása van
+implementálva. A CHARACTERDISPLAY osztály kibővíti ezt és lehetővé
+teszi egyszerű szöveg megjelenítését a kijelzőn.
+A GRAPHDISPLAY kibővítve ezt képes megjeleníteni grafikont
+a kijelzőre beépített skálázással, hogy lehetőleg az egész kijelzőt kihasznélja.
+
+
+\subsection{Mérő áramkör osztály diagrammja}
+
+Alábbiakban [\ref{fig:ControlClassDiagram}] a rendszer az adatok méréséért felelős osztályai láthatóak,
+ezek az osztályok alkotják a mérő eszközök vezérlését, mint a 
+DAC és az analóg kapcsolók és az adatok mérését.
+A rendszrben az ADC globális osztály és abból csak egy van.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.5]{images/diagrams/ControlClassDiagram.png}
+    \caption{A vezérlő osztályok diagramja}
+    \label{fig:ControlClassDiagram}
+\end{figure}
+
+
+\subsection{Számításokért felelő osztályok}
+
+A következő osztályok[\ref{fig:CalculateClassDiagram}] felelnek a részeredmények kiszámításáért. A 
+számításokat az ACALCULATE osztály végzi, az ADCCORRECTER osztály
+feladata az ADC konstans hibájának a kiküszöbölésére. Az 
+ISWITCHCONTROLLER az előző [\ref{fig:ControlClassDiagram}] ábrán látható
+vezérlő rendszerrel van kapcsolatban. A BASEVALUES osztály a mérés során
+történt ideiglenes adatok tárolására szolgál.
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.4]{images/diagrams/CalculateCalssDiagram.png}
+    \caption{A számításokat elvégző osztályok diagramja}
+    \label{fig:CalculateClassDiagram}
+\end{figure}
+
+\section{A mérés folyamat ábrája}
+
+A mérés lépései a következőképpen történik[\ref{fig:CalculateStateDiagram}].
+Első lépésben ellenállásra tesztel, ez ha nem talál semmit,
+vagyis egyik teszter láb sincs csatlakoztatva, vagy nem reagál akkor 
+a tesztelt komponens hibás, vagy nincs csatolva. Amennyiben valamilyen 
+eszköz érzékelve van abban az esetben megpróbálja megmérni az ellenállás 
+értékét, miközben figyelve arra, hogy ellenőrizzen lehetséges diódára is.
+Ezt úgy oldja meg, hogy a dióda ellenállástól eltérően csak egy irányban vezet és
+a feszültség esés konstans az áramerősségtől független.
+
+Amennyiben dióda van detektálva abban az esetben a dióda útvonalon folyatódik a
+tesztelés, különben megpróbálja megmérni az alkatrész kapacitását.
+
+A dióda esetben ellenőrzi, hogy az alkatrész az 2 inverz dióda, és 
+megméri a nyitó feszültségét. Amennyiben nem 2 inverz dióda, akkor abban az esetben
+teszteli tranzisztorra is, ebben az lépésben képes az NPN és PNP tranzisztorokat
+is detektálni és meghatározza a tranzisztor lábkiosztását.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.55]{images/diagrams/stateDiagram.png}
+    \caption{A mérés fázisai}
+    \label{fig:CalculateStateDiagram}
+\end{figure}
+
+%--------------------------------------------------------------------
+
 \section{Mérő áramkör}
 
 A rendszer hasonlóan épül fel, mint a példaként használt rendszer \cite{similarSystem}, viszont néhány módosítással.
@@ -7,7 +171,7 @@ Ezekből az értékekből számítások segítségével ki lehet számolni, hogy
 és lépései a későbbiekben lesznek részletezve) és értékét. A jelenlegi rendszer mérő áramkör része a következőkben
 látható. [\ref{fig:ownTesterConnection}]
 
-\begin{figure}[h]
+\begin{figure}[H]
     \centering
     \includegraphics[scale=0.3]{figures/images/literature/TeszterConnections.png}
     \caption{Saját teszter bekötési rajza}
@@ -37,87 +201,28 @@ a feszültséget, hogy hogyan változik a feszültség ahogy telik az idő. Az A
 tud végezni másodpercenként, viszont ez lelassítható egy belső késleltetővel. Ami segítségével
 a lassan változó jelek is megfigyelhetőek, mint például egy nagy kondenzátor töltödése.
 
+\section{A mérés menete a felhasználó által}
 
-\section{Áramkör terv}
+Az PCB-n található felhasználó által használható eszközök egy kapcsoló és a 
+teszter socket ahová a komponenst kell helyezni. A kapcsoló egy kétállású
+kapcsoló mely a mikrovezérlőt leállítja, vagy elindítja ami által a mérés
+automatikusan elindul.
 
-A rendszer elkészítéséhez szükséges volt egy áramkör tervezése is, mivel több komponens
-csak SMD (Surface Mount Component) formában találhatóak meg, így nem alkalmazhatóak egy
-egyszerű breadboard. Ezen megtalálható minden ami szükséges a rendszer működéséhez, 
-csupán egy micro-USB szükséges a rendszer táplálásához.
+A rendszer tartalmaz 2 LED-et ami a látható a következő fényképen is az
+áramkörről is a kijelző jobb felső sarka fölött [\ref{fig:Aramkor}]. 
+Amennyiben egyik LED sem világít, és a kijelző sem egy fehér hátteret
+mutat abban az esetben a mikrovezérlő nem kap áramot, ilyenkor ellenőrizni
+kell az USB kábelt.
 
-Az áramkör tervet az EasyEDA-ban terveztem, ez egy ingyenesen használható szerkesztő
-program, akár webes felületen is használható és nagy mennyiségű alkatrész található
-meg az adatbázisában amelyek a tervezésre használhatóak.
+Amennyiben a kijelző egy fehér képet mutat, viszont egyik LED sem világít akkor
+a vezérlő reset állapotban van, ezt a vezérlő alatt levő kapcsoló ON 
+pozícióba való állításával lehet orvosolni.
 
-Az áramkör egy kétoldalas lapon található és csak egy oldalán találhatóak a komponensek.
-A másik oldalán legfőképpen a huzalozás található. A rendszer használ kis méretű
-SMD alkatrészeket és THC alkatrészeket is. 
+A mérés kezdetekor a piros LED felkapcsol, majd mérés befelyeztekor a Zöld 
+LED is felkapcsol, ebben az esetben a mérés sikeres volt és az eredmény meg 
+kell jelenjen a kijelzőn és az USB-n keresztül elküldve a számítógéphez.
 
-A huzalozás során nagyobb figyelmet fektettem a nagy frekvenciás SPI jelek
-és a mérőáramkör szétválasztására, a zajok csökkentése érdekében.
-
-\subsection{Problémák az áramkör tervezésekor}
-
-Mivel számomra az áramkör tervezés tárgy nem volt elérhető, így ez volt az első 
-áramkör amit terveztem. Így többször át kellett alakítsam, hogy kivitelezhető legyen.
-
-Legelső alkalommal a rendszer nem volt kivitelezhető, mivel túl vékony vezetékeket
-használtam, ami nem volt legyártható a számomra elérhető helyeken. A komponenseket 
-nehezen lehetett volna beilleszteni (Through Hole komponensek esetén, mint a kijelző),
-mivel a vezetékek a lap mindkét oldalán voltak vezetve, így forrasztás során nehéz
-lett volna azokat a lábakat forrasztani, amelyek a képernyő oldalán voltak.
-Ezek át kellett vezessem olyan módon, hogy csakis a lap másik oldalán legyen a vezeték
-csatlakoztatva a komponenshez.
-
-Beszerzés során nem rendeltem meg minden alkatrészt, csak a fontosakat, így néhány
-egyszerű alkatrészt helyettesítettem más alaktrésekkel, ez csupán egy feszültség referenciát
-2 LED-et és egy kapcsolót érintett, így ezeket inkább helyileg helyettesítettem, minthogy
-ismét rendeljem meg azokat.
-
-A kijelző mérete a szerkesztőben és a valóságban nem egyezett meg, viszont ez még 
-kiderült az áramkör kinyomtatása előtt, így nem vesztődött el sok idő. Az egész
-kijelző nagyobb volt, mint a valóságban, még a láb közei is, így könnyedén látható
-volt, hogy a tervrajz nem lesz kivitelezhető.
-
-A tervrajzra nem tüntettem fel néhány jelzést, ami a felhasználást segíti, így ezt 
-utólag felrajzoltam a lapra.
-
-\subsection{Áramkör elkészítése}
-
-Miután a tervezés elkészült és kivitelezhetőnek lett minősítve azután az áramkör
-el lett keszítve az egyetemi laboratórium segítségével. Miután a lapot a furatokkal és a réz
-huzalozással megkaptam azután elkezdtem a komponensek felhelyezését.
-
-Áramkör forrasztásával szintén nem volt sok tapasztalatom, csupán egyszerűbb
-áramkörökkel, így nem a lehető legszebb, viszont használat során minden elektonikailag
-csatlakoztatva van, így az áramkör működőképes. A végső áramkör a következőkben néz ki.
-[\ref{fig:Aramkor}]
-
-
-\begin{figure}[h]
-    \centering
-    \includegraphics[scale=0.1]{images/literature/PCB.jpg}
-    \caption{A kész áramkör}
-    \label{fig:Aramkor}
-\end{figure}
-
-\section{Szimulációk}
-
-A szimulációra az LTspice \cite{LTspice} alkalmazást használtam, 
-amelyben felépítettem a mérő áramkört és ellenőriztem, hogy az elméleti
-mérési módszer alkalmas-e a mérés elvégzésére, és az értékek milyen
-tartományban vannak, mivel a rendszer nem eléggé érzékeny, hogy a precíz
-értékeket pontosan megadja, így olyan módszer kell ahol a tolerancia nagyobb.
-Egy ilyen példa az áramerősség mérése amit a port ellenállást használja az
-áramerősség meghatározására, viszont kis ellenállás esetén a
-feszültség esés az ellenálláson alacsony áram esetén nem mérhető pontosan.
-Ezért ilyen esetben nagyobb port ellenállást kell alkalmazni, hogy mérhető 
-legyen a feszültség esés.
-
-A program képes az időben változó feszültségeket is mérni, így
-meg lehet tudni, hogy milyen idő intervalumban kell nézni és hogy
-a komponensek időben mennyire befolyásolják a mérést. Ez 
-legfőképpen a kondenzátorok mérésekor volt fontos, hogy megbizonyodjak
-a mérések valóságosságáról.
-
+A teszter sockethez nem lehet tápforrást vagy elemet csatlakoztatni, ide tartoznak
+a nagy méretű kondenzátorok is, a kis méretűeket képes kisütni, de ajánlott 
+csatlakoztatás előtt kisütni ezeket is.
 

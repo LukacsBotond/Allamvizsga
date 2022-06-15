@@ -313,31 +313,6 @@ standardizálva, így az eszköztől függően az adatot olvashatja az órajel f
 lefutó élén. Az adat a mester felé a MISO (master in slave out) vezetéken érkezik,
 viszont a mester kell órajelet generáljon, hogy a szolga el tudja küldeni az adatokat.
 
-\section{A rendszer Blokk váza}
-
-Az alábbi árbán [\ref{fig:blockDiagramm}] látható a rendszer blokk Diagramja, a fő vezérlő jelekkel.
-A rendszer 2 SPI perifériával kommunikál, ezek a kijelző és a DAC, az analóg kapcsoló vezérlő jelei 
-egyszerű digitális jelek, mint ahogyan a LED vezérlő jelei. A teszter socket mindhárom lába egy-egy ADC
-csatornához van csatlakoztatva, ezen méri a mikrovezérlő a tesztelés során a feszültség szinteket.
-A kapcsoló a RUN bemenetre van kapcsolva, ez engedélyezi a mikrovezérlő futását amíg feszültség érték 
-található rajta vagy nincs bekötve. Amennyiben ez földre kerül akkor a mikrovezérlő leáll és restellődik.
-
-A rendszerhez működéséhez szükséges egy 5V-os feszültség forrás, ez lehet egy általános USB
-tápforrás, vagy lehetséges direkt 5V csatlakoztatása is. Az áramerősség alacsony, így nem közelíti
-meg az 500mA-es áramerősség határt amit egy átlagos USB képes leadni. Külső akkumulátorról
-is táplálható. Amennyiben egy számítógéphez, vagy egy olyan eszközhöz van csatolva ami képes 
-a serial portot olvasni akkor a mérési eredményeket automatikusan elküldi azon keresztül a 
-másik eszköz felé. 
-
-
-\begin{figure}[h]
-    \centering
-    \includegraphics[scale=0.3]{images/literature/blockDiagramm.png}
-    \caption{A rendszer blokk váza}
-    \label{fig:blockDiagramm}
-\end{figure}
-
-
 \section{Hasonló eszközök}
 
 Egy hasonló rendszer már megvalósult \cite{similarSystem} ami egy Arduino 
