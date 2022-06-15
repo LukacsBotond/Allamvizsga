@@ -16,16 +16,11 @@ void GRAPHDISPLAY::plotArray(const std::vector<double> &y, const std::string &Ys
         return;
     }
     this->set_Continous_Write_Area();
-    //* value will be between 0-100
-    //! test, make the border
-
     findMax(y);
     std::string maxYstr = std::to_string(MaxY);
     std::string maxXstr = std::to_string(MaxX);
-    // convert_Array_To_graph_Mask(y);
-    //  first line
-    //  std::cout << "currentLine" << (int)currentLine << std::endl;
 
+    //  first line
     std::fill_n(row, rowSize, bg_Color);
     // mid lanes
     while (currentLine < maxLineNr - 2)
@@ -40,12 +35,10 @@ void GRAPHDISPLAY::plotArray(const std::vector<double> &y, const std::string &Ys
             insertChar(0, transChartoCharSet(Yscale[0]));
             insertChar(1, transChartoCharSet(Yscale[1]));
         }
-        // std::cout << "currentLine" << (int)currentLine << std::endl;
         insertChar(2, transChartoCharSet('|'));
         fill_Graph_Row(y);
         writeLine();
         std::fill_n(row, rowSize, bg_Color);
-        // sleep_ms(100);
     }
 
     // n-1 lane
@@ -54,7 +47,6 @@ void GRAPHDISPLAY::plotArray(const std::vector<double> &y, const std::string &Ys
     {
         insertChar(i, transChartoCharSet('_'));
     }
-    // std::cout << "currentLine" << (int)currentLine << std::endl;
     writeLine();
 
     // last Line
@@ -68,12 +60,10 @@ void GRAPHDISPLAY::plotArray(const std::vector<double> &y, const std::string &Ys
     }
     writeLine();
 }
-/*
-void GRAPHDISPLAY::plotArray(std::vector<double> &x, std::vector<double> &y)
-{
-}
-*/
+
+
 //* Private functions
+
 void GRAPHDISPLAY::findMax(const std::vector<double> &y)
 {
     auto max = max_element(std::begin(y), std::end(y));
@@ -96,8 +86,6 @@ void GRAPHDISPLAY::fill_Graph_Row(const std::vector<double> &y)
             double height = y.at(i) - lowerRange;
             int Yposition = ((7 - (int)(height / mult))) * lineWidth;
             int pos = (Yposition + 24 + (double)(XStep * i));
-            // int pos = 0 + 24 + (double)(XStep * i);
-            //std::cout << "XSTEP: " << XStep << " offset: " << (double)(XStep * i) << " YPosition: " << Yposition << std::endl;
             row[pos] = fg_Color;
         }
     }

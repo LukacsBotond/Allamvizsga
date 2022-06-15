@@ -1,4 +1,164 @@
-\section{Áramkör terv}
+\section{Szoftver rész}
+
+\subsection{A beépített ADC használata}
+
+A mikorvezérlőbe egy 3 csatornás ADC van beépítve, viszont egyszerre csak 1 
+csatornát lehet olvasni, olvasás előtt át kell váltani arra a csatornára, amelyről
+az adatot olvasni akarjuk. Az ADC hardver szinten egy 48Mhz-es órajelet kap és
+egy mérés minimum 96 ciklusba telik, így 500k mérést végez másodpercenként, 
+ezt viszont növelhető dinamikusan szoftveresen, így csökkenthető a mérési gyorsaság.
+
+
+Az ADC képes DMA-n (direct memory access) [\cite{DMA}] keresztül kommunikálni a 
+memóriával, így inicializálás után automatikusan elvégzi a méréseket az adott
+csatornán. A csatorna inicializálása a következőképpen alakul. A méréseket
+egy előre lefoglalt tömbbe teszi ami jelen esetben a \textbf{capture$\_$buf} tömb,
+aminek a mérete \textbf{CAPTURE$\_$DEPTH} . A mérés után a tömbben időrendi sorrendben
+kiolvashatók a mérések.
+
+
+\begin{lstlisting}
+
+    //ezeket csak egyszer a konstruktorban kell meghivni
+    dma_chan = dma_claim_unused_channel(true);
+    cfg = dma_channel_get_default_config(dma_chan);
+
+    //minden indulas elott
+    adc_fifo_setup(
+        true, // Write each completed conversion to the sample FIFO
+        true, // Enable DMA data request (DREQ)
+        1,    // DREQ (and IRQ) asserted when at least 1 sample present
+        true, // Set sample error bit on error
+        false // Keep full 12 bits of each sample
+    );
+    //Set the size of each DMA bus transfer
+    channel_config_set_transfer_data_size(&cfg, DMA_SIZE_16);
+    channel_config_set_read_increment(&cfg, false);
+    channel_config_set_write_increment(&cfg, true);
+    channel_config_set_dreq(&cfg, DREQ_ADC);
+    dma_channel_configure(dma_chan, &cfg,
+                          capture_buf,   // dst
+                          &adc_hw->fifo, // src
+                          CAPTURE_DEPTH, // transfer count
+                          true           // start immediately
+    );
+
+    // miutan elo van keszitve
+    adc_run(true);//elinditja a merest
+    dma_channel_wait_for_finish_blocking(dma_chan);//var mig befelyezi a merest
+    adc_run(false);//leallitja a merest
+
+\end{lstlisting}
+
+Az ADC konstans hibával rendelkezik, vagyis 0V feszültséget nem 0-nak érzékel
+és 3.3V-ot nem 4096-nek (az ADC 12 bites felbontású). Ezért erre a célra egy
+lineáris hibajavító függvény van alkalmazva. Ennek működési lényege, hogy
+megméri 0V-on milyen értéket mér az ADC és 3.3V-on. Ezeket az értékeket elmenti
+és minden jövőbeli mérést a következőképpen korrigál.
+
+
+\begin{lstlisting}
+    for (int i = 0; i < samplesSize; i++)
+    {
+        samples[i] = (samples[i] * VCCOffset) - gndOffset;
+    }
+\end{lstlisting}
+
+\subsection{Beépített SPI használata}
+
+A mikrovezérlőnek 2 különálló SPI chatornája van és mindkét csaornának 2 különböző
+helyre van kivezetése a GPIO-ra [\ref{fig:Pico_pinout}]. Itt rá kell csatlakoztatni az eszköz vezetékeit, úgy
+hogy egy eszköz minden SPI vezetéke ugyan azt a csatornát használja.
+
+Amennyiben csatlakoztatva van akkor programon belül meg kell határozni, hogy 
+melyik GPIO van használva melyik célra, itt nem kötelező mind a 4 (MOSI,MISO,CLK,CS)
+jeleket felsorolni, vagy akár csatlakoztatni fizikailag a MISO esetében. Az 
+ajánlott a MOSI és a CLK jelek, hogy majd lehessen változtatni az SPI módokat.
+
+Beépítetten 8 és 16 bites adat tömböt vár szoftver oldalon, viszont csak az első
+8 bitet küldi el, ha a programozó nem állítsa át. Nagyobb adatot is át lehet 
+küldeni (pl. 24bit amit a DAC használ), viszont azt a programozó kell megoldja,
+mint egy 16 bites és egy 8 bites csomag. Ezért nem használtam a CS jelt, mint 
+SPI jel, hanem digitális jel, mert így teljes kontrollom volt felette és nem 
+kellett féljek, hogy ilyenkor a CS belezavar a küldésbe.
+
+
+\subsection{Kijelző vezérlése}
+
+A kijelző vezérlése a [\ref{fig:displayClassDiagram}] ábrán látható osztály diagrammot használja, 
+az SPI osztálynak meg kell adni, hogy hová vannak csatlakoztatva a vezetékek, 
+ezek az adatok megtalálhatóak a \textbf{Global.h} fájlban, ezen kívül a 
+kijelző használ még egyedi vezérlő jeleket is, amelyek globálisan definiálva vannak,
+így ezeket nem kell megadni. 
+
+A kijelzőnek van egy DC jele, ami a parancs és adat mód váltásáért felelős.
+Amennyiben ez a jel magas akkor a beérkező adat parancsként van értelmezve, amíg 
+ez alacsony akkor adatként.
+
+Nincs a teljes képernyő adata elmentve a memóriában egy időben, mivel a kijelzőnek
+van saját memóriája, így csak módosítani kell azt. A memóriában egy időben csak 
+egy 8 pixel magas sor van eltárolva, mivel egy karakter is ilyen magas.
+Amint megvan egy sor kiszámítása akkor azt elküldi és kezdi a következő sort.
+Mivel a kijelző nagy frekvenciás órajellel is képes működni (68Mhz), így a küldési
+idő is alacsony.
+
+Az ILI9341 osztály csak az inicializálásért felel, a parancs és adat 
+módokban való küldésért és a képernyő teljes újratöltésére egy színnel, vagy a jelenlegi
+sortól kezdve a kijelző végéig.
+
+A CHARACTERDISPLAY osztály képes egyszerű ASCII alapú üzenetek kijelzésére.
+Ezt egy mask tömbbel éri el, minden karakternek van egy 8x8as maskja, amely
+bittenként tárolja el, hogy hol kell változtatni a színt.
+Ahol a mask 1-es értékű, ott a pixelt a karakter színűre kell festeni, ahol 0
+ott a háttérszínűre.
+Ez minden betűn egyenként végig halad és beteszi a tároló tömb megfeelő indexére
+a szín értéket, a tároló sor küldés kezdetekor fel van töltve a háttérszín 
+értékével, ez törli az előző sor értékeit és így csak ott kell módosítani
+ahol szükséges.
+Küldés során printLine(string) függvény kap egy string értéket.
+Itt figyelemmel kell lenni arra, hogy automatikusan nem kezd új sort
+ha hosszú a szöveg. Ezen karakterenként végig haladva átalakítja a karaktereket maskokká
+és beírja a tárolóba. A 
+
+
+\begin{lstlisting}
+
+void CHARACTERDISPLAY::insertChar(uint8_t position, const uint8_t *charSet)
+{
+    for (int bit = 0; bit < 8; bit++)
+    {
+        uint8_t mask = 128 >> bit; // from last in the mask to the first
+        for (uint16_t i = 0; i < lineHeight; i++)
+        {
+            if (charSet[i] & mask)
+            {
+                // id is the position of the pixel
+                int id = i * lineWidth + position * 8 + bit;
+                row[id] = fg_Color; // set pixel to fg_Color
+            }
+        }
+    }
+}
+
+\end{lstlisting}
+
+
+A GRAPHDISPLAY képes használni a CHARACTERDISPLAY függvényeit és kibővíti azzal,
+hogy lehetővé teszi XY grafikonok kirajzolását. Itt csak egy vektort kell megadni,
+az szerint lesz skálázva, hogy a kijelzőt a legnagyobb mértékben kihasználja.
+A kijelző legfelső sorában lesz a maximális érték és az szerint lesz skálázva a
+többi érték. A kapott értékek számától függően az OX tengelyen az szerint lesznek
+egyenletesen felosztva az értékek.
+
+A függvény hívásakor meg kell adni, hogy az értékek milyen mértékegységűek, ez 2
+karakter lehet maximum (pl. mA). 
+
+
+
+
+%----------------------------------------HW-------------------------
+
+\section{Hardver rész}
 
 A rendszer elkészítéséhez szükséges volt egy áramkör tervezése is, mivel több komponens
 csak SMD (Surface Mount Component) formában találhatóak meg, így nem alkalmazhatóak egy
@@ -16,10 +176,27 @@ SMD alkatrészeket és THC alkatrészeket is.
 A huzalozás során nagyobb figyelmet fektettem a nagy frekvenciás SPI jelek
 és a mérőáramkör szétválasztására, a zajok csökkentése érdekében.
 
+A jel vezető huzalok vékonyabbak, mint az áramot vezető huzalok, viszont ez csak
+design szempontjából van jelentősége, mivel az áramerősség alacsony így vékonyabb
+hozalok is megfelenének a feladatra. Egyes esetekben amikor a kis méretű SMD 
+alkatrészekhez kell csatlakoztatni a vezetékeket akkor közvetlen a csatlakoztatás
+előtt a vezeték vastagság lecsökken, hogy lehetséges legyen a forrasztás annálkül,
+hogy a mellette levő lábbal rövidzárt okozzon.
+
+A chipek mellett találhatóak kondenzátorok is, amelyek a tápfeszültség stabilitására
+szolgálnak.
+
 \subsection{Problémák az áramkör tervezésekor}
 
 Mivel számomra az áramkör tervezés tárgy nem volt elérhető, így ez volt az első 
-áramkör amit terveztem. Így többször át kellett alakítsam, hogy kivitelezhető legyen.
+áramkör amit terveztem[\ref{fig:PCBV1}]. Így többször át kellett alakítsam, hogy kivitelezhető legyen.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.3]{images/literature/PCBV1.png}
+    \caption{NYÁK első verziója}
+    \label{fig:PCBV1}
+\end{figure}
 
 Legelső alkalommal a rendszer nem volt kivitelezhető, mivel túl vékony vezetékeket
 használtam, ami nem volt legyártható a számomra elérhető helyeken. A komponenseket 
@@ -44,9 +221,17 @@ utólag felrajzoltam a lapra.
 
 \subsection{Áramkör elkészítése}
 
-Miután a tervezés elkészült és kivitelezhetőnek lett minősítve azután az áramkör
+Miután a tervezés elkészült és kivitelezhetőnek lett minősítve[\ref{fig:PCBV2}] azután az áramkör
 el lett keszítve az egyetemi laboratórium segítségével. Miután a lapot a furatokkal és a réz
 huzalozással megkaptam azután elkezdtem a komponensek felhelyezését.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.3]{images/literature/PCBV2.png}
+    \caption{NYÁK első verziója}
+    \label{fig:PCBV2}
+\end{figure}
+
 
 Áramkör forrasztásával szintén nem volt sok tapasztalatom, csupán egyszerűbb
 áramkörökkel, így nem a lehető legszebb, viszont használat során minden elektonikailag
@@ -54,7 +239,7 @@ csatlakoztatva van, így az áramkör működőképes. A végső áramkör a kö
 [\ref{fig:Aramkor}]
 
 
-\begin{figure}[h]
+\begin{figure}[H]
     \centering
     \includegraphics[scale=0.1]{images/literature/PCB.jpg}
     \caption{A kész áramkör}
@@ -79,4 +264,7 @@ meg lehet tudni, hogy milyen idő intervalumban kell nézni és hogy
 a komponensek időben mennyire befolyásolják a mérést. Ez 
 legfőképpen a kondenzátorok mérésekor volt fontos, hogy megbizonyodjak
 a mérések valóságosságáról.
+
+A szimulációk többször is segítséget jelentettek a program 
+hibáinak felfedezésében amit annélkül nehezebb lett volna felfedezni.
 

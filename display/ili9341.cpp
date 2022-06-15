@@ -33,10 +33,6 @@ ili9341_config_t ili9341_config = {
 
 ILI9341::ILI9341(SPI *spi) : spi(spi)
 {
-    // spiPorts* tmp = new spiPorts(0, 10, 13, 14, 15, 12, 11);
-    // SPIPORTS *tmpPorts = new SPIPORTS(0, 4, 5, 6, 7, 8, 9);
-    // spi_instance = new SPI(300, tmpPorts);
-    // delete tmpPorts;
     // high = command, low = data
 
     gpio_init(DISP_DC);
@@ -163,7 +159,6 @@ void ILI9341::writeLine()
     currentLine++;
 }
 
-// TODO whatewer this is NOT doing
 void ILI9341::fillRestScreen(uint16_t color)
 {
     std::fill_n(row, rowSize, color);
@@ -180,16 +175,5 @@ void ILI9341::fillColor(uint16_t color)
     for (int i = 0; i < pixels; i++)
     {
         spi->write_data(&color, 1);
-    }
-}
-
-//* DEBUG
-void ILI9341::dumpRow()
-{
-    std::cout << "character write dump row\n";
-    for (int i = 0; i < rowSize; i++)
-    {
-        std::cout << row[i] << " ";
-        sleep_ms(1);
     }
 }

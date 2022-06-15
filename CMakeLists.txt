@@ -45,7 +45,7 @@ add_executable(src src.cpp
 
         # test cases
         #Tests/BaseCleanInputTest.cpp
-        Tests/TestPrinter.cpp
+        #Tests/TestPrinter.cpp
         )
 
 pico_set_program_name(src "src")
