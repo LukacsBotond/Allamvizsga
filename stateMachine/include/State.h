@@ -13,6 +13,7 @@ public:
     static std::map<int, std::string> usedPins;
     static std::map<std::string, double> results;
     static std::string mainResult;
+
 protected:
     static ICALCULATE *icalculate;
     static std::vector<std::string> usedModes;
@@ -28,6 +29,10 @@ public:
     std::map<std::string, double> getResults();
     std::vector<double> getMeasurement(std::string measurement);
     bool checkReverse(const std::string &measurementNormal, const std::string &measurementReverse);
+    /*if there is a similar voltage drop with a smaller and a larger resistor then
+        it is a diode
+    */
+    bool twoInverseDiode();
 };
 
 STATE::STATE(/* args */)
@@ -109,6 +114,29 @@ bool STATE::checkReverse(const std::string &measurementNormal, const std::string
             }
         }
     }
+}
+
+bool STATE::twoInverseDiode()
+{
+    if (usedModes.size() < 4)
+    {
+        return false;
+    }
+    double threshold1 = icalculate->diodeThreshold(usedModes.at(0));
+    double threshold2 = icalculate->diodeThreshold(usedModes.at(2));
+    if (std::abs(threshold1 - threshold2) < 0.5)
+    {
+        return true;
+    }
+    threshold1 = icalculate->diodeThreshold(usedModes.at(1));
+    threshold2 = icalculate->diodeThreshold(usedModes.at(3));
+    if (std::abs(threshold1 - threshold2) < 0.5)
+    {
+        return true;
+    }
+    std::cout << std::endl;
+
+    return false;
 }
 
 //*protected

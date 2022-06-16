@@ -46,6 +46,11 @@ bool TRANSISTOR::check()
         bool npn, pnp;
         pnp = transTestStart("5", gatePin);
         npn = transTestStart("6", gatePin);
+        if (npn && pnp)
+        {
+            return false;
+        }
+
         if (npn || pnp)
         {
             // std::cout << "npn: " << npn << " pnp " << pnp << " HF_fw" << HFE_fw << " HF_bw " << HFE_bw << std::endl;

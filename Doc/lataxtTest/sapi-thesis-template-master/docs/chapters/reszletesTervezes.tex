@@ -1,4 +1,4 @@
-\section{Szoftver rész}
+\section{Szoftver vezérlő rész}
 
 \subsection{A beépített ADC használata}
 
@@ -63,6 +63,30 @@ megméri 0V-on milyen értéket mér az ADC és 3.3V-on. Ezeket az értékeket e
         samples[i] = (samples[i] * VCCOffset) - gndOffset;
     }
 \end{lstlisting}
+
+\subsection{Digitál analóg Konverter}
+
+A DAC SPI-n keresztül kömmunikál, ezért
+szüksége van egy SPI osztályra amely inicializálja az 
+SPI portokat. A használt portok szintén a \textbf{Global.h}
+fájlban találhatóak meg. A DAC szintén használ az SPI protokokolon
+kívüli jeleket, viszont ezek a reseten kívül opcionálisak és 
+elégséges lenne közvetlen a földre kötni. Ezekkel a jelekkel
+lehetséges lenne jelet küldeni, hogy mikor töltse be az adatot
+a pufferből, viszont ez szoftveresen is megoldható így azt a megoldás
+van alkalmazva.
+
+Mivel egy külső feszültség referencia van alkalmazva, így a belsőt
+ki kell kapcsolni a \textbf{0x012000} parancs küldésével az SPI-n keresztül.
+A küldés során 24 bitet vár a DAC amiből az első 8 bit parancsként
+van értelmezve, míg a hátsó 16bit adatként. Mindenik lehetséges parancs
+fel van sorolva a \textbf{IDAC.h}-ban, amit, így a parancs nevét és a 
+kívánt feszültséggel kell a függvényt meghívni.
+
+%! INSERT PID WHEN IT IS COMPLETE----------
+
+
+
 
 \subsection{Beépített SPI használata}
 
@@ -155,6 +179,73 @@ karakter lehet maximum (pl. mA).
 
 
 
+\subsection{Analóg kapcsoló}
+
+Ennek az osztálynak a feladata az analóg kapcsolók vezérlése és ez az
+osztály vezérli a DAC-ot is. Ez képes egyszerre vezérelni mindhárom kapcsolót
+egyszerre és mivel a komponens azonosítására nem szükséges analóg jeleket
+használni, így egy beállítás táblázatot használ, amellyel megadható, hogy 
+melyik ellenállást kapcsolja és, hogy milyen feszültséget adjon le a DAC
+a következő táblázat szerint [\ref{fig:KapcsoloMod}].
+
+\begin{figure}[H]
+    \centering
+    \begin{tabular}{|l|l|l|}
+    \hline
+    Mód & Használt ellenállás & Feszültség \\ \hline
+    0   & Nincs               & 0V         \\ \hline
+    1   & Kicsi(100 Ohm)      & 0V         \\ \hline
+    2   & Kicsi(100 Ohm)      & 3.3V       \\ \hline
+    3   & Közepes(330 Ohm)    & 0V         \\ \hline
+    4   & Közepes(330 Ohm)    & 3.3V       \\ \hline
+    5   & Nagy(4700 Ohm)      & 0V         \\ \hline
+    6   & Nagy(4700 Ohm)      & 3.3V       \\ \hline
+\end{tabular}
+\caption{Kapcsolási táblázat}
+\label{fig:KapcsoloMod}
+\end{figure}
+
+Így a mérés során csak egy 0-6 közti értéket kell küldeni 
+ahhoz, hogy a megfelelő ellenállást és feszültség legyen
+minden kapcsoló kimenetén. Lehetőség van arra is, hogy csak 
+a feszültség legyen beállítva és a kapcsoló nyitott állapotban legyen,
+ez abban az esetben fontos ahol időben való változást kell figyelni,
+mint például a tranzisztor töltése. Ebben az esetben előre 
+beállítható a DAC kimenete és mivel az ADC osztály a második
+processzor magon fut így a szemafor jelzésére az ADC elkezd mérni, 
+viszont ha ekkor kerül csak elküldésre az adat a DAC-nak akkor 
+nagy késések lehetnek és az ADC hibás adatokat fog mérni.
+Így ha csak a kapcsolót kell átkapcsolni akkor a késés minimális és az ADC
+nem fog hibás adatokat olvasni.
+
+Az a kapcsolók egyszerre való írása maszkolással van elérve. Mivel az 
+analóg kapcsolók egymás mellett helyezkednek el, így azt a 
+részt ki lehet maskolni és az érték maszkba meg azokra a pozíciókra
+kerül amit be akarunk írni. Ezt a beépített gpio_put_masked(uint32_t mask, uint32_t value)
+függvénnyel értem el. A Sw_translation_Map a [\ref{fig:KapcsoloMod}] táblázatban
+szereplő értékeket tartalmazza.
+
+
+\begin{lstlisting}
+
+void ASWITCHCONTROLLER::setSwithcSetting(const uint8_t sw1, const uint8_t sw2, const uint8_t sw3)
+{
+    // set switch
+    gpio_put_masked(this->mask, 0 | (Sw_translation_Map[sw1].setting << 16) | (Sw_translation_Map[sw2].setting << 18) | (Sw_translation_Map[sw3].setting << 20));
+}
+
+\end{lstlisting}
+
+
+\section{Szoftver logikai rész}
+
+Az azonosítás a [\ref{fig:CalculateStateDiagram}] ábrán látható
+módon történik egy állapot gép osztály struktúrát alkalmazva.
+
+\subsection{Ellenállás teszt}
+
+Első lépésben a rendszer ellenállásra tesztel, 
+
 
 %----------------------------------------HW-------------------------
 
@@ -228,7 +319,7 @@ huzalozással megkaptam azután elkezdtem a komponensek felhelyezését.
 \begin{figure}[h]
     \centering
     \includegraphics[scale=0.3]{images/literature/PCBV2.png}
-    \caption{NYÁK első verziója}
+    \caption{NYÁK végső verziója}
     \label{fig:PCBV2}
 \end{figure}
 

@@ -253,36 +253,6 @@ se legyen kapcsolva. A kimenet kiválasztása a következő táblázattal lehets
 
 \section{Felhasznált Technológiák}
 
-\subsection{A programozási nyelv}
-
-A mikrovezérlő programozásához a C++ nyelv van használva. A mikrovezérlő alkalmazni 
-tudja a standard könyvtárakat, és az objektum orientáltságából fakadóan lehet az 
-OOP sémákat alkalmazni, amellyel bonyolultabb feladatokat is meg lehet valósítani
-már megoldott példák alapján, ezzel lecsökkentve a programozási időt.
-Mivel a standard C++ legtöbb függvényét ezért a kód hasonló, mintha az egy számítógépre
-lett volna írva, csupán az alacsony szinten kell egyedi függvényeket meghívni.
-Ezek a függvények jól dokumentáltak és a legtöbb esetben van egy teljesen működőképes
-példa program.
-
-A mikrovezérlő csak C/C++ és micropython nyelveken programozható, viszont ennek
-kevesebb a dokumentációja és lassabb, így nem alkalmas erre a feladatra.
-
-
-\subsection{Mikrovezérlő felprogramozása}
-
-A projekt lefordítására szükséges egy egyedi compiler, ami a programot lefordítsa
-a mikrovezérlő által megérthető nyelvre. Ez telepíthető a Raspberry oldalán megadott 
-utasításokkal, viszont ez lehetséges, hogy frissül, így telepítés előtt ajánlott
-azt követni. A compiler Linux és Windows rendszereken is használható. A fordítás után
-generál egy .uf2 fájlt, ezt kell feltölteni a mikrovezérlőre amit elment a Flash
-memóriájában és automatikusan indul amit bekapcsol.
-
-A programozásra csak egy micro-USB kábel szükséges. A számítógéphez csatlakoztatás előtt
-a mikrovezérlőn található BOOTSEL gombot lenyomva kell tartani és így csatlakoztatni a
-számítógéphez, ekkor megjelenik mint egy külső tároló. Ebbe a tárolóba fel kell másolni
-a generált .uf2 fájlt, amint ez megtörtént lecsatlakozik és futtatni kezdi a programot.
-
-
 \subsection{SPI}
 
 A kommunikációs protokoll amit a kijelző és a DAC használ. A mikrovezérlőnek vannak
