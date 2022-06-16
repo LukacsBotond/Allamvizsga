@@ -51,12 +51,14 @@ void DIODE::calculate()
     if (twoInverseDiode())
     {
         saveRes(0);
+        return;
     }
     for (uint i = 0; i < usedModes.size(); i += 2)
     {
         if (!checkReverse(usedModes[i], usedModes[i + 1]))
         {
             saveRes(i);
+            return;
         }
     }
 }
@@ -64,7 +66,7 @@ void DIODE::calculate()
 //* private
 void DIODE::setUsedPins(const std::string &usedMode)
 {
-    this->results.clear();
+
     for (int i = 0; i < 3; i++)
     {
         int tmpMode = usedMode[i] - '0';
@@ -83,6 +85,7 @@ void DIODE::setUsedPins(const std::string &usedMode)
 
 void DIODE::saveRes(int index)
 {
+    this->results.clear();
     double val = icalculate->diodeThreshold(usedModes[index]);
     this->mainResult = "Diode";
     if (val < 3)

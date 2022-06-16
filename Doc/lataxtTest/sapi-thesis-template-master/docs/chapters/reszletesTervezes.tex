@@ -244,7 +244,30 @@ módon történik egy állapot gép osztály struktúrát alkalmazva.
 
 \subsection{Ellenállás teszt}
 
-Első lépésben a rendszer ellenállásra tesztel, 
+Az ellenállás tesztelés során ellenőrzi, hogy az eszköz teszteli, 
+hogy a alkatrész az egy dióda vagy ellenállás és amellyiben ellenállás 
+akkor elmenti az ellenállását. Amennyiben egyiket sem találja
+akkor abban az esetben az alkatrész nem detektálható ezzel az eszközzel.
+
+Mivel a diódáknak az a tulajdonságuk, hogy csak egyik irányban vezetnek
+és áramerősségtől kevésbé függő a feszültség esésők, így fel lehet ezt
+használni a detekciójukra.
+
+Első lépésben ellenőrzi, hogy az alaktrész vezet-e mindkét irányban, 
+minimális eltéréssel akkor ezzel az egyszerű dióda ki van zárva.
+A tesztelés során ugyan azon irányból, csak különböző ellenállásokkal
+is letesztelődik, ennek lényege az, hogy ha esetlegesen az alkatrész
+egy ellenállás akkor az alkatrészen levő feszültség esés lehet olyan alacsony,
+hogy az nem pontosan mérhető. 
+Egy ilyen eset amikor a kapcsoló ellenállásai nagy értéküek, de a tesztelt 
+ellenállás kis értékű, így
+a mért feszültség esés néhány mV ami nem mérhető pontosan, így a 
+mérés nem használható. 
+
+Viszont az a lehetőség is fenn áll, hogy a tesztelt eszköz egy 2 
+inverz dióda, így ez mindkét irányban azonosan vezet, ezt a különböző
+kapcsoló ellenállásokkal lehet detektálni, mivel a feszültség esés hasonló
+így ezt észlelve bizonyos, hogy az alkatrész egy 
 
 
 %----------------------------------------HW-------------------------
