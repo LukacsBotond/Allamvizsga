@@ -10,6 +10,9 @@ class DAC : public IDAC
 private:
     SPI *spi;
     PID *pid;
+
+    uint8_t channelSearch(int port);
+    std::string measureMode = "000";
     void PIDCorrection(int gatePin, float ConstCurrentVal, int resistor);
     double getGatecurrent(ICALCULATE *icalculate, int basePin);
     double getGatecurrent(ICALCULATE *icalculate, double supplyVoltage, int basePin);
@@ -68,6 +71,7 @@ DAC::~DAC()
 void DAC::setVoltageOnChannel(uint16_t voltage, uint8_t command)
 {
     uint32_t merged = ((uint32_t)(command << 16)) | (uint16_t)voltage;
+    std::cout << "voltage: " << (int)voltage << " command: " << (int)command << " merged: " << merged << std::endl;
     this->spi->write_data(&merged, 1);
 }
 
@@ -84,61 +88,68 @@ void DAC::characteristicDiagramm(ICALCULATE *icalculate)
     std::vector<int> resBase = transistor.usedPinsFindByValue("B");
     std::vector<int> resCollector = transistor.usedPinsFindByValue("C");
     std::cout << "max baseCurrent" << getGatecurrent(icalculate, resBase.at(0)) << std::endl;
-    uint8_t command;
+    std::cout << "measureMode: " << measureMode << std::endl;
+    // the switches will be opened by default so we need to reset them
+    icalculate->controller->prepareSwitchSetting(measureMode[0] - '0', measureMode[1] - '0', measureMode[2] - '0');
+    icalculate->controller->setSwithcSetting(measureMode[0] - '0', measureMode[1] - '0', measureMode[2] - '0');
+    uint8_t IcChannel = channelSearch(resCollector.at(0));
+    // uint8_t IbChannel = channelSearch(resBase.at(0));
+    std::cout << "IcChannel: " << (int)IcChannel << std::endl;
+    for (uint16_t IcVolt = 0; IcVolt < INT16_MAX; IcVolt += INT16_MAX / 200)
+    {
+        setVoltageOnChannel(IcVolt, IcChannel);
+        std::cout << "icVolt: " << IcVolt << " max baseCurrent: " << getGatecurrent(icalculate, 3.3, resBase.at(0)) << std::endl;
+        sleep_ms(250);
+    }
+}
 
-    switch (resCollector.at(0))
+//*Private
+uint8_t DAC::channelSearch(int port)
+{
+    switch (port)
     {
     case 0:
-        command = DAC_COMM_WRITE_BUFF_LOAD_B;
-        break;
+        return DAC_COMM_WRITE_BUFF_LOAD_ALL_B;
+
     case 1:
-        command = DAC_COMM_WRITE_BUFF_LOAD_C;
+        return DAC_COMM_WRITE_BUFF_LOAD_ALL_C;
         break;
     case 2:
-        command = DAC_COMM_WRITE_BUFF_LOAD_D;
+        return DAC_COMM_WRITE_BUFF_LOAD_ALL_D;
+
         break;
     default:
         break;
     }
-
-    setVoltageOnChannel(2048, command);
-    std::cout << "max baseCurrent" << getGatecurrent(icalculate, double(2048.0 / 4096.0) * 3.3, resBase.at(0)) << std::endl;
-
-    /*
-        for (uint16_t IcVolt = 0; IcVolt < 4096; IcVolt += 4096 / 200)
-        {
-            PIDCorrection(res.at(0), )
-        }
-        */
+    throw NOTSUPPOSEDTOREACHTHIS("DAC channelSearch out of range");
 }
-
-//*Private
 
 double DAC::getGatecurrent(ICALCULATE *icalculate, int basePin)
 {
     TRANSISTOR transistor(icalculate);
     std::vector<int> resCollector = transistor.usedPinsFindByValue("C");
     std::vector<int> resEmmiter = transistor.usedPinsFindByValue("E");
-    std::string mode = "000";
+
     if (STATE::mainResult == "npn transistor")
     {
-        mode[basePin] = '2';
+        measureMode[basePin] = '2';
     }
     else
     {
-        mode[basePin] = '1';
+        measureMode[basePin] = '1';
     }
-    mode[resCollector.at(0)] = '2';
-    mode[resEmmiter.at(0)] = '1';
-    std::vector<double> measurement = icalculate->SameOut3ChannelRepeat(mode[0] - '0', mode[1] - '0', mode[2] - '0');
-    // std::cout << measurement.at(0) << " " << measurement.at(1) << " " << measurement.at(2) << "resi " << icalculate->controller->getTotResistor(mode[resBase.at(0)] - '0') << std::endl;
+    measureMode[resCollector.at(0)] = '2';
+    measureMode[resEmmiter.at(0)] = '1';
+    std::vector<double> measurement = icalculate->SameOut3ChannelRepeat(measureMode[0] - '0', measureMode[1] - '0', measureMode[2] - '0');
+    std::cout << measurement.at(0) << " " << measurement.at(1) << " " << measurement.at(2) << std::endl;
     return double((3.3 - measurement.at(basePin)) / RESISTOR_LOW) * 1000.0;
 }
 
 double DAC::getGatecurrent(ICALCULATE *icalculate, double supplyVoltage, int basePin)
 {
     std::vector<double> measurement = icalculate->SameOut3ChannelRepeat();
-    return double((3.3 - measurement.at(basePin)) / RESISTOR_LOW) * 1000.0;
+    std::cout << measurement.at(0) << " " << measurement.at(1) << " " << measurement.at(2) << std::endl;
+    return double((supplyVoltage - measurement.at(basePin)) / RESISTOR_LOW) * 1000.0;
 }
 
 void DAC::PIDCorrection(int gatePin, float ConstCurrentVal, int resistor)
