@@ -122,21 +122,23 @@ bool STATE::twoInverseDiode()
     {
         return false;
     }
+    bool fw = false, bw = false;
+    //check voltage drop with different resistors
     double threshold1 = icalculate->diodeThreshold(usedModes.at(0));
     double threshold2 = icalculate->diodeThreshold(usedModes.at(2));
     if (std::abs(threshold1 - threshold2) < 0.5)
     {
-        return true;
+        fw = true;
     }
+    //check voltage drop with different resistors
     threshold1 = icalculate->diodeThreshold(usedModes.at(1));
     threshold2 = icalculate->diodeThreshold(usedModes.at(3));
     if (std::abs(threshold1 - threshold2) < 0.5)
     {
-        return true;
+        bw = true;
     }
-    std::cout << std::endl;
-
-    return false;
+    
+    return fw && bw;
 }
 
 //*protected

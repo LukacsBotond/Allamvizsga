@@ -221,8 +221,8 @@ nem fog hibás adatokat olvasni.
 Az a kapcsolók egyszerre való írása maszkolással van elérve. Mivel az 
 analóg kapcsolók egymás mellett helyezkednek el, így azt a 
 részt ki lehet maskolni és az érték maszkba meg azokra a pozíciókra
-kerül amit be akarunk írni. Ezt a beépített gpio_put_masked(uint32_t mask, uint32_t value)
-függvénnyel értem el. A Sw_translation_Map a [\ref{fig:KapcsoloMod}] táblázatban
+kerül amit be akarunk írni. Ezt a beépített gpio$\_$put$\_$masked(uint32$\_$t mask, uint32$\_$t value)
+függvénnyel értem el. A Sw$\_$translation$\_$Map a [\ref{fig:KapcsoloMod}] táblázatban
 szereplő értékeket tartalmazza.
 
 
@@ -241,6 +241,17 @@ void ASWITCHCONTROLLER::setSwithcSetting(const uint8_t sw1, const uint8_t sw2, c
 
 Az azonosítás a [\ref{fig:CalculateStateDiagram}] ábrán látható
 módon történik egy állapot gép osztály struktúrát alkalmazva.
+A kezdetben ismeretlen komponensként van az alkatrész azonosítva,
+majd ahogy egy fázison áthalad úgy frissítve lesz. 
+Egy ilyen példa a tranzisztor tesztelése. Első lépésben elbukik az 
+ellenállás teszten így nem lesz frissítve, majd a dióda teszten
+megtalálja vagy a Collector-Bázis vagy a Bázis-Emmiter diódát, 
+mivel egyszerre csak 1-et keres a tesztelés során, elmenti ezeknek az 
+paramétereit, majd a tranzisztor tesztelés során fölülírja ezeket az értékeket 
+és a tranzisztor értékeivel tölti fel.
+
+Amennyiben egy következő fázis nem sikeres akkor abban az esetben 
+a régi értékek megmaradnak és az lesz az azonosítás eredménye.
 
 \subsection{Ellenállás teszt}
 
@@ -264,10 +275,137 @@ ellenállás kis értékű, így
 a mért feszültség esés néhány mV ami nem mérhető pontosan, így a 
 mérés nem használható. 
 
-Viszont az a lehetőség is fenn áll, hogy a tesztelt eszköz egy 2 
+Viszont az a lehetőség is fenn áll, hogy a tesztelt eszköz egy
 inverz dióda, így ez mindkét irányban azonosan vezet, ezt a különböző
 kapcsoló ellenállásokkal lehet detektálni, mivel a feszültség esés hasonló
-így ezt észlelve bizonyos, hogy az alkatrész egy 
+így ezt észlelve bizonyos, hogy az alkatrész egy inverz dióa.
+
+\begin{lstlisting}
+    bool STATE::twoInverseDiode()
+    {
+        if (usedModes.size() < 4)
+        {
+            return false;
+        }
+        bool fw = false, bw = false;
+        //check voltage drop with different resistors in forward mode
+        double threshold1 = icalculate->diodeThreshold(usedModes.at(0));
+        double threshold2 = icalculate->diodeThreshold(usedModes.at(2));
+        if (std::abs(threshold1 - threshold2) < 0.5)
+        {
+            fw = true;
+        }
+        //check voltage drop with different resistors in reverse mode
+        threshold1 = icalculate->diodeThreshold(usedModes.at(1));
+        threshold2 = icalculate->diodeThreshold(usedModes.at(3));
+        if (std::abs(threshold1 - threshold2) < 0.5)
+        {
+            bw = true;
+        }
+        
+        return fw && bw;
+    }
+\end{lstlisting}
+
+
+Amennyiben bizonyos, hogy az alkatrész egy ellenállás akkor
+abban az esetben az kapcsoló ellenálláson eső feszültségből kiszámítható
+az áram az áramkörben és mivel a feszültség esés ismert az alkatrészen,
+így ebből kiszámítható annak ellenállása is.
+
+Az áramerősséget azon az ellenálláson keresztül méri, amely 
+felől az áram folyik az áramkörbe (ebben az esetben csak 1 feszültség
+forrás aktív a többi földként működik).
+
+A tesztelés során a következő áramkör alakul ki[\ref{fig:ResistorExampleCircuit}], 
+itt a 2 
+vízszintes ellenállás a kapcsoló ellenállás ez változtatható
+és a függőleges az ismeretlen ellenállás. A 2 feszültség mérő az ADC
+csatornáját szimbolizálja.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=1]{images/diagrams/ResistorExampleCircuit.png}
+    \caption{Ellenállás mérés áramköre}
+    \label{fig:ResistorExampleCircuit}
+\end{figure}
+
+\subsection{Kondenzátor}
+
+Mivel a kondenzátok ellenállás karakterisztikát mutatnak abban az esetben
+amikor a 2 pólusán levő feszültséget mérjük és nem mutat 
+dióda karakterisztikát ezért az ellenállás 
+teszten átmegy.
+
+A mérés a töltési időt méri egy meghatározott ellenálláson keresztül,
+ebből az időből és ellenállásból határozza meg a Kondenzátor méretét.
+
+Mivel az ADC egy állítható frekvencián mér és egy mérés során azonos ütemben
+több mérést végez el (ebben az esetben 255), amelyet ebben az esetben
+nem átlagol, mint a többi esetben. Így az idő meghatározható a jelenlegi
+ADC frekvenciából és hogy hány mérés volt szükséges, hogy a kondenzátor
+63\%-ban felteljen.
+
+Amennyiben sikerül egy olyan módot találni (mérési frekvencia és ellenállás)
+ahol a mérési puffer vége előtt feltelik 63\%-ra akkor az alapján kiszámolja
+a kondenzátor méretét. Viszont 10nF alatt nem képes pontosan meghatározni,
+mivel a tervezés fázis alatt nem volt elég nagy ellenállás választva
+ezért a töltés túl gyors.
+
+Minden sikertelen tesztelés után és a legelső mérés előtt kondenzátort kisüti, 
+hogy a következő mérést ne befolyásolja. Ha félig fel lenne töltve a kondenzátor
+akkor a következő mérés alatt sokkal hamarább elérné a küszüb feszültséget
+a kellett időnél így hibás értéket számolna ki.
+
+
+
+\subsection{Dióda teszt}
+
+Amennyiben az ellenállás teszt során erre az útvonalra kerül
+abban az esetben kiszámolja a nyitó feszültség értékét.
+Mivel előző lépésben mért értékek el vannak mentve, így ebben 
+az esetben fel lehet használni azokat és nem kell ugyan azt a 
+mérést elvégezni.
+
+Ez a lépés meghatározza a dióda feszültség esését az által, hogy a 
+dióda 2 végén levő feszültség értékeket kivonva egymásból.
+Ezt mindkét irányban megméri és amennyiben a dióda nyitó
+feszültsége 3V alatt van akkor abban az esetben képes megmérni azt.
+
+Attól függően, hogy melyik irányból folyik az áram meghatározza
+a dióa anód/katód pólusait is, amennyiben az alkatrész egy 
+2 inverz dióda akkor abban az esetben a mindkét pólusra 
+Anód-Katód azonosítást ad.
+
+Ez a lépés után következik a tranzisztor tesztelés, mivel a
+tranzisztorok tartalmaznak diódát így erről a fázisról képes eljutni.
+
+\subsection{Tranzisztor teszt}
+
+Ebben a fázisban tesztelésre kerül, hogy a komponens NPN vagy PNP tranzisztor.
+A tesztelés során meg lesz határozva a tranzisztor erősítése és hogy 
+melyik a tranzisztor láb kiosztását a Collector-Emmiter különbséget is figyelembe
+véve.
+
+PNP tranzisztor esetében a bázist földre kell kötni, hogy a tranzisztor kinyisson.
+Ebben az esetben a tranzisztor Collector-Emmiter és Emmiter-Collector irányban
+is vezet. A mérés megismétlődik NPN tranzisztor módra is, ebben az esetben 
+a Bázisra feszültséget kell kapcsolni, hogy kinyisson és ez is mindkét irányban
+vezet.
+
+Amennyiben mindkét teszt sikeres (NPN és PNP) akkor a teszt sikertelen, mivel
+egyszerre nem lehet mindkettő. Amennyiben csak az egyik teszt sikeres akkor
+abban az esetben megméri a tranzisztor erősítését Collector-Emmiter és 
+Emmiter-Collector irányban. A teszter nem tudja ezeket, csak az egyszerűség
+kedvéért van ilyen módon leírva. Mindkét esetben kijön egy-egy erősítés érték,
+viszont amikor az áram a Collector-Emmiter úton halad akkor abban az esetben
+az erősítés sokkal nagyobb, mint fordított irányban így meghatározható a 
+Collector és Emmiter láb.
+
+A tranzisztor erősítése az ellenállás mérés alatt bemutatott áramerősség
+mérésen alapul. Az áramerősséget megméri a Bázison és a Collectoron keresztül
+és ennek \textbf{Ic/IB} aránya adja meg az erősítést. Ic ebben az esetben mindig
+az a láb amely felől az áram folyik.
 
 
 %----------------------------------------HW-------------------------
