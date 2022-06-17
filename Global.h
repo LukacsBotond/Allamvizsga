@@ -54,9 +54,9 @@
 
 //* resistors
 
-#define RESISTOR_LOW 100
-#define RESISTOR_MID 330
-#define RESISTOR_HIGH 4700
+#define RESISTOR_LOW 120
+#define RESISTOR_MID 350
+#define RESISTOR_HIGH 4720
 
 //*Power save pin
 #define POWERS_SAVE_PIN 23

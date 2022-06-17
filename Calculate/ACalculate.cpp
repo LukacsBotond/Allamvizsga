@@ -75,7 +75,6 @@ std::vector<double> ACALCULATE::SameOut3ChannelRepeat()
 {
     std::vector<double> valuesVector;
     uint16_t CAPTURE_DEPTH = adc->getCaptureDepth();
-    std::cout << " sw0 " << (int)this->controller->getSwithcSetting(1) << " sw1 " << (int)this->controller->getSwithcSetting(2) << " sw2 " << (int)this->controller->getSwithcSetting(3);
     for (uint8_t i = 3; i >= 1; --i)
     {
         multicore_fifo_push_blocking(i - 1);

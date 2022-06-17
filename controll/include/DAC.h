@@ -11,9 +11,11 @@ private:
     SPI *spi;
     PID *pid;
 
+    double baseVoltage = 3.3;
+
     uint8_t channelSearch(int port);
     std::string measureMode = "000";
-    void PIDCorrection(int gatePin, float ConstCurrentVal, int resistor);
+    void PIDCorrection(ICALCULATE *icalculate, int basePin, float ConstCurrentVal);
     double getGatecurrent(ICALCULATE *icalculate, int basePin);
     double getGatecurrent(ICALCULATE *icalculate, double supplyVoltage, int basePin);
 
@@ -71,7 +73,7 @@ DAC::~DAC()
 void DAC::setVoltageOnChannel(uint16_t voltage, uint8_t command)
 {
     uint32_t merged = ((uint32_t)(command << 16)) | (uint16_t)voltage;
-    std::cout << "voltage: " << (int)voltage << " command: " << (int)command << " merged: " << merged << std::endl;
+    // std::cout << "voltage: " << (int)voltage << " command: " << (int)command << " merged: " << merged << std::endl;
     this->spi->write_data(&merged, 1);
 }
 
@@ -83,23 +85,23 @@ void DAC::reset(bool resetLvl)
 void DAC::characteristicDiagramm(ICALCULATE *icalculate)
 {
     adc->set_clkDiv(0);
-    pid = new PID(5, 1, 1, 500000);
     TRANSISTOR transistor(icalculate);
     std::vector<int> resBase = transistor.usedPinsFindByValue("B");
     std::vector<int> resCollector = transistor.usedPinsFindByValue("C");
-    std::cout << "max baseCurrent" << getGatecurrent(icalculate, resBase.at(0)) << std::endl;
+    double IbConst = getGatecurrent(icalculate, resBase.at(0));
+    std::cout << "IbConst" << IbConst << std::endl;
     std::cout << "measureMode: " << measureMode << std::endl;
-    // the switches will be opened by default so we need to reset them
+    //  the switches will be opened by default so we need to reset them
     icalculate->controller->prepareSwitchSetting(measureMode[0] - '0', measureMode[1] - '0', measureMode[2] - '0');
     icalculate->controller->setSwithcSetting(measureMode[0] - '0', measureMode[1] - '0', measureMode[2] - '0');
     uint8_t IcChannel = channelSearch(resCollector.at(0));
     // uint8_t IbChannel = channelSearch(resBase.at(0));
-    std::cout << "IcChannel: " << (int)IcChannel << std::endl;
-    for (uint16_t IcVolt = 0; IcVolt < INT16_MAX; IcVolt += INT16_MAX / 200)
+    // std::cout << "IcChannel: " << (int)IcChannel << std::endl;
+    for (uint32_t IcVolt = 0; IcVolt < UINT16_MAX; IcVolt += UINT16_MAX / 200)
     {
-        setVoltageOnChannel(IcVolt, IcChannel);
-        std::cout << "icVolt: " << IcVolt << " max baseCurrent: " << getGatecurrent(icalculate, 3.3, resBase.at(0)) << std::endl;
-        sleep_ms(250);
+        setVoltageOnChannel((uint16_t) IcVolt, IcChannel);
+        // std::cout << "icVolt: " << IcVolt << " max baseCurrent: " << getGatecurrent(icalculate, 3.3, resBase.at(0)) << std::endl;
+        PIDCorrection(icalculate, resBase.at(0), IbConst);
     }
 }
 
@@ -110,13 +112,11 @@ uint8_t DAC::channelSearch(int port)
     {
     case 0:
         return DAC_COMM_WRITE_BUFF_LOAD_ALL_B;
-
     case 1:
         return DAC_COMM_WRITE_BUFF_LOAD_ALL_C;
         break;
     case 2:
         return DAC_COMM_WRITE_BUFF_LOAD_ALL_D;
-
         break;
     default:
         break;
@@ -152,6 +152,16 @@ double DAC::getGatecurrent(ICALCULATE *icalculate, double supplyVoltage, int bas
     return double((supplyVoltage - measurement.at(basePin)) / RESISTOR_LOW) * 1000.0;
 }
 
-void DAC::PIDCorrection(int gatePin, float ConstCurrentVal, int resistor)
+void DAC::PIDCorrection(ICALCULATE *icalculate, int basePin, float ConstCurrentVal)
 {
+    pid = new PID(5, 1, 1, 500000);
+    // for (int i = 0; i < 10; i++)
+    //{
+    double currentBasemA = getGatecurrent(icalculate, baseVoltage, basePin);
+    double error = ConstCurrentVal - currentBasemA;
+    double pidCorr = pid->pid_process(error);
+
+    std::cout << "pidCorr: " << pidCorr << " currentBase: " << currentBasemA << "error: " << error << std::endl;
+
+    //}
 }
