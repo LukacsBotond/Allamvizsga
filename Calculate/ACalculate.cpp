@@ -21,13 +21,6 @@ ACALCULATE::~ACALCULATE()
 
 uint16_t *ACALCULATE::ChannelMeasure(const uint8_t sw1, const uint8_t sw2, const uint8_t sw3, uint32_t channelId, bool saveMeasurement)
 {
-    /*
-    std::string measurement;
-    measurement = std::to_string(sw1);
-    measurement += std::to_string(sw2);
-    measurement += std::to_string(sw3);
-    std::cout << "test measurement, sw settings: " << measurement << "\n";
-    */
     multicore_fifo_push_blocking(channelId);
     // prepare measuring
     this->startSemaphoreRelease(true);
@@ -45,12 +38,6 @@ uint16_t *ACALCULATE::ChannelMeasure(const uint8_t sw1, const uint8_t sw2, const
     uint16_t *capture_buf = adc->getCaptureBuff();
     uint16_t CAPTURE_DEPTH = adc->getCaptureDepth();
 
-    /*
-        //! delete
-        adc->printSamples();
-        sleep_ms(200);
-        //! end delete
-    */
     // drain
     controller->setSwithcSetting(0, 0, 0);
     return adccorrecter->offsetCorrection(capture_buf, CAPTURE_DEPTH);
@@ -63,8 +50,6 @@ std::vector<double> ACALCULATE::SameOut3ChannelRepeat(const uint8_t sw1, const u
     measurement += std::to_string(sw2);
     measurement += std::to_string(sw3);
     uint16_t CAPTURE_DEPTH = adc->getCaptureDepth();
-    // std::cout << "test measurement, sw settings: " << measurement << "\n";
-
     // if there is a measurement then just use that instead the slower measuring
     try
     {
@@ -86,6 +71,25 @@ std::vector<double> ACALCULATE::SameOut3ChannelRepeat(const uint8_t sw1, const u
     return valuesVector;
 }
 
+std::vector<double> ACALCULATE::SameOut3ChannelRepeat()
+{
+    std::vector<double> valuesVector;
+    uint16_t CAPTURE_DEPTH = adc->getCaptureDepth();
+    for (uint8_t i = 3; i >= 1; --i)
+    {
+        multicore_fifo_push_blocking(i - 1);
+        // prepare measuring
+        this->startSemaphoreRelease(true);
+        // measure
+        this->startSemaphoreRelease();
+        // WAIT for ADC
+        this->doneSemaphoreAquire();
+        this->doneSemaphoreAquire(true);
+        uint16_t *capture_buf = adc->getCaptureBuff();
+        valuesVector.push_back(cleanInput->AVGVoltage(adccorrecter->offsetCorrection(capture_buf, CAPTURE_DEPTH),CAPTURE_DEPTH));
+    }
+    return valuesVector;
+}
 double ACALCULATE::calcResistance(std::vector<std::string> &measurements)
 {
     if (measurements.size() == 0)

@@ -41,6 +41,11 @@ add_executable(src src.cpp
         controll/ASwitchController.cpp
         #controll/Aswitch.cpp
 
+        #state
+        stateMachine/State.cpp
+        stateMachine/Transistor.cpp
+        stateMachine/Machine.cpp
+
         common/common.cpp
 
         # test cases

@@ -17,6 +17,8 @@ public:
     uint16_t *ChannelMeasure(const uint8_t sw1, const uint8_t sw2, const uint8_t sw3, uint32_t channelId, bool saveMeasurement = true) override;
     std::vector<double> SameOut3ChannelRepeat(const uint8_t sw1, const uint8_t sw2, const uint8_t sw3, bool saveMeasurement = true) override;
 
+    std::vector<double> SameOut3ChannelRepeat() override;
+
     //* Throw a NOTARESISTOR exception if it is not a resistor
     double calcResistance(std::vector<std::string> &measurements) override;
 
