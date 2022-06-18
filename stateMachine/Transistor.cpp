@@ -9,12 +9,8 @@ bool TRANSISTOR::check()
 {
     for (gatePin = 0; gatePin < 3; gatePin++)
     {
-        bool npn, pnp;
-        std::cout << "gatePin: " << gatePin << std::endl;
-        pnp = transTestStart("5", gatePin);
-        npn = transTestStart("6", gatePin);
-
-        std::cout << "npn: " << npn << " pnp " << pnp << " HF_fw" << HFE_fw << " HF_bw " << HFE_bw << std::endl;
+        bool pnp = transTestStart("5", gatePin);
+        bool npn = transTestStart("6", gatePin);
         if (npn && pnp)
         {
             return false;
@@ -98,7 +94,6 @@ bool TRANSISTOR::transTestStart(const std::string &gateMode, int gatePin)
 bool TRANSISTOR::transTest(const std::string &gateMode, int gatePin, const std::string basemodes[], double &HFE)
 {
     std::string modes[2];
-    // icalculate->cleanMesurements();
     for (int i = 0; i < 2; i++)
     {
         int baseIndex = 0;
@@ -117,21 +112,16 @@ bool TRANSISTOR::transTest(const std::string &gateMode, int gatePin, const std::
         }
         modes[i] = tmp;
     }
-    std::cout << "usedModes: " << modes[0] << " " << modes[1] << std::endl;
-
     for (int i = 0; i < 2; i++)
     {
         icalculate->SameOut3ChannelRepeat(modes[i][0] - '0', modes[i][1] - '0', modes[i][2] - '0', true);
-        icalculate->values->printMeasurements();
         if (!checkIfTransistorIsOn(modes[i], gatePin))
         {
-            // icalculate->values->printMeasurements();
             return false;
         }
     }
 
     HFE = HFECalculation(modes[0], gatePin);
-    // icalculate->values->printMeasurements();
     return true;
 }
 
@@ -155,19 +145,12 @@ bool TRANSISTOR::checkIfTransistorIsOn(const std::string &mode, int gatePin)
 bool TRANSISTOR::checkIfTransistorIsOnHelper(double volt1, double volt2, int volt1Mode, int volt2Mode)
 {
     double dif = volt1 - volt2;
-    // std::cout << "volt dif: " << dif << std::endl;
     if (!icalculate->IsAnythingConnected(volt1, volt1Mode) || !icalculate->IsAnythingConnected(volt1, volt2Mode))
-    {
         return false;
-    }
     if (dif < 0)
-    {
         dif *= -1;
-    }
     if (dif > 3)
-    {
         return false;
-    }
     return true;
 }
 
@@ -175,13 +158,9 @@ double TRANSISTOR::HFECalculation(const std::string &mode, int gatePin)
 {
     double HFE = 0;
     if (gatePin == 0)
-    {
         HFE = HFECalculationHelper(mode, gatePin, 1);
-    }
     if (gatePin == 1)
-    {
         HFE = HFECalculationHelper(mode, gatePin, 0);
-    }
     return HFE;
 }
 
@@ -192,18 +171,14 @@ double TRANSISTOR::HFECalculationHelper(const std::string &mode, int gatePin, in
     std::vector<double> measurement = icalculate->getMeasurement(mode);
     IbmA = double((3.3 - measurement.at(gatePin)) / icalculate->controller->getTotResistor(mode[gatePin] - '0')) * 1000.0;
     if ((mode[collectorPin] - '0') % 2 == 0) // pin is in collector mode
-    {
         IcmA = double((3.3 - measurement.at(collectorPin)) / icalculate->controller->getTotResistor(mode[collectorPin] - '0')) * 1000.0;
-    }
     else // collector is actually the emmiter
     {    // search the true collector pin
         int truecollectorPin = 0;
         for (int i = 0; i < 3; i++)
         {
             if (i != gatePin && i != collectorPin)
-            {
                 truecollectorPin = i;
-            }
         }
         IcmA = double((3.3 - measurement.at(truecollectorPin)) / icalculate->controller->getTotResistor(mode[truecollectorPin] - '0')) * 1000.0;
     }

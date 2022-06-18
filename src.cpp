@@ -76,7 +76,6 @@ void core1_entry()
 void printResult(const std::map<std::string, double> &ret, const std::string &mainResult, GRAPHDISPLAY *driver)
 {
     std::cout << "Print Results\n";
-    // std::map<std::string, double> ret = machine->getResult();
     gpio_put(GREEN_LED_PIN, LOW);
 
     std::cout << mainResult << std::endl;
@@ -121,7 +120,7 @@ int main()
     sleep_ms(3000);
     // set_sys_clock_khz(280000, true);
 
-    std::cout << "Test\n";
+    std::cout << "Start\n";
     sem_init(&startSemaphore1, 0, 1);
     sem_init(&doneSemaphore1, 0, 1);
     sem_init(&prepstartSemaphore1, 0, 1);
@@ -202,10 +201,16 @@ int main()
     }
 
     printResult(machine->getResult(), machine->getMainResult(), driver);
+    try
+    {
+        CharDiagr ret = dac->characteristicDiagramm(calc);
+        sleep_ms(1000);
+        driver->plotArray(ret.data, "mA");
+    }
+    catch (NOTSUPPOSEDTOREACHTHIS)
+    {
+    }
 
-    CharDiagr ret = dac->characteristicDiagramm(calc);
-    sleep_ms(1000);
-    driver->plotArray(ret.data, "mA");
     gpio_put(GREEN_LED_PIN, LOW);
 
 #endif
