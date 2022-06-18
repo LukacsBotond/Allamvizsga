@@ -8,6 +8,7 @@ class DIODE : public STATE
 {
 private:
     void setUsedPins(const std::string &usedMode);
+    void saveRes(int index);
 
 public:
     explicit DIODE(ICALCULATE *icalculate);
@@ -47,24 +48,17 @@ bool DIODE::check()
 
 void DIODE::calculate()
 {
-
+    if (twoInverseDiode())
+    {
+        saveRes(0);
+        return;
+    }
     for (uint i = 0; i < usedModes.size(); i += 2)
     {
         if (!checkReverse(usedModes[i], usedModes[i + 1]))
         {
-            double val = icalculate->diodeThreshold(usedModes[i]);
-            this->mainResult = "Diode";
-            if (val < 3)
-            {
-                results["fw"] = val;
-                setUsedPins(usedModes[i]);
-            }
-            val = icalculate->diodeThreshold(usedModes[i + 1]);
-            if (val < 3)
-            {
-                results["bw"] = val;
-                setUsedPins(usedModes[i]);
-            }
+            saveRes(i);
+            return;
         }
     }
 }
@@ -72,7 +66,7 @@ void DIODE::calculate()
 //* private
 void DIODE::setUsedPins(const std::string &usedMode)
 {
-    this->results.clear();
+
     for (int i = 0; i < 3; i++)
     {
         int tmpMode = usedMode[i] - '0';
@@ -86,5 +80,23 @@ void DIODE::setUsedPins(const std::string &usedMode)
         {
             usedPins[i] += 'C';
         }
+    }
+}
+
+void DIODE::saveRes(int index)
+{
+    this->results.clear();
+    double val = icalculate->diodeThreshold(usedModes[index]);
+    this->mainResult = "Diode";
+    if (val < 3)
+    {
+        results["fw"] = val;
+        setUsedPins(usedModes[index]);
+    }
+    val = icalculate->diodeThreshold(usedModes[index + 1]);
+    if (val < 3)
+    {
+        results["bw"] = val;
+        setUsedPins(usedModes[index + 1]);
     }
 }

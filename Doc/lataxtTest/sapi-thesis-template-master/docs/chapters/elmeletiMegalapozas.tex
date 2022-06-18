@@ -14,18 +14,18 @@ státuszát jelzi egyszerű színkódokkal.
 
 Az teszteléshez  szükséges áramkört a DAC segítségével történik és a mikrovezérlő 
 csak a feszültség értékeket nézi, erre a célra egy DAC8565 chipet használtam amely 
-szintél SPI-on 
+szintén SPI-n 
 keresztül kommunikál a mikrovezérlővel. 
 
 Ennek 3 kimenete egy-egy 3 kimenetes 
 analóg kapcsolón keresztül különböző ellenállásokra kapcsolódnak a nagyobb 
-precizitás elérése érdekében és az esetleges rövidzár esetén is az áramerősség 
+precizitás elérése érdekében és az esetleges rövidzárlat esetén is az áramerősség 
 biztonságos szinten tartásáért, minden esetben a létrehozott áramkörön lesz egy 
 ellenállás, ami az áramerősséget limitálja, hogy esetlegesen ne tegye tönkre a 
 tesztelés alatt levő alkatrészt. 
 
-A mikrovezérlőnek 3 ADC (analog-digital 
-converter) portja közvetlen rá van csatolva egy lábra ahová majd a tesztelni kívánt 
+A mikrovezérlőnek 3 ADC (analóg-digitál 
+konverter) portja közvetlen rá van csatolva egy lábra ahová majd a tesztelni kívánt 
 komponens kerül. A rendszernek van egy külső referencia feszültsége, ami egy 
 stabil 3.3V-ot biztosít az ADC referenciaként és DAC referenciának.
 
@@ -33,7 +33,7 @@ A pontos részleteket az a következőkben lesznek leírva.
 
 \section{Elméleti alapok}
 
-\subsection{Mikrovezők}
+\subsection{Mikrovezérlők}
 
 A mikrovezérlők már a elterjedtek a háztartási eszközök körében is. Legfőképpen az
 általánosságuk miatt, vagyis egyszerű különböző eszközöket vezérelni velük miközben 
@@ -53,9 +53,9 @@ csatolni a szenzorokat. Ehhez még nagy segítség a standardizált kommunikáci
 protokollok is a szenzorokkal, amely segítségével könnyedén összekapcsolhatóak 
 a mikrovezérlővel, legtöbb esetben hardver szinten ismeri ezeket a protokollokat 
 így gyorsan és hatékonyan képes kommunikálni. A leggyakrabban használt protokollok 
-az $I^2C$ és SPI. Viszont manapság sok mikrovezérlőn a WiFi és Bluethoot is 
+az $I^2C$ és SPI. Viszont manapság sok mikrovezérlőn a WiFi és Bluetooth is 
 megtalálható amivel vezeték nélkül is össze lehet kötni az eszközöket, ezek az 
-eszközök leginkább az IoT-Internet of Things (Dolgok Internete) alapú rendszerek
+eszközök leginkább az IoT - Internet of Things (Dolgok Internete) alapú rendszerek
 által használatosak.
 
 Ezek a protokollok legtöbbször egyszerűek, így lehetséges szoftveresen is 
@@ -74,9 +74,9 @@ működik, mintha egy hardveres megvalósítás lenne, ezzel meg sokkal egyszer�
 nem alapértelmezetten támogatott protokoll megvalósítása, miközben a processzor 
 nincs leterhelve ezzel a feladattal.
 
-\subsection{Analog Digital Converter}
+\subsection{Analóg Digitál Konverter}
 
-Az Analog Digital Converter (ADC) feladata, hogy egy analóg jelet digitális jellé
+Az Analóg Digitál Konverter (ADC) feladata, hogy egy analóg jelet digitális jellé
 alakítson át, mivel a processzor csak digitális jeleket képes feldolgozni. Viszont 
 1 bitben nem használható, mivel szinte az összes adat elveszne, ezért az ADC több 
 biten tárolja el az analóg mérés eredményét. Ez legtöbbször 8-16 bit közti értékek 
@@ -88,7 +88,7 @@ megállapítja, hogy melyik 2 érték közé esik a feszültség szint.
 
 Viszont ez a valóságban nem ilyen egyszerű, mivel a komponensek amik az ADC-t 
 felépítik nem tökéletesek így zajok és csúszások jelenhetnek meg. Ilyen hibák 
-lehetnek az offset hibák, ebben az esetben a végértékek nem felelnek meg az elvárt 
+lehetnek az ofszet hibák, ebben az esetben a végértékek nem felelnek meg az elvárt 
 értékeknek, ilyen példa a amikor 0V-os feszültség esetén az ADC nem 0-t térít 
 vissza, hanem egy nagyobb számot, míg $V_{ref}$ esetén egy kisebb értéket.
 
@@ -100,14 +100,14 @@ esetben csupán ez a hibája az ADC-nek az átláthatóság kedvéért.
 \begin{figure}[h]
     \centering
     \includegraphics[scale=0.3]{figures/images/literature/ADC_Offset_Error.png}
-    \caption{ADC offset hibája}
+    \caption{ADC ofszet hibája}
     \label{fig:ADC_Offset_Error}
 \end{figure}
 
 Másik jellegzetes hiba a nem linearitás, ennek jellemzője, hogy a mérési 
-tartományon belül még az offset hibát is figyelembe véve nem azt az eredményt 
+tartományon belül még az ofszet hibát is figyelembe véve nem azt az eredményt 
 kapjuk, mint amit elvártunk amelyet nehezebb korrigálni szoftveresen, mivel amíg 
-az offset hibát egyszerűen lehet korrigálni csupán a 0 és $V_{ref}$ feszültség szintek 
+az ofszet hibát egyszerűen lehet korrigálni csupán a 0 és $V_{ref}$ feszültség szintek 
 megmérésével, addig ezt a hibát sokkal nehezebb kiküszöbölni, mivel az ADC 
 eredménye nem lineáris, így több ismert mérési pontot kell felvenni és a számítás 
 is sokkal bonyolultabbá válik. Ezen kívül lehetnek kvantálási hibák is, amikor az 
@@ -115,21 +115,21 @@ ADC egy bizonyos értéket sosem ad eredménynek, hanem a nála egyel kisebb/nag
 értéket. Ez nem okoz nagy gondot azoknál az ADC-nél ahol nagy a felbontás, viszont 
 az alacsony felbontású eszközök esetén nagyobb hibát eredményez.
 
-\subsection{Digital Analog Converter}
+\subsection{Digitál Analóg Konverter}
 
-A Digital Analog Converter feladata, hogy a processzor által értelmezhető digitális
-értékeketet analóg jelekké konvertálja amik a külső perifériáknak szükségesek.
+A Digitál Analóg Konverter feladata, hogy a processzor által értelmezhető digitális
+értékeket analóg jelekké konvertálja amik a külső perifériáknak szükségesek.
 Gyakran használják ahol pontos analóg jeleket kell vezérelni, ilyen egy VGA jel
 vagy zene lejátszása, viszont bármire felhasználhatóak ahol az egyszerű digitális
 jelek nem elegendőek. Ebben a projektben az alkatrészek azonosítására és a 
 karakterisztika diagram kirajzolására van felhasználva.
 
-Működése hasonlóképpen működik, mind az Analog Digital Converter-é, viszont fordítva.
+Működése hasonlóképpen működik, mind az Analóg Digitál Konverter-é, viszont fordítva.
 Egyes DAC-eknek van belső referencia feszültségük, vagy kell külsőleg egyet alkalmazni.
 Ez a jel lesz DAC maximális analóg kimenete amikor a digitális bemeneten a maximális
 érték érkezik és 0V lesz a kimenete amikor 0 értékű digitális érték érkezik. Ideális
 esetben e két pont között az átmenet lineáris, így minden köztes értékre egy lineáris
-ősszefüggés alapján ki lehetne számolni [\ref{DACequation}], ahol D a digitális bemenet
+összefüggés alapján ki lehetne számolni [\ref{DACequation}], ahol D a digitális bemenet
 ami 0 és $2^{res}$ között kell legyen.
 \begin{equation}
     \label{DACequation}
@@ -146,7 +146,7 @@ ami 0 és $2^{res}$ között kell legyen.
 Ez a teszter legfontosabb eleme [\ref{fig:Pico_pinout}], ez a vezéreli a teszter többi részét. A Raspberry 
 által kifejlesztve, viszont nem, mint a többi termékük ezen nem fut egy operációs 
 rendszer és használható, mint egy számítógép, hanem mint egy hagyományos 
-mikrovezérlő. A mikrovezérlő magját egy Dual-core Arm Cortex M0+ processzor, 
+mikrovezérlő. A mikrovezérlő magját egy Dual-core ARM Cortex M0+ processzor, 
 aminek a frekvenciáját dinamikusan változtatható 16Mhz és akár 280Mhz közt. A 
 memóriája is elegendő 264KB of SRAM a változók tárolására a program futása során 
 és 2MB Flash memória a program kód tárolására. Lehetőség van csak RAM-ból futtatni 
@@ -154,14 +154,14 @@ is a kódot, ilyenkor nagyobb órajel is elérhető ami elérheti a 450Mhz-et is
 
 A vezérlő úgy van megtervezve, hogy THC (Through Hole Component) és SMT 
 (Surface Mount Component) komponensként is lehet alkalmazni, 
-ezt a castellated pinnekel éri el, amelyeket lehet forrasztani közvetlen SMT 
+ezt a castellated pinekel éri el, amelyeket lehet forrasztani közvetlen SMT 
 komponensként és a pinek távolsága annyi, mint egy átlagos breadboard sortávja így 
 egy male-male header forrasztásával breadboardon is alkalmazható. 
 
 Hardveresen 
 megtalálható 2xSPI, 2xI2C, 2xUART, 3x12-bit ADC, 16xszabályozható PWM csatorna és 
 összesen 26 GPIO van kivezetve a felhasználó fele. Egy pin több dologra is képes 
-ez az alábbi pinout diagrammon is látható. Programozás során beállítható, hogy 
+ez az alábbi pinout diagramon is látható. Programozás során beállítható, hogy 
 USB-t használja soros portként így egyszerűen használható egy számítógéppel való 
 kommunikációra. Megtalálható 8 PIO (programable I/O) amivel hardveres protokollokat 
 lehet létrehozni, ha valami egyedi kell egy különleges komponens vezérlésére. 
@@ -178,9 +178,9 @@ lehet létrehozni, ha valami egyedi kell egy különleges komponens vezérlésé
 \subsection{ILI9341 kijelző}
 
 Az adatok kijelzésére egy ILI9341 [\ref{fig:ILI9341 kijelző}] kijelzőt használtam.
-Egy egyszerűbb kijelző is megfelene a célra, akár csupán egy karaktereket megjelenítő
-kijelző is elegendő lenne a célra, ha nem kellene a karakterisztika diagramm. A 
-célra megfelene egy egyszerű OLED kijelző is. Viszont ez a kijelző már a rendelkezésre
+Egy egyszerűbb kijelző is megfelelne a célra, akár csupán egy karaktereket megjelenítő
+kijelző is elegendő lenne a célra, ha nem kellene a karakterisztika diagram. A 
+célra megfelelne egy egyszerű OLED kijelző is. Viszont ez a kijelző már a rendelkezésre
 állt a projekt tervezése előtt is, így fel lehetett használni a kijelzőt erre a 
 projektre.
 
@@ -189,15 +189,15 @@ Ezen fognak megjelenni az mérés eredményei, mint a komponens értékei, a lá
 viszont ez nem fontos ennél a projektnél. Viszont a nagy 240*320 as felbontása és
 a 2.2" kijelző mérete nagyban segít, hogy könnyen olvasható legyen. A kijelző rendelkezik
 beépített háttérvilágítással is, így fényes helyen is jól látható.
-A kijelző SPI protokollon keresztül kommunikál a mikorvezérlővel és rendkívűl stabil,
+A kijelző SPI protokollon keresztül kommunikál a mikrovezérlővel és rendkívül stabil,
 akár 68Mhz-es órajellel is stabilan és megbízhatóan megkapja az adatokat a mikrovezérlőtől.
-Ennek az eredménye a rendkívűl gyors képernyő váltás, így a felhasználó nem kell
+Ennek az eredménye a rendkívül gyors képernyő váltás, így a felhasználó nem kell
 arra várjon, hogy az adatok megjelenjenek a kijelzőn.
 
 Az adatok beírása pixel szinten történik amelyek a kijelző memóriájában elmentődnek, 
 előre meg kell határozni, hogy milyen
 zónában történik az írás és azután lehetséges csak az adat küldése és belsőleg automatikusan
-a kövekező mezőt címzi meg, ahogy megérkezett az adat az előzőnek. Ennek az eredménye,
+a következő mezőt címzi meg, ahogy megérkezett az adat az előzőnek. Ennek az eredménye,
 hogy írás során nem kell figyelembe tartani a kijelző belső memória címét, csak az 
 adat sorrendjét. Ez egyszerűsíti a programozó dolgát és csökkenti a küldési
 időt.
@@ -209,16 +209,16 @@ időt.
     \label{fig:ILI9341 kijelző}
 \end{figure}
 
-\subsection{Digital Analog Converter}
+\subsection{Digitál Analóg Konverter}
 
-Az analóg jelek generálására egy DAC8565IAPWR [\cite{DAC}] van alkalmazva, 
+Az analóg jelek generálására egy DAC8565IAPWR \cite{DAC} van alkalmazva, 
 amelynek felbontása 16 bit.
-Ennek 4 egymástól független kimenete van, amelyek belsőleg bufferelve vannak,
+Ennek 4 egymástól független kimenete van, amelyek belsőleg pufferelve vannak,
 így terhelés esetén sem változik. 
 
 A DAC-nak van egy belső 2.5V-os feszültség referenciája,
 viszont ez külsőleg felülírható egy külső feszültség referenciával. Ebben az 
-esetben szükség volt erre, mivel a leljes ADC mérési tartományra szükség van
+esetben szükség volt erre, mivel a teljes ADC mérési tartományra szükség van
 ami 3.3V. Ez egy egyszerű 3.3V-os feszültség referenciával lett elérve, viszont
 ebben az eseten egy parancsot kell küldeni a DAC-nak, hogy a külső referenciát használja,
 mivel nem áll át automatikusan, rövid időre nem gond, hogy mindkettő aktív, viszont
@@ -227,48 +227,66 @@ nem ajánlott huzamosabb ideig ilyen helyzetben tartani.
 A DAC SPI protokollt használ amiből 8 bit a parancs bit és 16 bit az adat.
 Lehetőség van az adatok azonnali betöltésére és a kimenet változtatására, és
 arra is van lehetőség, hogy csak az adatot elmentse és egyszerre frissítse az
-ősszes kimenetet. Erre lehetőség van szoftveresen is, amit az SPI parancs
+összes kimenetet. Erre lehetőség van szoftveresen is, amit az SPI parancs
 részében lehet kódolni, ebben a projekt esetében is ez van alkalmazva. 
 
+\subsection{Analóg kapcsoló}
 
-
-
-
-
-
-\section{A rendszer Blokk váza}
-
-Az alábbi árbán [\ref{fig:blockDiagramm}] lárható a rendszer blockDiagrammja, a fő vezérlő jelekkel.
-A rendszer 2 SPI perifériával kommunikál, ezek a kijelző és a DAC, az analóg kapcsoló vezérlő jelei 
-egyszerű digitális jelek, mint ahogyan a LED vezérlő jelei. A teszter socket mindhárom lába egy-egy ADC
-csatornához van csatlakoztatva, ezen méri a mikrovezérlő a tesztelés során a feszültség szinteket.
-A kapcsoló a RUN bemenetre van kapcsolva, ez engedélyezi a mikrovezérlő futását amíg feszültség érték 
-található rajta vagy nincs bekötve. Amennyiben ez földre kerül akkor a mikrovezérlő leáll és resetelődik.
-
-A rendszerher működéséhez szükséges egy 5V-os feszültség forrás, ez lehet egy általános USB
-tápforrás, vagy lehetséges direkt 5V csatlakoztatása is. Az áramerősség alacsony, így nem közelíti
-meg az 500mA-es áramerősség határt amit egy átlagos USB képes leadni. Külső akkumulátorról
-is táplálható. Amennyiben egy számítógéphez, vagy egy olyan eszközhöz van csatolva ami képes 
-a serial portot olvasni akkor a mérési eredményeket automatikusan elküldi azon keresztül a 
-másik eszköz felé. 
-
+Mindegyik analóg jelet egyszerre 1 ellenálláson keresztül rá kell kapcsolni a komponensre,
+viszont az ellenállás váltható kell legyen mérés közben, nagy sebességgel, így a manuális
+kapcsolás nem lehetséges. Erre a célra egy analóg kapcsoló van alkalmazva amely egy közös
+bemenetet 3 különböző kimenetre képes kapcsolni, melyeken az ellenállások találhatóak.
+A kimenet kiválasztása nem használ kommunikációs protokollt, csak a "IN" portokra érkező
+digitális jelek segítségével történik. Minden esetben maximálisan 1 kimenet aktív a többi
+a nyílt áramkörben van és arra is van lehetőség, hogy a bemenet 1 kimenetre 
+se legyen kapcsolva. A kimenet kiválasztása a következő táblázattal lehetséges.
+[\ref{fig:ASwitchFuntionTable}]
 
 \begin{figure}[h]
     \centering
-    \includegraphics[scale=0.3]{figures/images/literature/blockDiagramm.png}
-    \caption{A rendszer block váza}
-    \label{fig:blockDiagramm}
+    \includegraphics[scale=0.3]{images/literature/ASwitchFunctionTable.png}
+    \caption{Analóg kapcsoló funkcionális táblázata}
+    \label{fig:ASwitchFuntionTable}
 \end{figure}
 
 
 
+\section{Felhasznált Technológiák}
+
+\subsection{SPI}
+
+A kommunikációs protokoll amit a kijelző és a DAC használ. A mikrovezérlőnek vannak
+beépített függvényei és specifikus pinei amellyel képes hardver szinten kommunikálni
+külső eszközökkel. Ez egy full duplex protokoll, vagyis képes egyszerre mindkét eszköz
+adatot küldeni, anélkül, hogy egymást zavarnák. Ez 2 külön vezetéken
+keresztül történik, órajel szinkronizációval.
+
+Az SPI egy mester szolga alapú protokoll, általános esetben 1 mester van (pl. egy 
+vezérlő), de lehet több mester is, amennyiben csak 1 mester aktív és a többi mester
+a kimeneteit magas impedanciára kell helyezze (High Z), hogy ne befolyásolja az 
+adatok küldését. 
 
 
+A szolgák száma bármennyi lehet, viszont nem szokott nagyszámú lenni, mivel minden
+szolgának egy külön vezeték kell az aktiválásra, ez a CS (chip select), amely 
+legtöbb esetben aktív és csak akkor lehet a bizonyos eszközzel kommunikálni, amennyiben
+ez első lépésben megtörtént.
 
+Az SPI egy órajellel szinkronizált protokoll, az órajelet a mester szolgáltatja,
+amely nincs standardizálva, csupán az eszköz maximális órajellel frekvenciája 
+alatt kell legyen. Az eszközöktől függően nyugalmi helyzetben az órajel lehet alacsony
+vagy magas szinten.
+
+Az adatok küldésére 2 vezeték szükséges, ezek a MOJSI (master out slave in), ezen a
+vezetéken érkezik az adat a mester felől a szolga felé. Az adatok kiolvasása nincs
+standardizálva, így az eszköztől függően az adatot olvashatja az órajel felfutó vagy a 
+lefutó élén. Az adat a mester felé a MISO (master in slave out) vezetéken érkezik,
+viszont a mester kell órajelet generáljon, hogy a szolga el tudja küldeni az adatokat.
 
 \section{Hasonló eszközök}
 
-Egy hasonló rendszer már megvalósult \cite{similarSystem} ami egy Arduino\cite{ArduinoAtmega} 
+Egy hasonló rendszer már megvalósult \cite{similarSystem} ami egy Arduino 
+\cite{ArduinoAtmega}
 mikroprocesszoron alapul. Ez egy egyszerűbb rendszer, ami csupán ellenállásokat használ az 
 alkatrészek felismerésére és egy kijelzőt az adatok megjelenítésére. Ebből több fejlesztés is 
 kialakult, több minden tesztelésére és nagyobb pontosság elérésére, miközben a rendszer 
@@ -281,7 +299,7 @@ Az bekötése hasonlóképpen történik: lásd [\ref{fig:basicTesterConnection}
 
 \begin{figure}[h]
     \centering
-    \includegraphics[scale=0.3]{figures/images/literature/OrgTesterConnection.png}
+    \includegraphics[scale=0.3]{images/literature/OrgTesterConnection.png}
     \caption{Eredeti teszter bekötési rajza}
     \label{fig:basicTesterConnection}
 \end{figure}
@@ -291,10 +309,10 @@ nem befolyásolja az áramkör működését. Az ADC pin meg lehet ADC üzemmód
 az áramkört, viszont lehet földre, vagy tápfeszültségre is kapcsolni, ilyen esetben port ellenállás
 nélkül csatolódik az áramkörre.
 
-Viszont szintén hordozható egy 9V-os elem segítsségével és az eredmények megjelennek egy
-kis LCD kijelzőn, ebből több féle verzió is létezik, van amely csak egy karakter kijelzőt
+Viszont szintén hordozható egy 9V-os elem segítségével és az eredmények megjelennek egy
+kis LCD kijelzőn, ebből több verzió is létezik, van amely csak egy karakter kijelzőt
 használ, van amelyik egy színes kép kirajzolására is alkalmas kijelzőt alkalmaz. 
 
 A tesztelés néhány másodpercbe telik, nagy méretű kondenzátorok esetén telhet több időbe,
-viszont ebben az esetben csak annyi idő, míg a legkissebb ellenálláson keresztül képes feltölteni
-a kondenzátorot.
+viszont ebben az esetben csak annyi idő, míg a legkisebb ellenálláson keresztül képes feltölteni
+a kondenzátort.

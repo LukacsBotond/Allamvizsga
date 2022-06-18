@@ -65,6 +65,10 @@ bool RESISTOR::check()
             //std::cout << e.what() << std::endl;
         }
     }
+
+    if(this->twoInverseDiode()){
+        throw POSSIBLYDIODE("2 inverse diode");
+    }
     return flag;
 }
 

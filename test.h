@@ -45,29 +45,7 @@ static struct semaphore doneSemaphore1;
 static struct semaphore prepstartSemaphore1;
 static struct semaphore prepdoneSemaphore1;
 
-void ICALCULATE::startSemaphoreRelease(bool prep)
-{
-    if (prep)
-    {
-        sem_release(&prepstartSemaphore1);
-    }
-    else
-    {
-        sem_release(&startSemaphore1);
-    }
-}
 
-void ICALCULATE::doneSemaphoreAquire(bool prep)
-{
-    if (prep)
-    {
-        sem_acquire_blocking(&prepdoneSemaphore1);
-    }
-    else
-    {
-        sem_acquire_blocking(&doneSemaphore1);
-    }
-}
 
 IADC *adc = new ADC();
 COMMON *commonClass = new COMMON();

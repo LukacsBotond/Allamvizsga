@@ -4,6 +4,7 @@
 #include "controll/include/IAswitch.h"
 #include "./common/include/common.h"
 #include "./Calculate/include/ICleanInput.h"
+#include "display/include/graphDisplay.h"
 #include <map>
 
 //* power level
@@ -53,9 +54,9 @@
 
 //* resistors
 
-#define RESISTOR_LOW 100
-#define RESISTOR_MID 330
-#define RESISTOR_HIGH 4700
+#define RESISTOR_LOW 120
+#define RESISTOR_MID 350
+#define RESISTOR_HIGH 4720
 
 //*Power save pin
 #define POWERS_SAVE_PIN 23
@@ -69,13 +70,13 @@ extern COMMON *commonClass;
 class ICLEANINPUT;
 extern ICLEANINPUT *cleanInput;
 
-void printResult(const std::map<std::string, double> &ret, const std::string &mainResult);
+void printResult(const std::map<std::string, double> &ret, const std::string &mainResult, GRAPHDISPLAY *driver);
 
 //! DEBUG
 
 // if commented out then the normal program runs without test cases
 // if not then only the test cases run
-#define TESTS
+//#define TESTS
 
 // disables ADC read
 //#define ADCDISABLE

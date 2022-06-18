@@ -22,6 +22,12 @@ public:
     virtual std::vector<double> SameOut3ChannelRepeat(const uint8_t sw1, const uint8_t sw2, const uint8_t sw3, bool saveMeasurement = true) = 0;
 
     /*
+        set the switches and voltage beforehand and just measure
+        !not usable where voltage changes over time
+    */
+    virtual std::vector<double> SameOut3ChannelRepeat() = 0;
+
+    /*
         Give a set of measurement modes where the component is a resistor and calculate
         the resistance from the voltage drops
         @param measurements: std::vector<std::string>& vector of the used port modes

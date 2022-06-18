@@ -6,7 +6,6 @@ using namespace std;
 SPI::SPI(int frekv, SPIPORTS *portsIn) : mode(false)
 {
     this->ports = portsIn;
-    // printer();
     if (this->ports->spi)
     {
         spi_Hw_inst = spi1;
@@ -17,7 +16,6 @@ SPI::SPI(int frekv, SPIPORTS *portsIn) : mode(false)
     }
     spi_init(spi_Hw_inst, frekv);
     spi_set_baudrate(spi_Hw_inst, frekv);
-    //std::cout << "baudrate: " << baudrate << std::endl;
     gpio_set_function(ports->sck, GPIO_FUNC_SPI);
     gpio_set_function(ports->mosi, GPIO_FUNC_SPI);
 
@@ -25,8 +23,6 @@ SPI::SPI(int frekv, SPIPORTS *portsIn) : mode(false)
     gpio_init(ports->cs);
     gpio_set_dir(ports->cs, GPIO_OUT);
     gpio_put(ports->cs, LOW);
-
-    //printer();
 }
 
 SPI::~SPI()
@@ -67,13 +63,7 @@ void SPI::write_data(const uint8_t *buffer, int bytes)
     spi_write_blocking(spi_Hw_inst, buffer, bytes);
     cs_deselect();
 }
-/*
-void SPI::write_data_continuous(uint8_t *buffer, int bytes)
-{
-    changeFormat(false);
-    spi_write_blocking(spi_Hw_inst, buffer, bytes);
-}
-*/
+
 void SPI::write_data(const uint16_t *buffer, int bytes)
 {
     changeFormat(true);
@@ -81,13 +71,7 @@ void SPI::write_data(const uint16_t *buffer, int bytes)
     spi_write16_blocking(spi_Hw_inst, buffer, bytes);
     cs_deselect();
 }
-/*
-void SPI::write_data_continuous(uint16_t *buffer, int bytes)
-{
-    changeFormat(true);
-    spi_write16_blocking(spi_Hw_inst, buffer, bytes);
-}
-*/
+
 void SPI::write_data(const uint32_t *buffer, int bytes)
 {
     for (int i = 0; i < bytes; i++)
@@ -104,15 +88,4 @@ void SPI::write_data(const uint32_t *buffer, int bytes)
 
         cs_deselect();
     }
-}
-
-//* DEBUG
-
-void SPI::printer()
-{
-    cout << "DEBUG" << endl;
-    std::cout << "spi: " << ports->spi << std::endl;
-    std::cout << "cs: " << ports->cs << std::endl;
-    std::cout << "mosi: " << ports->mosi << std::endl;
-    std::cout << "sck: " << ports->sck << std::endl;
 }
