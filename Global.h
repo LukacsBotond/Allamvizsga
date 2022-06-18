@@ -4,7 +4,7 @@
 #include "controll/include/IAswitch.h"
 #include "./common/include/common.h"
 #include "./Calculate/include/ICleanInput.h"
-#include "display/include/characterDisplay.h"
+#include "display/include/graphDisplay.h"
 #include <map>
 
 //* power level
@@ -70,7 +70,7 @@ extern COMMON *commonClass;
 class ICLEANINPUT;
 extern ICLEANINPUT *cleanInput;
 
-void printResult(const std::map<std::string, double> &ret, const std::string &mainResult, CHARACTERDISPLAY* driver );
+void printResult(const std::map<std::string, double> &ret, const std::string &mainResult, GRAPHDISPLAY *driver);
 
 //! DEBUG
 

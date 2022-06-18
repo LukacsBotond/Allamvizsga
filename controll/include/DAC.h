@@ -18,7 +18,7 @@ private:
     std::string measureMode = "000";
     void PIDCorrection(ICALCULATE *icalculate, int basePin, float ConstCurrentVal);
     double getGatecurrent(ICALCULATE *icalculate, int basePin);
-    double getGatecurrent(ICALCULATE *icalculate, double supplyVoltage, int basePin);
+    double getShuntcurrent(ICALCULATE *icalculate, double supplyVoltage, int Pin);
 
 public:
     explicit DAC(SPI *spi);
@@ -36,7 +36,7 @@ public:
     */
     void reset(bool resetLvl) override;
 
-    void characteristicDiagramm(ICALCULATE *icalculate) override;
+    CharDiagr characteristicDiagramm(ICALCULATE *icalculate) override;
 };
 
 DAC::DAC(SPI *spi) : spi(spi)
@@ -74,7 +74,7 @@ DAC::~DAC()
 void DAC::setVoltageOnChannel(uint16_t voltage, uint8_t command)
 {
     uint32_t merged = ((uint32_t)(command << 16)) | (uint16_t)voltage;
-    //std::cout << "voltage: " << (int)voltage << " command: " << (int)command << " merged: " << merged << std::endl;
+    // std::cout << "voltage: " << (int)voltage << " command: " << (int)command << " merged: " << merged << std::endl;
     this->spi->write_data(&merged, 1);
 }
 
@@ -83,27 +83,41 @@ void DAC::reset(bool resetLvl)
     gpio_put(DAC_RESET, resetLvl);
 }
 
-void DAC::characteristicDiagramm(ICALCULATE *icalculate)
+CharDiagr DAC::characteristicDiagramm(ICALCULATE *icalculate)
 {
+    CharDiagr ret;
+    std::vector<double> tmp;
+    if (STATE::mainResult != "npn transistor")
+    {
+        throw NOSUCHMEASUREMENT("can't make characteristic for pnp!");
+    }
     adc->set_clkDiv(0);
     TRANSISTOR transistor(icalculate);
     std::vector<int> resBase = transistor.usedPinsFindByValue("B");
     std::vector<int> resCollector = transistor.usedPinsFindByValue("C");
     double IbConst = getGatecurrent(icalculate, resBase.at(0));
-    std::cout << "IbConst" << IbConst << std::endl;
-    std::cout << "measureMode: " << measureMode << std::endl;
-    //  the switches will be opened by default so we need to reset them
+    double maxIcmA = -1;
+    // std::cout << "IbConst" << IbConst << std::endl;
+    // std::cout << "measureMode: " << measureMode << std::endl;
+    //   the switches will be opened by default so we need to reset them
     icalculate->controller->prepareSwitchSetting(measureMode[0] - '0', measureMode[1] - '0', measureMode[2] - '0');
     icalculate->controller->setSwithcSetting(measureMode[0] - '0', measureMode[1] - '0', measureMode[2] - '0');
     uint8_t IcChannel = channelSearch(resCollector.at(0));
-    // uint8_t IbChannel = channelSearch(resBase.at(0));
-    // std::cout << "IcChannel: " << (int)IcChannel << std::endl;
+
     for (uint32_t IcVolt = 0; IcVolt < UINT16_MAX; IcVolt += UINT16_MAX / 200)
     {
         setVoltageOnChannel((uint16_t)IcVolt, IcChannel);
         // std::cout << "icVolt: " << IcVolt << " max baseCurrent: " << getGatecurrent(icalculate, 3.3, resBase.at(0)) << std::endl;
         PIDCorrection(icalculate, resBase.at(0), IbConst);
+        // measurement = icalculate->SameOut3ChannelRepeat();
+        double IcmA = getShuntcurrent(icalculate, convertToVolt(IcVolt), resCollector.at(0));
+        tmp.push_back(IcmA);
+        if (IcmA > maxIcmA)
+            maxIcmA = IcmA;
     }
+    ret.data = tmp;
+    ret.yScale = maxIcmA;
+    return ret;
 }
 
 //*Private
@@ -133,25 +147,25 @@ double DAC::getGatecurrent(ICALCULATE *icalculate, int basePin)
 
     if (STATE::mainResult == "npn transistor")
     {
-        measureMode[basePin] = '2';
+        measureMode[basePin] = '6';
     }
     else
     {
-        measureMode[basePin] = '1';
+        measureMode[basePin] = '5';
     }
     measureMode[resCollector.at(0)] = '2';
     measureMode[resEmmiter.at(0)] = '1';
     std::vector<double> measurement = icalculate->SameOut3ChannelRepeat(measureMode[0] - '0', measureMode[1] - '0', measureMode[2] - '0');
-    // std::cout << measurement.at(0) << " " << measurement.at(1) << " " << measurement.at(2) << std::endl;
+    //std::cout << measurement.at(0) << " " << measurement.at(1) << " " << measurement.at(2) << std::endl;
     return double((3.3 - measurement.at(basePin)) / RESISTOR_LOW) * 1000.0;
 }
 
-double DAC::getGatecurrent(ICALCULATE *icalculate, double supplyVoltage, int basePin)
+double DAC::getShuntcurrent(ICALCULATE *icalculate, double supplyVoltage, int Pin)
 {
     std::vector<double> measurement = icalculate->SameOut3ChannelRepeat();
-    //std::cout << measurement.at(0) << " " << measurement.at(1) << " " << measurement.at(2) << std::endl;
-    //std::cout << "voltage " << (double)supplyVoltage << std::endl;
-    return double((double)(supplyVoltage - measurement.at(basePin)) / RESISTOR_LOW) * 1000.0;
+    // std::cout << measurement.at(0) << " " << measurement.at(1) << " " << measurement.at(2) << std::endl;
+    // std::cout << "voltage " << (double)supplyVoltage << std::endl;
+    return double((double)(supplyVoltage - measurement.at(Pin)) / RESISTOR_LOW) * 1000.0;
 }
 
 void DAC::PIDCorrection(ICALCULATE *icalculate, int basePin, float ConstCurrentVal)
@@ -163,36 +177,31 @@ void DAC::PIDCorrection(ICALCULATE *icalculate, int basePin, float ConstCurrentV
     double reqVolt;
     double maxPID = pid->pid_process(30);
     uint8_t baseCommand = channelSearch(basePin);
-    //std::cout << "maxCorr: " << maxPID << std::endl;
-    // pid->pid_reset_integral();
+    // std::cout << "maxCorr: " << maxPID << std::endl;
+    //  pid->pid_reset_integral();
     //
-    //  std::cout << "minCorr: " << pid->pid_process(-30) << std::endl;
+    //   std::cout << "minCorr: " << pid->pid_process(-30) << std::endl;
     for (int i = 0; i < 10; i++)
     {
-        currentBasemA = getGatecurrent(icalculate, convertToVolt(baseVoltage), basePin);
+        currentBasemA = getShuntcurrent(icalculate, convertToVolt(baseVoltage), basePin);
         error = ConstCurrentVal - currentBasemA;
-        if(error < 0.01){
-            return;
-        }
         pidCorr = pid->pid_process(error);
         pidCorr = (pidCorr / maxPID);
         reqVolt = convertToVolt(baseVoltage) + 3.3 * pidCorr;
+        // std::cout << "pidCorr: " << pidCorr << " currentBase: " << currentBasemA << " error: " << error << " basevoltage: " << baseVoltage << " " << (double)(3.3 * (baseVoltage / UINT16_MAX)) << " reqVolt: " << reqVolt << std::endl;
+        if (std::abs(error) < 0.01)
+        {
+            return;
+        }
         if (reqVolt > 3.3)
-        {
             reqVolt = 3.3;
-        }
         if (reqVolt < 0)
-        {
             reqVolt = 0;
-        }
         baseVoltage = (int)((reqVolt / 3.3) * UINT16_MAX);
-
         setVoltageOnChannel(baseVoltage, baseCommand);
-        std::cout << "pidCorr: " << pidCorr << " currentBase: " << currentBasemA << " error: " << error << " basevoltage: " << baseVoltage << " " << (double)(3.3 * (baseVoltage / UINT16_MAX)) << " reqVolt: " << reqVolt << std::endl;
-        std ::cout << std::endl;
+        // std ::cout << std::endl;
     }
-
-    sleep_ms(2000);
+    // sleep_ms(2000);
 }
 
 double DAC::convertToVolt(uint16_t baseVoltage)

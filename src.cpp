@@ -73,7 +73,7 @@ void core1_entry()
     }
 }
 
-void printResult(const std::map<std::string, double> &ret, const std::string &mainResult, CHARACTERDISPLAY *driver)
+void printResult(const std::map<std::string, double> &ret, const std::string &mainResult, GRAPHDISPLAY *driver)
 {
     std::cout << "Print Results\n";
     // std::map<std::string, double> ret = machine->getResult();
@@ -158,7 +158,7 @@ int main()
 
     SPIPORTS *displ_spi_ports = new SPIPORTS(DISP_SPI_CHANNEL, DISP_CS, DISP_SCK, DISP_MOSI);
     SPI *spidispl = new SPI(DISP_FREQ, displ_spi_ports);
-    CHARACTERDISPLAY *driver = new GRAPHDISPLAY(spidispl, 0x0000, commonClass->swap_bytes(0x081F));
+    GRAPHDISPLAY *driver = new GRAPHDISPLAY(spidispl, 0x0000, commonClass->swap_bytes(0x081F));
 
     STATE::usedPins[0] = "";
     STATE::usedPins[1] = "";
@@ -203,8 +203,9 @@ int main()
 
     printResult(machine->getResult(), machine->getMainResult(), driver);
 
-    dac->characteristicDiagramm(calc);
-
+    CharDiagr ret = dac->characteristicDiagramm(calc);
+    sleep_ms(1000);
+    driver->plotArray(ret.data, "mA");
     gpio_put(GREEN_LED_PIN, LOW);
 
 #endif

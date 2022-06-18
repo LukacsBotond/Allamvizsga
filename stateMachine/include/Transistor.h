@@ -20,7 +20,7 @@ private:
     bool transTestStart(const std::string &gateMode, int gatePin);
     bool transTest(const std::string &gateMode, int gatePin, const std::string basemodes[], double &HFE);
     bool checkIfTransistorIsOn(const std::string &mode, int gatePin);
-    bool checkIfTransistorIsOnHelper(double volt1, double volt2);
+    bool checkIfTransistorIsOnHelper(double volt1, double volt2, int volt1Mode, int volt2Mode);
 
     double HFECalculation(const std::string &mode, int gatePin);
     double HFECalculationHelper(const std::string &mode, int gatePin, int collectorPin);
