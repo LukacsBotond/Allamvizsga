@@ -140,10 +140,8 @@ double DAC::getGatecurrent(ICALCULATE *icalculate, int basePin)
     std::vector<int> resCollector = transistor.usedPinsFindByValue("C");
     std::vector<int> resEmmiter = transistor.usedPinsFindByValue("E");
 
-    if (STATE::mainResult == "npn transistor")
-        measureMode[basePin] = '6';
-    else
-        measureMode[basePin] = '5';
+    measureMode[basePin] = '6';
+
     measureMode[resCollector.at(0)] = '2';
     measureMode[resEmmiter.at(0)] = '1';
     std::vector<double> measurement = icalculate->SameOut3ChannelRepeat(measureMode[0] - '0', measureMode[1] - '0', measureMode[2] - '0');
@@ -173,9 +171,7 @@ void DAC::PIDCorrection(ICALCULATE *icalculate, int basePin, float ConstCurrentV
         pidCorr = (pidCorr / maxPID);
         reqVolt = convertToVolt(baseVoltage) + 3.3 * pidCorr;
         if (std::abs(error) < 0.01)
-        {
             return;
-        }
         if (reqVolt > 3.3)
             reqVolt = 3.3;
         if (reqVolt < 0)

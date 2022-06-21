@@ -205,6 +205,7 @@ int main()
     {
         CharDiagr ret = dac->characteristicDiagramm(calc);
         sleep_ms(1000);
+        std::cout << ret.data.at(ret.data.size() - 2) << std::endl;
         driver->plotArray(ret.data, "mA");
     }
     catch (NOTSUPPOSEDTOREACHTHIS)

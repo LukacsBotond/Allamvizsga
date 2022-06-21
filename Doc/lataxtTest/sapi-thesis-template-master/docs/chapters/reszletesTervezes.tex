@@ -83,10 +83,55 @@ van értelmezve, míg a hátsó 16bit adatként. Mindenik lehetséges parancs
 fel van sorolva a \textbf{IDAC.h}-ban, amit, így a parancs nevét és a 
 kívánt feszültséggel kell a függvényt meghívni.
 
-%! INSERT PID WHEN IT IS COMPLETE----------
+\subsection{PID szabályozó konstans áram előállítására}
 
+A karakterisztika diagramm elkészítéséhez a tranzisztor bázisán egy konstans áram
+folyik át, míg a kollectoron 0 tól 3.3V-ig növekedik a feszültség. Viszont
+ez a rendszer csak NPN típusú tranzisztoroknak képes kirajzolni, mivel a
+PNP tranzisztoroknak negatív feszültség szükséges, hogy konstans áram legyen
+a bázison, ami nem lehetséges ezzel az áramkörrel.
 
+Mivel a rendszer nem tartalmaz egy konstans áram forrást, csak feszültséget,
+így szoftveres segítségget az DAC van erre a célra felhasználva. A 
+szabályozásra egy PID szabályozó van használva, melynek csak a proportional
+része van használva, mivel a kimenet nem függ az múltbeli értékektől,
+így a szabályozás egyszerűbb ezáltal. A választott konstans áram 
+amikor a bázison és collectoron a feszültség 3.3V, ilyenkor az
+áramerősség a bázison a legalacsonyabb a tesztelhető tartományban.
+Ezután a bázis feszültséget szabályozva megközelíti ezt az áramerősséget
+ahogy a kollector feszültség növekedik.
 
+A a diagramm 200 mérési pontot tartalmaz és még ebben az esetben is a 
+diagramm kirajzolása közel 2-3 másodpercet vesz igénybe. Ez idő alatt 
+az azonosítás eredményei láthatóak a kijelzőn, így a felhasználó láthatja
+a rész eredményeket miközben a mérés még folyamatban van. 
+A rész eredmények tartalmazzák az eszköz láb kiosztását, a komponenst
+nevét és az erősítését. A szabályozás algoritmusa a következőképpen
+alakul
+
+\begin{lstlisting}
+    //a jelenlegi bazis aram
+    currentBasemA = getShuntcurrent(icalculate, convertToVolt(baseVoltage), basePin);
+    //hiba a jelenlegi es az elvart kozt
+    error = ConstCurrentVal - currentBasemA;
+    //hiba korrigalasa
+    pidCorr = pid->pid_process(error);
+    //pid kimenetenek skalazasa [-1,1] koze
+    pidCorr = (pidCorr / maxPID);
+    //korrigalt feszultseg
+    reqVolt = convertToVolt(baseVoltage) + 3.3 * pidCorr;
+    //amennyiben a hiba eleg alacsony a szabalyozas kilep
+    if (std::abs(error) < 0.01)
+        return;
+    //feszultseg abszolut limiteinek meghatarozasa    
+    if (reqVolt > 3.3)
+        reqVolt = 3.3;
+    if (reqVolt < 0)
+        reqVolt = 0;
+    //feszultseg kiirasa a DAC-ra
+    baseVoltage = (int)((reqVolt / 3.3) * UINT16_MAX);
+    setVoltageOnChannel(baseVoltage, baseCommand);
+\end{lstlisting}
 
 \subsection{Beépített SPI használata}
 
@@ -406,6 +451,28 @@ A tranzisztor erősítése az ellenállás mérés alatt bemutatott áramerőss�
 mérésen alapul. Az áramerősséget megméri a Bázison és a Collectoron keresztül
 és ennek \textbf{Ic/IB} aránya adja meg az erősítést. Ic ebben az esetben mindig
 az a láb amely felől az áram folyik.
+
+A karakterisztika diagramm elkészítéséhez első lépésben a tranzisztor azonosítása
+szükséges, mivel itt szükséges a tranzisztor lábkiosztásának az ismerete.
+A PID vezérlő konstans áramot enged át a tranzisztor bázisán bármilyen
+Kollector-Emmiter feszültség mellett. 
+
+Az NPN tranzisztoroknál a bázis feszültség
+magasabb kell legyen, mint a tranzisztor Emmiter feszültsége.
+Ez lehetséges a mérés teljes tartományban, mivel az Emmiteren a feszültség
+mindig alacsonyabb, mint a Bázison, így csak a Bázis feszültségét kell
+szabályozni.
+
+A PNP tranzisztor esetében a bázis feszültség alacsonyabb kell legyen,
+mint az emmiter feszültség. Ezen esetben a Bázis feszültség lehetséges 
+lenne, hogy negatív értékeket vegyen fel, amit a DAC nem képes szolgáltatni.
+Viszont virtuális negatív feszültség elérhető, így a mérés elvégezhető 
+a következő módon. Az Emmitert egy konstans 3.3V feszültségen tartva a
+Kollectort növelve a Kollector-Emmiter feszültség csökken, miközben
+relatív negatív feszültség érhető el a bázison.
+Ennek segítségével a teljes mérési tartományon mérhető, annélkül,
+hogy a bázisra a DAC-hoz képest negatív feszültségre lenne szükség.
+
 
 
 %----------------------------------------HW-------------------------

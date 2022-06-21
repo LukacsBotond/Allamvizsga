@@ -9,7 +9,7 @@ private:
     double kp;
 public:
     /** Initializes a PID controller. */
-    PID(float kp);
+    explicit PID(float kp);
     ~PID() {}
 
     /** Process one step if the PID algorithm. */
@@ -22,7 +22,5 @@ PID::PID(float kp) : kp(kp)
 
 float PID::pid_process(float error)
 {
-    float output;
-    output = -kp * error;
-    return output;
+    return -kp * error;
 }
