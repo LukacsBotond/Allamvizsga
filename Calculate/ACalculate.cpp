@@ -1,6 +1,7 @@
 #include "./include/ACalculate.h"
 #include "../Global.h"
 
+
 ACALCULATE::ACALCULATE(IVALUES *values, ISWITCHCONTROLLER *controller, IADCORRECTER *adccorrecter)
 {
     this->values = values;
@@ -189,6 +190,11 @@ double ACALCULATE::diodeThreshold(std::string &measurement)
 
 double ACALCULATE::CalcCapacitance_nF(uint16_t *samples, uint16_t CAPTURE_DEPTH, double sapleRate, const uint8_t swMode)
 {
+    if (!IsAnythingConnected(cleanInput->AVGVoltage(samples, CAPTURE_DEPTH), swMode))
+    {
+        throw NOTHINGCONNECTED("Capacitor charge too slowly, decrease the resistance or the sample frequency");
+    }
+
     uint ChargeTime_ns = 0;
     uint ticktime = 1000000000 / (sapleRate);
     if (samples[CAPTURE_DEPTH - 2] < 3000)
@@ -200,7 +206,7 @@ double ACALCULATE::CalcCapacitance_nF(uint16_t *samples, uint16_t CAPTURE_DEPTH,
     for (uint i = 0; i < CAPTURE_DEPTH; i++)
     {
         ChargeTime_ns += ticktime;
-        if (samples[i] >= 2855)
+        if (samples[i] >= 2600)
         {
             break;
         }

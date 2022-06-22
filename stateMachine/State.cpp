@@ -31,7 +31,7 @@ bool STATE::checkReverse(const std::string &measurementNormal, const std::string
 {
     std::vector<double> measurementDataNormal = getMeasurement(measurementNormal);
     std::vector<double> measurementDataReverse = getMeasurement(measurementReverse);
-
+    this->icalculate->values->printMeasurements();
     // first port is not used
     if (measurementNormal[0] - '0' == 0)
     {
@@ -91,14 +91,14 @@ bool STATE::twoInverseDiode()
     // check voltage drop with different resistors
     double threshold1 = icalculate->diodeThreshold(usedModes.at(0));
     double threshold2 = icalculate->diodeThreshold(usedModes.at(2));
-    if (std::abs(threshold1 - threshold2) < 0.5)
+    if (std::abs(threshold1 - threshold2) < 0.1)
     {
         fw = true;
     }
     // check voltage drop with different resistors
     threshold1 = icalculate->diodeThreshold(usedModes.at(1));
     threshold2 = icalculate->diodeThreshold(usedModes.at(3));
-    if (std::abs(threshold1 - threshold2) < 0.5)
+    if (std::abs(threshold1 - threshold2) < 0.1)
     {
         bw = true;
     }

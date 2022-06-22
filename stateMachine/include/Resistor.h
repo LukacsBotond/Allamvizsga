@@ -42,18 +42,18 @@ RESISTOR::RESISTOR(ICALCULATE *icalculate)
 bool RESISTOR::check()
 {
     bool flag = false;
-    std::string modes[] = {"210", "410", "610", "201", "401", "601", "021", "041", "061"};
-    std::string modesRev[] = {"120", "140", "160", "102", "104", "106", "012", "014", "016"};
+    std::string modes[] = {"210", "430", "650", "201", "401", "605", "021", "043", "065"};
+    std::string modesRev[] = {"120", "340", "560", "102", "304", "506", "012", "034", "056"};
     for (int8_t i = 0; i < 9; i++)
     {
         try
         {
-            //std::cout << "reverseCheck: mode" << modes[i] << " " << modesRev[i] << " " << std::endl;
+            // std::cout << "reverseCheck: mode" << modes[i] << " " << modesRev[i] << " " << std::endl;
             if (!checkReverse(modes[i], modesRev[i]))
             {
                 usedModes.push_back(modes[i]);
                 usedModes.push_back(modesRev[i]);
-                //std::cout << "REVERSE CHECK FAILED, POSSIBLY DIODE OR SIMILAR\n";
+                // std::cout << "REVERSE CHECK FAILED, POSSIBLY DIODE OR SIMILAR\n";
                 throw POSSIBLYDIODE("reverse check failed with port modes:" + modes[i] + modesRev[i]);
             }
             usedModes.push_back(modes[i]);
@@ -62,11 +62,16 @@ bool RESISTOR::check()
         }
         catch (NOTHINGCONNECTED &e)
         {
-            //std::cout << e.what() << std::endl;
+            std::cout << e.what() << std::endl;
+        }
+        catch (const std::exception &e)
+        {
+            std::cout << e.what() << std::endl;
         }
     }
 
-    if(this->twoInverseDiode()){
+    if (this->twoInverseDiode())
+    {
         throw POSSIBLYDIODE("2 inverse diode");
     }
     return flag;
@@ -80,11 +85,11 @@ void RESISTOR::calculate()
     {
         results["resistance"] = icalculate->calcResistance(this->usedModes);
         this->mainResult = "Resistor";
-        setUsedPins(usedModes.at(0),'R');
+        setUsedPins(usedModes.at(0), 'R');
     }
     else
     {
-        //std::cout << "NO resistor found\n";
+        // std::cout << "NO resistor found\n";
         throw NOTARESISTOR("NO PIN IS USED");
     }
 }

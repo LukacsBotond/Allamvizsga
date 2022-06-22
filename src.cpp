@@ -94,6 +94,46 @@ void printResult(const std::map<std::string, double> &ret, const std::string &ma
     driver->fillRestScreen(0x0000);
 }
 
+void testing(GRAPHDISPLAY *driver, ICALCULATE *calc, MACHINE *machine)
+{
+    try
+    {
+        machine->setState(new CAPACITOR(calc));
+        machine->calculate();
+        if (STATE::mainResult == "Capacitor")
+        {
+            return;
+        }
+
+        machine->setState(new RESISTOR(calc));
+        machine->calculate();
+    }
+    catch (POSSIBLYDIODE &e) // diode path
+    {
+
+        // std::cout << e.what() << std::endl;
+        machine->setState(new DIODE(calc));
+        machine->calculate();
+        // check if 2 inverse diode
+        if (STATE::usedPins.at(0).size() > 1 || STATE::usedPins.at(1).size() > 1)
+        {
+            return;
+        }
+        machine->setState(new TRANSISTOR(calc));
+        machine->calculate();
+    }
+    catch (NOTARESISTOR &e) // nothing found
+    {
+    }
+    catch (NOTHINGCONNECTED &e)
+    {
+    }
+    catch (const std::exception &e)
+    {
+        std::cout << e.what() << std::endl;
+    }
+}
+
 #ifndef TESTS
 IADC *adc = new ADC();
 COMMON *commonClass = new COMMON();
@@ -162,49 +202,13 @@ int main()
     STATE::usedPins[1] = "";
     STATE::usedPins[2] = "";
 
-    try
-    {
-        machine->setState(new RESISTOR(calc));
-        machine->calculate();
-
-        machine->setState(new CAPACITOR(calc));
-        machine->calculate();
-    }
-    catch (POSSIBLYDIODE &e) // diode path
-    {
-
-        // std::cout << e.what() << std::endl;
-        machine->setState(new DIODE(calc));
-        machine->calculate();
-        // check if 2 inverse diode
-        if (STATE::usedPins.at(0).size() > 1 || STATE::usedPins.at(1).size() > 1)
-        {
-            printResult(machine->getResult(), machine->getMainResult(), driver);
-        }
-        machine->setState(new TRANSISTOR(calc));
-        machine->calculate();
-    }
-    catch (NOTARESISTOR &e) // nothing found
-    {
-        machine->setState(new CAPACITOR(calc));
-        machine->calculate();
-    }
-    catch (NOTHINGCONNECTED &e)
-    {
-        machine->setState(new CAPACITOR(calc));
-        machine->calculate();
-    }
-    catch (const std::exception &e)
-    {
-        std::cout << e.what() << std::endl;
-    }
+    testing(driver, calc, machine);
 
     printResult(machine->getResult(), machine->getMainResult(), driver);
     try
     {
         CharDiagr ret = dac->characteristicDiagramm(calc);
-        //sleep_ms(1000);
-        std::cout << ret.data.at(ret.data.size() - 2) << std::endl;
+        // sleep_ms(1000);
         driver->plotArray(ret.data, "mA");
     }
     catch (NOTSUPPOSEDTOREACHTHIS)
