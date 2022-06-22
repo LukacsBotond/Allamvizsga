@@ -76,7 +76,6 @@ void core1_entry()
 void printResult(const std::map<std::string, double> &ret, const std::string &mainResult, GRAPHDISPLAY *driver)
 {
     std::cout << "Print Results\n";
-    gpio_put(GREEN_LED_PIN, LOW);
 
     std::cout << mainResult << std::endl;
     driver->printLine(mainResult);
