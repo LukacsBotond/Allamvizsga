@@ -35,6 +35,7 @@ void GRAPHDISPLAY::plotArray(const std::vector<double> &y, const std::string &Ys
         {
             insertChar(0, transChartoCharSet(Yscale[0]));
             insertChar(1, transChartoCharSet(Yscale[1]));
+            insertChar(2, transChartoCharSet(Yscale[2]));
         }
         insertChar(3, transChartoCharSet('|'));
         fill_Graph_Row(y);

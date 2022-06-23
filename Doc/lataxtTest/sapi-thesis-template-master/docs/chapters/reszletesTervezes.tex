@@ -6,7 +6,7 @@ A mikorvezérlőbe egy 3 csatornás ADC van beépítve, viszont egyszerre csak 1
 csatornát lehet olvasni, olvasás előtt át kell váltani arra a csatornára, amelyről
 az adatot olvasni akarjuk. Az ADC hardver szinten egy 48Mhz-es órajelet kap és
 egy mérés minimum 96 ciklusba telik, így 500k mérést végez másodpercenként, 
-ezt viszont növelhető dinamikusan szoftveresen, így csökkenthető a mérési gyorsaság.
+ez viszont növelhető dinamikusan szoftveresen, így csökkenthető a mérési gyorsaság.
 
 
 Az ADC képes DMA-n (direct memory access) \cite{DMA} keresztül kommunikálni a 
@@ -66,10 +66,10 @@ megméri 0V-on milyen értéket mér az ADC és 3.3V-on. Ezeket az értékeket e
 
 \subsection{Digitál analóg Konverter}
 
-A DAC SPI-n keresztül kömmunikál, ezért
+A DAC SPI-n keresztül kommunikál, ezért
 szüksége van egy SPI osztályra amely inicializálja az 
 SPI portokat. A használt portok szintén a \textbf{Global.h}
-fájlban találhatóak meg. A DAC szintén használ az SPI protokokolon
+fájlban találhatóak meg. A DAC szintén használ az SPI protokollon
 kívüli jeleket, viszont ezek a reseten kívül opcionálisak és 
 elégséges lenne közvetlen a földre kötni. Ezekkel a jelekkel
 lehetséges lenne jelet küldeni, hogy mikor töltse be az adatot
@@ -85,29 +85,25 @@ kívánt feszültséggel kell a függvényt meghívni.
 
 \subsection{PID szabályozó konstans áram előállítására}
 
-A karakterisztika diagramm elkészítéséhez a tranzisztor bázisán egy konstans áram
-folyik át, míg a kollectoron 0 tól 3.3V-ig növekedik a feszültség. Viszont
-ez a rendszer csak NPN típusú tranzisztoroknak képes kirajzolni, mivel a
-PNP tranzisztoroknak negatív feszültség szükséges, hogy konstans áram legyen
-a bázison, ami nem lehetséges ezzel az áramkörrel.
+A karakterisztika diagram elkészítéséhez a tranzisztor bázisán egy konstans áram
+folyik át, míg a kollektoron 0-tól 3.3V-ig növekedik a feszültség.
 
 Mivel a rendszer nem tartalmaz egy konstans áram forrást, csak feszültséget,
-így szoftveres segítségget az DAC van erre a célra felhasználva. A 
-szabályozásra egy PID szabályozó van használva, melynek csak a proportional
+így szoftveres segítséggel a DAC van erre a célra felhasználva. A 
+szabályozásra egy PID szabályozó van használva, melynek csak a proporcionált
 része van használva, mivel a kimenet nem függ az múltbeli értékektől,
 így a szabályozás egyszerűbb ezáltal. A választott konstans áram 
-amikor a bázison és collectoron a feszültség 3.3V, ilyenkor az
-áramerősség a bázison a legalacsonyabb a tesztelhető tartományban.
-Ezután a bázis feszültséget szabályozva megközelíti ezt az áramerősséget
-ahogy a kollector feszültség növekedik.
+amikor a tranzisztor kollektor-emitter feszültség esése 1.5V, ilyenkor
+a tranzisztor elkezd kinyitni, viszont nincs még kapcsoló
+üzemmódban.
 
-A a diagramm 200 mérési pontot tartalmaz és még ebben az esetben is a 
-diagramm kirajzolása közel 2-3 másodpercet vesz igénybe. Ez idő alatt 
+A a diagram 200 mérési pontot tartalmaz és még ebben az esetben is a 
+diagram kirajzolása közel 2-3 másodpercet vesz igénybe. Ez idő alatt 
 az azonosítás eredményei láthatóak a kijelzőn, így a felhasználó láthatja
 a rész eredményeket miközben a mérés még folyamatban van. 
 A rész eredmények tartalmazzák az eszköz láb kiosztását, a komponenst
 nevét és az erősítését. A szabályozás algoritmusa a következőképpen
-alakul
+alakul.
 
 \begin{lstlisting}
     //a jelenlegi bazis aram
@@ -154,7 +150,7 @@ kellett féljek, hogy ilyenkor a CS belezavar a küldésbe.
 
 \subsection{Kijelző vezérlése}
 
-A kijelző vezérlése a [\ref{fig:displayClassDiagram}] ábrán látható osztály diagrammot használja, 
+A kijelző vezérlése a [\ref{fig:displayClassDiagram}] ábrán látható osztály diagramot használja, 
 az SPI osztálynak meg kell adni, hogy hová vannak csatlakoztatva a vezetékek, 
 ezek az adatok megtalálhatóak a \textbf{Global.h} fájlban, ezen kívül a 
 kijelző használ még egyedi vezérlő jeleket is, amelyek globálisan definiálva vannak,
@@ -176,18 +172,18 @@ módokban való küldésért és a képernyő teljes újratöltésére egy szín
 sortól kezdve a kijelző végéig.
 
 A CHARACTERDISPLAY osztály képes egyszerű ASCII alapú üzenetek kijelzésére.
-Ezt egy mask tömbbel éri el, minden karakternek van egy 8x8as maskja, amely
-bittenként tárolja el, hogy hol kell változtatni a színt.
-Ahol a mask 1-es értékű, ott a pixelt a karakter színűre kell festeni, ahol 0
+Ezt egy maszk tömbbel éri el, minden karakternek van egy 8x8as maszkja, amely
+bitenként tárolja el, hogy hol kell változtatni a színt.
+Ahol a maszk 1-es értékű, ott a pixelt a karakter színűre kell festeni, ahol 0
 ott a háttérszínűre.
-Ez minden betűn egyenként végig halad és beteszi a tároló tömb megfeelő indexére
+Ez minden betűn egyenként végig halad és beteszi a tároló tömb megfelelő indexére
 a szín értéket, a tároló sor küldés kezdetekor fel van töltve a háttérszín 
 értékével, ez törli az előző sor értékeit és így csak ott kell módosítani
 ahol szükséges.
 Küldés során printLine(string) függvény kap egy string értéket.
 Itt figyelemmel kell lenni arra, hogy automatikusan nem kezd új sort
-ha hosszú a szöveg. Ezen karakterenként végig haladva átalakítja a karaktereket maskokká
-és beírja a tárolóba. A 
+ha hosszú a szöveg. Ezen karakterenként végig haladva átalakítja a karaktereket maszkokká
+és beírja a tárolóba.
 
 
 \begin{lstlisting}
@@ -219,7 +215,7 @@ A kijelző legfelső sorában lesz a maximális érték és az szerint lesz ská
 többi érték. A kapott értékek számától függően az OX tengelyen az szerint lesznek
 egyenletesen felosztva az értékek.
 
-A függvény hívásakor meg kell adni, hogy az értékek milyen mértékegységűek, ez 2
+A függvény hívásakor meg kell adni, hogy az értékek milyen mértékegységűek, ez 3
 karakter lehet maximum (pl. mA). 
 
 
@@ -263,9 +259,9 @@ nagy késések lehetnek és az ADC hibás adatokat fog mérni.
 Így ha csak a kapcsolót kell átkapcsolni akkor a késés minimális és az ADC
 nem fog hibás adatokat olvasni.
 
-Az a kapcsolók egyszerre való írása maszkolással van elérve. Mivel az 
+Kapcsolók egyszerre való írása maszkolással van elérve. Mivel az 
 analóg kapcsolók egymás mellett helyezkednek el, így azt a 
-részt ki lehet maskolni és az érték maszkba meg azokra a pozíciókra
+részt ki lehet maszkolni és az érték maszkba meg azokra a pozíciókra
 kerül amit be akarunk írni. Ezt a beépített gpio$\_$put$\_$masked(uint32$\_$t mask, uint32$\_$t value)
 függvénnyel értem el. A Sw$\_$translation$\_$Map a [\ref{fig:KapcsoloMod}] táblázatban
 szereplő értékeket tartalmazza.
@@ -290,7 +286,7 @@ A kezdetben ismeretlen komponensként van az alkatrész azonosítva,
 majd ahogy egy fázison áthalad úgy frissítve lesz. 
 Egy ilyen példa a tranzisztor tesztelése. Első lépésben elbukik az 
 ellenállás teszten így nem lesz frissítve, majd a dióda teszten
-megtalálja vagy a Collector-Bázis vagy a Bázis-Emmiter diódát, 
+megtalálja vagy a Kollektor-Bázis vagy a Bázis-Emitter diódát, 
 mivel egyszerre csak 1-et keres a tesztelés során, elmenti ezeknek az 
 paramétereit, majd a tranzisztor tesztelés során fölülírja ezeket az értékeket 
 és a tranzisztor értékeivel tölti fel.
@@ -377,7 +373,7 @@ csatornáját szimbolizálja.
 
 \subsection{Kondenzátor}
 
-Mivel a kondenzátok ellenállás karakterisztikát mutatnak abban az esetben
+Mivel a kondenzátorok ellenállás karakterisztikát mutatnak abban az esetben
 amikor a 2 pólusán levő feszültséget mérjük és nem mutat 
 dióda karakterisztikát ezért az ellenállás 
 teszten átmegy.
@@ -399,9 +395,8 @@ ezért a töltés túl gyors.
 
 Minden sikertelen tesztelés után és a legelső mérés előtt kondenzátort kisüti, 
 hogy a következő mérést ne befolyásolja. Ha félig fel lenne töltve a kondenzátor
-akkor a következő mérés alatt sokkal hamarább elérné a küszüb feszültséget
+akkor a következő mérés alatt sokkal hamarább elérné a küszöb feszültséget
 a kellett időnél így hibás értéket számolna ki.
-
 
 
 \subsection{Dióda teszt}
@@ -418,7 +413,7 @@ Ezt mindkét irányban megméri és amennyiben a dióda nyitó
 feszültsége 3V alatt van akkor abban az esetben képes megmérni azt.
 
 Attól függően, hogy melyik irányból folyik az áram meghatározza
-a dióa anód/katód pólusait is, amennyiben az alkatrész egy 
+a dióda anód/katód pólusait is, amennyiben az alkatrész egy 
 2 inverz dióda akkor abban az esetben a mindkét pólusra 
 Anód-Katód azonosítást ad.
 
@@ -429,60 +424,54 @@ tranzisztorok tartalmaznak diódát így erről a fázisról képes eljutni.
 
 Ebben a fázisban tesztelésre kerül, hogy a komponens NPN vagy PNP tranzisztor.
 A tesztelés során meg lesz határozva a tranzisztor erősítése és hogy 
-melyik a tranzisztor láb kiosztását a Collector-Emmiter különbséget is figyelembe
+melyik a tranzisztor láb kiosztását a Kollektor-Emitter különbséget is figyelembe
 véve.
 
 PNP tranzisztor esetében a bázist földre kell kötni, hogy a tranzisztor kinyisson.
-Ebben az esetben a tranzisztor Collector-Emmiter és Emmiter-Collector irányban
+Ebben az esetben a tranzisztor Kollektor-Emitter és Emitter-Kollektor irányban
 is vezet. A mérés megismétlődik NPN tranzisztor módra is, ebben az esetben 
 a Bázisra feszültséget kell kapcsolni, hogy kinyisson és ez is mindkét irányban
 vezet.
 
 Amennyiben mindkét teszt sikeres (NPN és PNP) akkor a teszt sikertelen, mivel
 egyszerre nem lehet mindkettő. Amennyiben csak az egyik teszt sikeres akkor
-abban az esetben megméri a tranzisztor erősítését Collector-Emmiter és 
-Emmiter-Collector irányban. A teszter nem tudja ezeket, csak az egyszerűség
+abban az esetben megméri a tranzisztor erősítését Kollektor-Emitter és 
+Emitter-Kollektor irányban. A teszter nem tudja ezeket, csak az egyszerűség
 kedvéért van ilyen módon leírva. Mindkét esetben kijön egy-egy erősítés érték,
-viszont amikor az áram a Collector-Emmiter úton halad akkor abban az esetben
+viszont amikor az áram a Kollektor-Emitter úton halad akkor abban az esetben
 az erősítés sokkal nagyobb, mint fordított irányban így meghatározható a 
-Collector és Emmiter láb.
+Kollektor és Emitter láb.
 
 A tranzisztor erősítése az ellenállás mérés alatt bemutatott áramerősség
-mérésen alapul. Az áramerősséget megméri a Bázison és a Collectoron keresztül
+mérésen alapul. Az áramerősséget megméri a Bázison és a Kollektoron keresztül
 és ennek \textbf{Ic/IB} aránya adja meg az erősítést. Ic ebben az esetben mindig
 az a láb amely felől az áram folyik.
 
-A karakterisztika diagramm elkészítéséhez első lépésben a tranzisztor azonosítása
+A karakterisztika diagram elkészítéséhez első lépésben a tranzisztor azonosítása
 szükséges, mivel itt szükséges a tranzisztor lábkiosztásának az ismerete.
 A PID vezérlő konstans áramot enged át a tranzisztor bázisán bármilyen
-Kollector-Emmiter feszültség mellett. 
+Kollektor-Emitter feszültség mellett. 
 
 Az NPN tranzisztoroknál a bázis feszültség
-magasabb kell legyen, mint a tranzisztor Emmiter feszültsége.
-Ez lehetséges a mérés teljes tartományban, mivel az Emmiteren a feszültség
+magasabb kell legyen, mint a tranzisztor Emitter feszültsége.
+Ez lehetséges a mérés teljes tartományban, mivel az Emitteren a feszültség
 mindig alacsonyabb, mint a Bázison, így csak a Bázis feszültségét kell
 szabályozni.
 
 A PNP tranzisztor esetében a bázis feszültség alacsonyabb kell legyen,
-mint az emmiter feszültség. Ezen esetben a Bázis feszültség lehetséges 
+mint az emitter feszültség. Ezen esetben a Bázis feszültség lehetséges 
 lenne, hogy negatív értékeket vegyen fel, amit a DAC nem képes szolgáltatni.
 Viszont virtuális negatív feszültség elérhető, így a mérés elvégezhető 
-a következő módon. Az Emmitert egy konstans 3.3V feszültségen tartva a
-Kollectort növelve a Kollector-Emmiter feszültség csökken, miközben
+a következő módon. Az Emittert egy konstans 3.3V feszültségen tartva a
+Kollektort növelve a Kollektor-Emitter feszültség csökken, miközben
 relatív negatív feszültség érhető el a bázison.
-Ennek segítségével a teljes mérési tartományon mérhető, annélkül,
+Ennek segítségével a teljes mérési tartományon mérhető, anélkül,
 hogy a bázisra a DAC-hoz képest negatív feszültségre lenne szükség.
-
 
 
 %----------------------------------------HW-------------------------
 
 \section{Hardver rész}
-
-A rendszer elkészítéséhez szükséges volt egy áramkör tervezése is, mivel több komponens
-csak SMD (Surface Mount Component) formában találhatóak meg, így nem alkalmazhatóak egy
-egyszerű breadboard. Ezen megtalálható minden ami szükséges a rendszer működéséhez, 
-csupán egy micro-USB szükséges a rendszer táplálásához.
 
 Az áramkör tervet az EasyEDA-ban terveztem, ez egy ingyenesen használható szerkesztő
 program, akár webes felületen is használható és nagy mennyiségű alkatrész található
@@ -496,11 +485,11 @@ A huzalozás során nagyobb figyelmet fektettem a nagy frekvenciás SPI jelek
 és a mérőáramkör szétválasztására, a zajok csökkentése érdekében.
 
 A jel vezető huzalok vékonyabbak, mint az áramot vezető huzalok, viszont ez csak
-design szempontjából van jelentősége, mivel az áramerősség alacsony így vékonyabb
-hozalok is megfelenének a feladatra. Egyes esetekben amikor a kis méretű SMD 
+dizájn szempontjából van jelentősége, mivel az áramerősség alacsony így vékonyabb
+huzalok is megfelelnek a feladatra. Egyes esetekben amikor a kis méretű SMD 
 alkatrészekhez kell csatlakoztatni a vezetékeket akkor közvetlen a csatlakoztatás
-előtt a vezeték vastagság lecsökken, hogy lehetséges legyen a forrasztás annálkül,
-hogy a mellette levő lábbal rövidzárt okozzon.
+előtt a vezeték vastagság lecsökken, hogy lehetséges legyen a forrasztás anélkül,
+hogy a mellette levő lábbal rövidzárlatot okozzon.
 
 A chipek mellett találhatóak kondenzátorok is, amelyek a tápfeszültség stabilitására
 szolgálnak.
@@ -526,7 +515,7 @@ Ezek át kellett vezessem olyan módon, hogy csakis a lap másik oldalán legyen
 csatlakoztatva a komponenshez.
 
 Beszerzés során nem rendeltem meg minden alkatrészt, csak a fontosakat, így néhány
-egyszerű alkatrészt helyettesítettem más alaktrésekkel, ez csupán egy feszültség referenciát
+egyszerű alkatrészt helyettesítettem más alaktrészekkel, ez csupán egy feszültség referenciát
 2 LED-et és egy kapcsolót érintett, így ezeket inkább helyileg helyettesítettem, minthogy
 ismét rendeljem meg azokat.
 
@@ -541,7 +530,7 @@ utólag felrajzoltam a lapra.
 \subsection{Áramkör elkészítése}
 
 Miután a tervezés elkészült és kivitelezhetőnek lett minősítve[\ref{fig:PCBV2}] azután az áramkör
-el lett keszítve az egyetemi laboratórium segítségével. Miután a lapot a furatokkal és a réz
+el lett készítve az egyetemi laboratórium segítségével. Miután a lapot a furatokkal és a réz
 huzalozással megkaptam azután elkezdtem a komponensek felhelyezését.
 
 \begin{figure}[h]
@@ -553,7 +542,7 @@ huzalozással megkaptam azután elkezdtem a komponensek felhelyezését.
 
 
 Áramkör forrasztásával szintén nem volt sok tapasztalatom, csupán egyszerűbb
-áramkörökkel, így nem a lehető legszebb, viszont használat során minden elektonikailag
+áramkörökkel, így nem a lehető legszebb, viszont használat során minden elektronikailag
 csatlakoztatva van, így az áramkör működőképes. A végső áramkör a következőkben néz ki.
 [\ref{fig:Aramkor}]
 
@@ -579,11 +568,11 @@ Ezért ilyen esetben nagyobb port ellenállást kell alkalmazni, hogy mérhető
 legyen a feszültség esés.
 
 A program képes az időben változó feszültségeket is mérni, így
-meg lehet tudni, hogy milyen idő intervalumban kell nézni és hogy
+meg lehet tudni, hogy milyen idő intervallumban kell nézni és hogy
 a komponensek időben mennyire befolyásolják a mérést. Ez 
-legfőképpen a kondenzátorok mérésekor volt fontos, hogy megbizonyodjak
+legfőképpen a kondenzátorok mérésekor volt fontos, hogy megbizonyosodjak
 a mérések valóságosságáról.
 
 A szimulációk többször is segítséget jelentettek a program 
-hibáinak felfedezésében amit annélkül nehezebb lett volna felfedezni.
+hibáinak felfedezésében amit anélkül nehezebb lett volna felfedezni.
 
