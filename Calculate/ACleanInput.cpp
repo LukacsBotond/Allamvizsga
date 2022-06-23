@@ -6,7 +6,7 @@ bool ACLEANINPUT::IsAnythingConnected(const double avgVoltage, const uint8_t por
     // drop then there is nothing connected or high impedance
     if (portMode == 0)
     {
-        return (avgVoltage > 0.5 && avgVoltage < 0.9);
+        return (avgVoltage < 0.5 || avgVoltage > 0.9);
     }
     if (portMode % 2 == 1) // pin is on ground
     {

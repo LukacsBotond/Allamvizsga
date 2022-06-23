@@ -2,15 +2,20 @@ A teszter elkészítése után a rendszer tesztelése következett.
 A rendszer nem fektetett nagy hangsúlyt a pontossárga, viszont egy 
 megközelítő értéket meg kell tudjon határozni.
 
-\subsection{Ellenállás mérés}
+\section{Ellenállás mérés}
 
 Amennyiben az elkatrész egy ellenállás akkor meghatározza ennek az ellenállását.
+Mivel az ADC-n levő konstans és változó zajok vannak és ezen alapszik 
+az áramerősség mérése, így a mérések pontossága nem magas[\ref{fig:ResistorResults}], ami különösen csökken a mérés tartomány
+végén, mivel a mérő ellenállás amit az áramerősség mérésére használ túl alacsony így
+nem képes pontosan meghatározni az áramerősséget. Ezt egy nagyobb mérő ellenállással
+lehetne korrigálni
 
 
-\begin{table}[]
+\begin{table}[H]
     \begin{tabular}{|l|l|l|l|}
     \hline
-    Sorszám & Névleges érték & Multiméterrel mért érték & Teszter által mért érték \\ \hline
+    Sorszám & Névleges érték(Ohm) & Multiméterrel mért érték(Ohm) & Teszter által mért érték(Ohm) \\ \hline
     0       & 47             & 47                       & 52.5                     \\ \hline
     1       & 56             & 55.7                     & 59                       \\ \hline
     2       & 100            & 100.1                    & 107.4                    \\ \hline
@@ -26,32 +31,57 @@ Amennyiben az elkatrész egy ellenállás akkor meghatározza ennek az ellenáll
     \end{tabular}
     \end{table}
 
-\subsection{Kondenzátor}
+    \begin{figure}[H]
+        \centering
+        \includegraphics[scale=0.6]{images/results/resistorMesurement.png}
+        \caption{Ellenállás mérés eredménye}
+        \label{fig:ResistorResults}
+    \end{figure}
 
-\begin{table}[]
-    \begin{tabular}{llll}
-    sorszám & Névleges érték & Mérőműszerrel mért érték & Mért érték \\
-    1       & 60nF           & 59.62nF                  & 60nF       \\
-    2       & 75nF           & 74.26                    & 75nF       \\
-    3       & 100nF          & 98.26nF                  & 101nF      \\
-    4       & 200nF          & 202nF                    & 203nF      \\
-    5       & 300nF          & 300.3nF                  & 305nF      \\
-    6       & 400nF          & 400nF                    & 406nF      \\
-    7       & 500nF          & 498nF                    & 504nF      \\
-    8       & 600nF          & 602nF                    & 610nF      \\
-    9       & 700nF          & 701nF                    & 703nF      \\
-    10      & 800nF          & 791.4nF                  & 800nF      \\
-    11      & 900nF          & 889.7nF                  & 889nF      \\
-    12      & 1uF            & 979nF                    & 1.059uF    \\
-    13      & 2uF            & 1.97uF                   & 2.033uF    \\
-    14      & 3uF            & 2.95uF                   & 3.05uF     \\
-    15      & 4uF            & 3.96uF                   & 4.025uF    \\
-    16      & 5uF            & 4.94uF                   & 5uF        \\
-    17      & 6uF            & 5.935uF                  & 6.016uF    \\
-    18      & 7uF            & 6.914uF                  & 6.95uF     \\
-    19      & 8uF            & 7.946uF                  & 8.05uF    
-\end{tabular}
-\end{table}
 
-\subsection{Karakterisztika diagramm}
+\section{Kondenzátor}
+
+Kondenzátor mérés estén az időt méri ameddig a kondenzátor feszültsége eléri a 
+68\%-át a 3.3V-os forrásnak. Ezen esetben a mérés pontosabb, mivel
+a zajok kevésbé befolyásolják így nem kell alacsony értékekből
+számolni ami nagy hibához vezet. 50nF alatt nem biztos a mérés, 
+mivel egyes alaktrészeket másnak is detektálhat, különösen ha 
+hosszú vezetékek vannak használva. A grafikonon[\ref{fig:ResistorResults}]
+látható, hogy a mérés jól megközelíti a névleges és dedikált mérőműszer
+eredményeit.
+
+\begin{table}[h]
+    \begin{tabular}{|l|l|l|l|}
+    \hline
+    sorszám & Névleges érték & Mérőműszerrel mért érték & Mért érték \\ \hline
+    1       & 60nF           & 59.62nF                  & 60nF       \\ \hline
+    2       & 75nF           & 74.26                    & 75nF       \\ \hline
+    3       & 100nF          & 98.26nF                  & 101nF      \\ \hline
+    4       & 200nF          & 202nF                    & 203nF      \\ \hline
+    5       & 300nF          & 300.3nF                  & 305nF      \\ \hline
+    6       & 400nF          & 400nF                    & 406nF      \\ \hline
+    7       & 500nF          & 498nF                    & 504nF      \\ \hline
+    8       & 600nF          & 602nF                    & 610nF      \\ \hline
+    9       & 700nF          & 701nF                    & 703nF      \\ \hline
+    10      & 800nF          & 791.4nF                  & 800nF      \\ \hline
+    11      & 900nF          & 889.7nF                  & 889nF      \\ \hline
+    12      & 1uF            & 979nF                    & 1.059uF    \\ \hline
+    13      & 2uF            & 1.97uF                   & 2.033uF    \\ \hline
+    14      & 3uF            & 2.95uF                   & 3.05uF     \\ \hline
+    15      & 4uF            & 3.96uF                   & 4.025uF    \\ \hline
+    16      & 5uF            & 4.94uF                   & 5uF        \\ \hline
+    17      & 6uF            & 5.935uF                  & 6.016uF    \\ \hline
+    18      & 7uF            & 6.914uF                  & 6.95uF     \\ \hline
+    19      & 8uF            & 7.946uF                  & 8.05uF     \\ \hline
+    \end{tabular}
+    \end{table}
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[scale=0.6]{images/results/CapacitorMeasurement.png}
+        \caption{Kondenzátor mérés eredménye}
+        \label{fig:CapacitorResults}
+    \end{figure}
+
+\section{Karakterisztika diagramm}
 
