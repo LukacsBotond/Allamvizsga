@@ -29,13 +29,14 @@ void GRAPHDISPLAY::plotArray(const std::vector<double> &y, const std::string &Ys
         {
             insertChar(0, transChartoCharSet(maxYstr[0]));
             insertChar(1, transChartoCharSet(maxYstr[1]));
+            insertChar(1, transChartoCharSet(maxYstr[2]));
         }
         if (currentLine == 1)
         {
             insertChar(0, transChartoCharSet(Yscale[0]));
             insertChar(1, transChartoCharSet(Yscale[1]));
         }
-        insertChar(2, transChartoCharSet('|'));
+        insertChar(3, transChartoCharSet('|'));
         fill_Graph_Row(y);
         writeLine();
         std::fill_n(row, rowSize, bg_Color);
@@ -43,7 +44,7 @@ void GRAPHDISPLAY::plotArray(const std::vector<double> &y, const std::string &Ys
 
     // n-1 lane
     std::fill_n(row, rowSize, bg_Color);
-    for (uint8_t i = 2; i < this->lineWidth / 8; i++)
+    for (uint8_t i = 3; i < this->lineWidth / 8; i++)
     {
         insertChar(i, transChartoCharSet('_'));
     }

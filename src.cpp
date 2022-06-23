@@ -110,7 +110,7 @@ void testing(GRAPHDISPLAY *driver, ICALCULATE *calc, MACHINE *machine)
     }
     catch (POSSIBLYDIODE &e) // diode path
     {
-        std::cout << e.what() << std::endl;
+        //std::cout << e.what() << std::endl;
         machine->setState(new DIODE(calc));
         machine->calculate();
         // check if 2 inverse diode
@@ -123,15 +123,15 @@ void testing(GRAPHDISPLAY *driver, ICALCULATE *calc, MACHINE *machine)
     }
     catch (NOTARESISTOR &e) // nothing found
     {
-        std::cout << e.what() << std::endl;
+        //std::cout << e.what() << std::endl;
     }
     catch (NOTHINGCONNECTED &e)
     {
-        std::cout << e.what() << std::endl;
+        //std::cout << e.what() << std::endl;
     }
     catch (const std::exception &e)
     {
-        std::cout << e.what() << std::endl;
+        //std::cout << e.what() << std::endl;
     }
 }
 
@@ -210,7 +210,7 @@ int main()
     {
         CharDiagr ret = dac->characteristicDiagramm(calc);
         // sleep_ms(1000);
-        driver->plotArray(ret.data, "mA");
+        driver->plotArray(ret.data, "uA");
     }
     catch (NOTSUPPOSEDTOREACHTHIS)
     {

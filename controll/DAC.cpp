@@ -91,6 +91,7 @@ std::vector<double> DAC::PNPLoop(ICALCULATE *icalculate)
     std::vector<double> tmp;
     baseVoltage = 0;
     double IbConst = getGatecurrent(icalculate, BasePin);
+    std::cout << "gateCurrent: " << IbConst << std::endl;
     icalculate->controller->prepareSwitchSetting(measureMode[0] - '0', measureMode[1] - '0', measureMode[2] - '0');
     icalculate->controller->setSwithcSetting(measureMode[0] - '0', measureMode[1] - '0', measureMode[2] - '0');
     uint8_t IcChannel = channelSearch(CollectorPin);
@@ -98,7 +99,7 @@ std::vector<double> DAC::PNPLoop(ICALCULATE *icalculate)
     {
         setVoltageOnChannel((uint16_t)IcVolt, IcChannel);
         PIDCorrection(icalculate, BasePin, IbConst);
-        double IemA = getShuntcurrent(icalculate, convertToVolt(UINT16_MAX), CollectorPin);
+        double IemA = getShuntcurrent(icalculate, convertToVolt(UINT16_MAX), EmitterPin);
         tmp.push_back(IemA);
     }
     return tmp;
@@ -144,9 +145,9 @@ double DAC::getGatecurrent(ICALCULATE *icalculate, int basePin)
     icalculate->controller->prepareSwitchSetting(measureMode[0] - '0', measureMode[1] - '0', measureMode[2] - '0');
     icalculate->controller->setSwithcSetting(measureMode[0] - '0', measureMode[1] - '0', measureMode[2] - '0');
     uint8_t baseCommand = channelSearch(basePin);
-    while (std::abs(measurement[CollectorPin] - measurement[EmitterPin]) < 2)
+    while (std::abs(measurement[CollectorPin] - measurement[EmitterPin]) < 1.5)
     {
-        //std::cout << "voltDif: " << std::abs(measurement[CollectorPin] - measurement[EmitterPin]) << " baseVolt:" << baseVoltage << std::endl;
+        // std::cout << "voltDif: " << std::abs(measurement[CollectorPin] - measurement[EmitterPin]) << " baseVolt:" << baseVoltage << std::endl;
         if (STATE::mainResult == "npn transistor")
             baseVoltage -= 200;
         else
@@ -196,6 +197,7 @@ void DAC::PIDCorrection(ICALCULATE *icalculate, int basePin, float ConstCurrentV
             reqVolt = 0;
         baseVoltage = (int)((reqVolt / 3.3) * UINT16_MAX);
         setVoltageOnChannel(baseVoltage, baseCommand);
+        //std::cout << "error: " << error << " baseVoltage " << baseVoltage << " currentBasemA " << currentBasemA << std::endl;
     }
 }
 

@@ -53,7 +53,7 @@ bool RESISTOR::check()
             {
                 usedModes.push_back(modes[i]);
                 usedModes.push_back(modesRev[i]);
-                std::cout << "REVERSE CHECK FAILED, POSSIBLY DIODE OR SIMILAR\n";
+                //std::cout << "REVERSE CHECK FAILED, POSSIBLY DIODE OR SIMILAR\n";
                 throw POSSIBLYDIODE("reverse check failed with port modes:" + modes[i] + modesRev[i]);
             }
             usedModes.push_back(modes[i]);

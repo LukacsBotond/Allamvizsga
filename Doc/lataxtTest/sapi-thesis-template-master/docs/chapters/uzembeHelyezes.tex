@@ -111,7 +111,28 @@ irányban mekkora a dióda nyitó feszültsége.
 
 \section{Tranzisztor}
 
-Ebben az esetben 
+Ebben az esetben a teszter megméri a tranzisztor lábkiosztását és az erősítését.
+Képes az emitter és kollektor különbséget is meghatározni az erősítés nagyságából,
+mivel az erősítés nagyobb abban az esetben, amikor a tranzisztor a helyes irányban
+vezeti az áramot (NPN esetében az áram a kollektor emitter úton folyik).
+Az erősítést akkor méri, amikor a tranzisztor kinyit, de még nincs teljesen kinyitva,
+hanem a kollektor-emmiter feszültség 2V körül van. Ezt a bázis feszültség
+értékének a szabályozásával érhető el. Ekkor megméri a kollektor áramot
+(mivel itt még nincs meghatározva, hogy melyik az, így most az ahonnan
+az áram folyik) és elossza a bázison levő árammal.
+
+Egy hiba a mérések alatt az volt, hogy a bázisra kis ellenállást
+kapcsoltam és a tranzisztort a szaturációs pontba tettem ahol 
+nagy áram folyt a bázison keresztül ezért az erősítése nagyon alacsony
+(5 alatt) volt, míg nagyobb ellenállással sem volt képes megközelíteni
+az adatlapi értékét ebben az esetben. Amíg az új verzióval az 
+erősítés sokkal jobban megközelíti a valóságot.
 
 \section{Karakterisztika diagramm}
+
+Az áramerősséget azon az értéken hagyva ahol a tranzisztor elkezdett kicsitni
+végig mér a C-E feszültség 0-3.3V-os tartományán. A bázis használ egy 
+P szabályozót, mivel a rendszer csak konstans feszültség forrást tartalmaz
+és nem áramot. És minden mérési pontban megméri a kollektor
+feszültséget
 
