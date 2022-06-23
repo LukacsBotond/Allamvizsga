@@ -41,14 +41,14 @@ bool CAPACITOR::check()
 void CAPACITOR::calculate()
 {
     std::string modes[] = {"610", "210", /**/ "160", "061", /**/ "016", "012"};
-    int div[] = {96, 96 * 10, 96 * 100, 96 * 1000, 96 * 10000, 96 * 100000};
+    int div[] = {96, 96 * 10, 96 * 100, 96 * 1000/*, 96 * 10000, 96 * 100000*/};
     drainCapacitor();
     for (int8_t i = 0; i < 6; i++)
     {
-        for (int8_t j = 0; j < 6; j++)
+        for (int8_t j = 0; j < 4; j++)
         {
             drainCapacitor();
-            std::cout << "Current mode: " << modes[i] << " " << (int)div[j] << std::endl;
+            //std::cout << "Current mode: " << modes[i] << " " << (int)div[j] << std::endl;
             adc->set_clkDiv(div[j]);
             try
             {

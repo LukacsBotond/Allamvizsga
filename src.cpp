@@ -98,15 +98,15 @@ void testing(GRAPHDISPLAY *driver, ICALCULATE *calc, MACHINE *machine)
 {
     try
     {
+        machine->setState(new RESISTOR(calc));
+        machine->calculate();
+
         machine->setState(new CAPACITOR(calc));
         machine->calculate();
         if (STATE::mainResult == "Capacitor")
         {
             return;
         }
-
-        machine->setState(new RESISTOR(calc));
-        machine->calculate();
     }
     catch (POSSIBLYDIODE &e) // diode path
     {

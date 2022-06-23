@@ -31,7 +31,7 @@ bool STATE::checkReverse(const std::string &measurementNormal, const std::string
 {
     std::vector<double> measurementDataNormal = getMeasurement(measurementNormal);
     std::vector<double> measurementDataReverse = getMeasurement(measurementReverse);
-    this->icalculate->values->printMeasurements();
+    //this->icalculate->values->printMeasurements();
     // first port is not used
     if (measurementNormal[0] - '0' == 0)
     {

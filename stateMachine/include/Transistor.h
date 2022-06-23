@@ -4,6 +4,8 @@
 #include <iostream>
 #include <string>
 #include "../../Exceptions/include/NotATransistor.h"
+#include "../../controll/include/IDAC.h"
+
 class TRANSISTOR : public STATE
 {
 private:
@@ -22,8 +24,9 @@ private:
     bool checkIfTransistorIsOn(const std::string &mode, int gatePin);
     bool checkIfTransistorIsOnHelper(double volt1, double volt2, int volt1Mode, int volt2Mode);
 
-    double HFECalculation(const std::string &mode, int gatePin);
+    double HFECalculation(const std::string &basemodes, int gatePin, bool npn);
     double HFECalculationHelper(const std::string &mode, int gatePin, int collectorPin);
+    std::string mergeMode(int gatePin, const std::string &mode, const std::string &gateMode);
 
 public:
     explicit TRANSISTOR(ICALCULATE *icalculate);
@@ -33,4 +36,3 @@ public:
 
     void calculate() override;
 };
-

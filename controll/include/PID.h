@@ -15,12 +15,3 @@ public:
     /** Process one step if the PID algorithm. */
     float pid_process(float error);
 };
-
-PID::PID(float kp) : kp(kp)
-{
-}
-
-float PID::pid_process(float error)
-{
-    return -kp * error;
-}
