@@ -146,7 +146,7 @@ double DAC::getGatecurrent(ICALCULATE *icalculate, int basePin)
     uint8_t baseCommand = channelSearch(basePin);
     while (std::abs(measurement[CollectorPin] - measurement[EmitterPin]) < 2)
     {
-        std::cout << "voltDif: " << std::abs(measurement[CollectorPin] - measurement[EmitterPin]) << " baseVolt:" << baseVoltage << std::endl;
+        //std::cout << "voltDif: " << std::abs(measurement[CollectorPin] - measurement[EmitterPin]) << " baseVolt:" << baseVoltage << std::endl;
         if (STATE::mainResult == "npn transistor")
             baseVoltage -= 200;
         else

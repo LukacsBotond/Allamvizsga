@@ -53,7 +53,7 @@ void CAPACITOR::calculate()
             try
             {
                 double result = this->icalculate->CalcCapacitance_nF(this->icalculate->ChannelMeasure(modes[i][0] - '0', modes[i][1] - '0', modes[i][2] - '0', i / 2, false), adc->getCaptureDepth(), adc->get_clkHz(), modes[i][2 - i / 2] - '0');
-                std::cout << result << std::endl;
+                //std::cout << result << std::endl;
                 if (result > 55)
                 { // less than 10nF is just too small
                     drainCapacitor();

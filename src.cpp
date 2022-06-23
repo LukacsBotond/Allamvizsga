@@ -123,12 +123,10 @@ void testing(GRAPHDISPLAY *driver, ICALCULATE *calc, MACHINE *machine)
     }
     catch (NOTARESISTOR &e) // nothing found
     {
-        calc->values->printMeasurements();
         std::cout << e.what() << std::endl;
     }
     catch (NOTHINGCONNECTED &e)
     {
-        calc->values->printMeasurements();
         std::cout << e.what() << std::endl;
     }
     catch (const std::exception &e)

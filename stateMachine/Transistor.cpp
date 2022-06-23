@@ -194,7 +194,7 @@ double TRANSISTOR::HFECalculationHelper(const std::string &mode, int gatePin, in
 
     while (std::abs(measurement[collectorPin] - measurement[EmitterPin]) < 2)
     {
-        std::cout << "voltDif: " << std::abs(measurement[collectorPin] - measurement[EmitterPin]) << " collector " << measurement[collectorPin] << " emitter: " << measurement[EmitterPin] << " baseVolt:" << baseVoltage << std::endl;
+        //std::cout << "voltDif: " << std::abs(measurement[collectorPin] - measurement[EmitterPin]) << " collector " << measurement[collectorPin] << " emitter: " << measurement[EmitterPin] << " baseVolt:" << baseVoltage << std::endl;
         if ((mode[gatePin] - '0') % 2 == 0)
             baseVoltage -= 200;
         else

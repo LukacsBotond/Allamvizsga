@@ -116,7 +116,7 @@ uint16_t *ADC::getCaptureBuff()
         throw NULLEXCEPT("ADC getCapturebuff is NULL");
     return capture_buf;
 }
-
+/*
 void ADC::printSamples()
 {
     std::cout << "\nPrint Samples\n";
@@ -138,4 +138,5 @@ void ADC::setCaptureBuff(uint16_t *buff, const uint16_t buffSize)
         throw NULLEXCEPT("ADC setCaptureBuff is null or buffSize it not equal to" + std::to_string(CAPTURE_DEPTH));
     memcpy(this->capture_buf, buff, (CAPTURE_DEPTH + 1) * sizeof(uint16_t));
 }
+*/
 
