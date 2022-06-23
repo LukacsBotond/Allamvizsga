@@ -144,7 +144,7 @@ ami 0 és $2^{res}$ között kell legyen.
 \subsection{Raspberry pi pico}
 
 Ez a teszter legfontosabb eleme [\ref{fig:Pico_pinout}], ez a vezéreli a teszter többi részét. A Raspberry 
-által kifejlesztve, viszont nem, mint a többi termékük ezen nem fut egy operációs 
+által kifejlesztve \cite{RaspberryPico}, viszont nem, mint a többi termékük ezen nem fut egy operációs 
 rendszer és használható, mint egy számítógép, hanem mint egy hagyományos 
 mikrovezérlő. A mikrovezérlő magját egy Dual-core ARM Cortex M0+ processzor, 
 aminek a frekvenciáját dinamikusan változtatható 16Mhz és akár 280Mhz közt. A 
@@ -175,7 +175,7 @@ lehet létrehozni, ha valami egyedi kell egy különleges komponens vezérlésé
 \end{figure}
 
 
-\subsection{ILI9341 kijelző}
+\subsection{ILI9341 kijelző}\cite{ILI9341}
 
 Az adatok kijelzésére egy ILI9341 [\ref{fig:ILI9341 kijelző}] kijelzőt használtam.
 Egy egyszerűbb kijelző is megfelelne a célra, akár csupán egy karaktereket megjelenítő
@@ -230,7 +230,7 @@ arra is van lehetőség, hogy csak az adatot elmentse és egyszerre frissítse a
 összes kimenetet. Erre lehetőség van szoftveresen is, amit az SPI parancs
 részében lehet kódolni, ebben a projekt esetében is ez van alkalmazva. 
 
-\subsection{Analóg kapcsoló}
+\subsection{Analóg kapcsoló}\cite{AnalogSwitch}
 
 Mindegyik analóg jelet egyszerre 1 ellenálláson keresztül rá kell kapcsolni a komponensre,
 viszont az ellenállás váltható kell legyen mérés közben, nagy sebességgel, így a manuális
@@ -255,7 +255,7 @@ se legyen kapcsolva. A kimenet kiválasztása a következő táblázattal lehets
 
 \subsection{SPI}
 
-A kommunikációs protokoll amit a kijelző és a DAC használ. A mikrovezérlőnek vannak
+A kommunikációs protokoll \cite{SPIprotokol} amit a kijelző és a DAC használ. A mikrovezérlőnek vannak
 beépített függvényei és specifikus pinei amellyel képes hardver szinten kommunikálni
 külső eszközökkel. Ez egy full duplex protokoll, vagyis képes egyszerre mindkét eszköz
 adatot küldeni, anélkül, hogy egymást zavarnák. Ez 2 külön vezetéken

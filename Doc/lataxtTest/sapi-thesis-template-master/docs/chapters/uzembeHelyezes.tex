@@ -133,6 +133,26 @@ erősítés sokkal jobban megközelíti a valóságot.
 Az áramerősséget azon az értéken hagyva ahol a tranzisztor elkezdett kicsitni
 végig mér a C-E feszültség 0-3.3V-os tartományán. A bázis használ egy 
 P szabályozót, mivel a rendszer csak konstans feszültség forrást tartalmaz
-és nem áramot. És minden mérési pontban megméri a kollektor
-feszültséget
+és nem áramot. Az áram referencia ebben az esetben amikor a kollektor
+emmiter feszültsége eléri az 1.5V-ot
+
+Minden mérési pontban megméri a kollektor
+áramerősséget. Ezeket az eredményeket elmenti, majd kirajzolja a 
+teszteren található kijelzőre. A kirajzolás csak a kijelzőn
+jelenik meg, mivel egy egyszerű Serial port olvasó program
+szöveg megjelenítésére használatos és nincs számítógép oldani applikáció.
+
+A PNP tranzisztor esetében az emmiter konstans 3.3V-on tartásával és 
+kollektor csökkentésével 3.3V-ról a emitter-kollektor feszültség
+0 és 3.3V közt változik, miközben a bázis feszültsége sosem negatív
+a földhöz képest.
+
+A mérés a következőképpen lesz látható a kijelzőn 
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.1, angle=-90]{images/results/CharDiagr.jpg}
+    \caption{Karakterisztika diagramm}
+    \label{fig:CharResults}
+\end{figure}
 

@@ -79,17 +79,19 @@ void printResult(const std::map<std::string, double> &ret, const std::string &ma
 
     std::cout << mainResult << std::endl;
     driver->printLine(mainResult);
-
+    driver->printLine(" ");
     for (auto it : ret)
     {
         std::cout << it.first << " " << it.second << std::endl;
         driver->printLine(it.first + " " + std::to_string(it.second));
+        driver->printLine(" ");
     }
 
     for (auto it : STATE::usedPins)
     {
         std::cout << it.first << " " << it.second << std::endl;
         driver->printLine(std::to_string(it.first) + " " + it.second);
+        driver->printLine(" ");
     }
     driver->fillRestScreen(0x0000);
 }
@@ -110,7 +112,7 @@ void testing(GRAPHDISPLAY *driver, ICALCULATE *calc, MACHINE *machine)
     }
     catch (POSSIBLYDIODE &e) // diode path
     {
-        //std::cout << e.what() << std::endl;
+        // std::cout << e.what() << std::endl;
         machine->setState(new DIODE(calc));
         machine->calculate();
         // check if 2 inverse diode
@@ -123,15 +125,15 @@ void testing(GRAPHDISPLAY *driver, ICALCULATE *calc, MACHINE *machine)
     }
     catch (NOTARESISTOR &e) // nothing found
     {
-        //std::cout << e.what() << std::endl;
+        // std::cout << e.what() << std::endl;
     }
     catch (NOTHINGCONNECTED &e)
     {
-        //std::cout << e.what() << std::endl;
+        // std::cout << e.what() << std::endl;
     }
     catch (const std::exception &e)
     {
-        //std::cout << e.what() << std::endl;
+        // std::cout << e.what() << std::endl;
     }
 }
 
@@ -197,7 +199,7 @@ int main()
 
     SPIPORTS *displ_spi_ports = new SPIPORTS(DISP_SPI_CHANNEL, DISP_CS, DISP_SCK, DISP_MOSI);
     SPI *spidispl = new SPI(DISP_FREQ, displ_spi_ports);
-    GRAPHDISPLAY *driver = new GRAPHDISPLAY(spidispl, 0x0000, commonClass->swap_bytes(0x081F));
+    GRAPHDISPLAY *driver = new GRAPHDISPLAY(spidispl, 0x0000, commonClass->swap_bytes(0xFFFF));
 
     STATE::usedPins[0] = "";
     STATE::usedPins[1] = "";
@@ -210,7 +212,7 @@ int main()
     {
         CharDiagr ret = dac->characteristicDiagramm(calc);
         // sleep_ms(1000);
-        driver->plotArray(ret.data, "uA");
+        driver->plotArray(ret.data, "mA");
     }
     catch (NOTSUPPOSEDTOREACHTHIS)
     {

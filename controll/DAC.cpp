@@ -91,7 +91,7 @@ std::vector<double> DAC::PNPLoop(ICALCULATE *icalculate)
     std::vector<double> tmp;
     baseVoltage = 0;
     double IbConst = getGatecurrent(icalculate, BasePin);
-    std::cout << "gateCurrent: " << IbConst << std::endl;
+    //std::cout << "gateCurrent: " << IbConst << std::endl;
     icalculate->controller->prepareSwitchSetting(measureMode[0] - '0', measureMode[1] - '0', measureMode[2] - '0');
     icalculate->controller->setSwithcSetting(measureMode[0] - '0', measureMode[1] - '0', measureMode[2] - '0');
     uint8_t IcChannel = channelSearch(CollectorPin);
