@@ -2,11 +2,33 @@
 
 A projekten belül egy olyan rendszer megvalósítására került sor,
 amellyel leegyszerűsíthetőek az alaktrészek azonosítása és mérése.
+A megvalósítás során sikerült az egyszerű alkatrészek azonosítása
+és mérése, miközben megközelítőleg az értékei is meghatározására
+kerültek.
+
+A megvalósítás során fő szempont volt az egyszerűség a felhasználó felé,
+így nem kell tudjon semmit az eszközről és elvégezni komplex műveleteket,
+hogy az eredményt megkapja. 
 
 
+\section{Hasolnó rendszerrel való összehasonlítás}
 
+A hasonló rendszer ami alapján terveztem a rendszert \cite{similarSystem}
+több dolog detektálására is képes, viszont az egy nyílt forráskódú
+projekt, amit többen it tovább fejlesztettek az idők során. Viszont
+ebből csak részben a mérő áramkör ami hasonló, pontosabban ellenállások
+használata változtatható feszültség forrásra van kapcsolva. 
+Ebben az esetben viszont csak digitális feszültség szinteket lehet
+használni, mivel az a rendszer nem alkalmaz egy DAC-ot.
 
-\section{További fejleszési irányok}
+Mindkét rendszer képes kiírni egy kijelzőre ami a teszteren található
+a mérések eredményeit. Viszont a hasonló eszköz nemcsak a lábkiosztását,
+hanem az áramköri rajzát is megjeleníti.
+
+Viszont a hasonló eszköz nem képes változtatható feszültséggel vezérelni a
+komponenst, így nem képes karakterisztika diagramok kirajzolására.
+
+\section{További fejleszési lehetőségek}
 
 A rendszernek lehetősége volna komplexebb alkatrészek
 tesztelésére is, viszont a 3.3V-os feszültség határ
@@ -15,8 +37,17 @@ feszültségre lenne szükség, hogy biztosan azonosíthatóak legyenek.
 Ezen kívül több féle dióda és tranzisztor fajták vannak, 
 amelyekre komplexebb azonosítási algoritmus szükséges.
 
-Lehetséges lenne frekvencia mérésére is és tekercsek mérésére
-is állítható frekvenciával. Rengeteg dolog van ami fejlesztehető
-egy viszonlag egyszerű áramkörrel.
+A rendszerrel lehetséges lenne állítható frekvenciával tekercsek mérésére
+is és különböző típusú jelek generálása.
+
+Módosítás az áramkörön, hogy a teszter socket biztosabb legyen, mivel
+jelenleg egyes esetekben nem érintkezhet megfelelően ezért hibás az azonosítás.
+
+Az áramkör módosítása olyan módon, hogy lehetséges legyen SMD alkatrészeket
+is könnyedén tesztelni.
+
+A mérési tartomány kiterjesztése a mérő ellenállások cseréjével.
+
+
 
 
