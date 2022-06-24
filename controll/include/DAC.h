@@ -41,4 +41,5 @@ public:
     void reset(bool resetLvl) override;
 
     CharDiagr characteristicDiagramm(ICALCULATE *icalculate) override;
+    CharDiagr InputcharacteristicDiagramm(ICALCULATE *icalculate) override;
 };

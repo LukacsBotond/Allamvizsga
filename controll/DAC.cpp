@@ -68,6 +68,38 @@ CharDiagr DAC::characteristicDiagramm(ICALCULATE *icalculate)
     return ret;
 }
 
+CharDiagr DAC::InputcharacteristicDiagramm(ICALCULATE *icalculate)
+{
+    CharDiagr ret;
+    std::vector<double> tmp;
+        measureMode[CollectorPin] = '1';
+        measureMode[EmitterPin] = '1';
+    if (STATE::mainResult == "npn transistor")
+    {
+        measureMode[BasePin] = '6';
+    }
+    else
+    {
+        measureMode[BasePin] = '5';
+    }
+
+
+    icalculate->controller->prepareSwitchSetting(measureMode[0] - '0', measureMode[1] - '0', measureMode[2] - '0');
+    icalculate->controller->setSwithcSetting(measureMode[0] - '0', measureMode[1] - '0', measureMode[2] - '0');
+    uint8_t IbChannel = channelSearch(BasePin);
+    for (uint32_t IbVolt = 0; IbVolt < UINT16_MAX/3; IbVolt += (UINT16_MAX/3) / 200)
+    {
+        setVoltageOnChannel((uint16_t)IbVolt, IbChannel);
+        //PIDCorrection(icalculate, BasePin, IbConst);
+        double IbmA = getShuntcurrent(icalculate, convertToVolt((uint16_t)IbVolt), BasePin);
+        tmp.push_back(IbmA);
+    }
+
+    ret.data = tmp;
+    ret.yScale = -1;
+    return ret;
+}
+
 //*Private
 std::vector<double> DAC::NPNLoop(ICALCULATE *icalculate)
 {
@@ -91,7 +123,7 @@ std::vector<double> DAC::PNPLoop(ICALCULATE *icalculate)
     std::vector<double> tmp;
     baseVoltage = 0;
     double IbConst = getGatecurrent(icalculate, BasePin);
-    //std::cout << "gateCurrent: " << IbConst << std::endl;
+    // std::cout << "gateCurrent: " << IbConst << std::endl;
     icalculate->controller->prepareSwitchSetting(measureMode[0] - '0', measureMode[1] - '0', measureMode[2] - '0');
     icalculate->controller->setSwithcSetting(measureMode[0] - '0', measureMode[1] - '0', measureMode[2] - '0');
     uint8_t IcChannel = channelSearch(CollectorPin);
@@ -123,7 +155,6 @@ uint8_t DAC::channelSearch(int port)
     throw NOTSUPPOSEDTOREACHTHIS("DAC channelSearch out of range");
 }
 
-//! TODO open gate till there is a 2V CE difference
 double DAC::getGatecurrent(ICALCULATE *icalculate, int basePin)
 {
     TRANSISTOR transistor(icalculate);
@@ -197,7 +228,7 @@ void DAC::PIDCorrection(ICALCULATE *icalculate, int basePin, float ConstCurrentV
             reqVolt = 0;
         baseVoltage = (int)((reqVolt / 3.3) * UINT16_MAX);
         setVoltageOnChannel(baseVoltage, baseCommand);
-        //std::cout << "error: " << error << " baseVoltage " << baseVoltage << " currentBasemA " << currentBasemA << std::endl;
+        // std::cout << "error: " << error << " baseVoltage " << baseVoltage << " currentBasemA " << currentBasemA << std::endl;
     }
 }
 

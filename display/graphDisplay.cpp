@@ -9,7 +9,7 @@ GRAPHDISPLAY::~GRAPHDISPLAY()
     delete spi;
 }
 
-void GRAPHDISPLAY::plotArray(const std::vector<double> &y, const std::string &Yscale, const double MaxX)
+void GRAPHDISPLAY::plotArray(const std::vector<double> &y, const std::string &Yscale, const std::string &title,const double MaxX)
 {
     if (y.size() == 0)
     { // there is nothing to draw
@@ -54,6 +54,10 @@ void GRAPHDISPLAY::plotArray(const std::vector<double> &y, const std::string &Ys
     // last Line
     std::fill_n(row, rowSize, bg_Color);
     insertChar(0, transChartoCharSet('0'));
+    for(int i=3;i<title.size(); i++){
+        insertChar(i, transChartoCharSet(title[i]));
+    }
+
     uint8_t countPos = 0;
     for (uint8_t i = (lineWidth / 8) - 3; i < lineWidth / 8; i++)
     {

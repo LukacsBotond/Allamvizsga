@@ -48,6 +48,7 @@ bool TRANSISTOR::check()
                 }
                 setResults(npn, HFE_bw);
             }
+            inputResistance();
             return true;
         }
     }
@@ -194,7 +195,7 @@ double TRANSISTOR::HFECalculationHelper(const std::string &mode, int gatePin, in
 
     while (std::abs(measurement[collectorPin] - measurement[EmitterPin]) < 2)
     {
-        //std::cout << "voltDif: " << std::abs(measurement[collectorPin] - measurement[EmitterPin]) << " collector " << measurement[collectorPin] << " emitter: " << measurement[EmitterPin] << " baseVolt:" << baseVoltage << std::endl;
+        // std::cout << "voltDif: " << std::abs(measurement[collectorPin] - measurement[EmitterPin]) << " collector " << measurement[collectorPin] << " emitter: " << measurement[EmitterPin] << " baseVolt:" << baseVoltage << std::endl;
         if ((mode[gatePin] - '0') % 2 == 0)
             baseVoltage -= 200;
         else
@@ -204,7 +205,6 @@ double TRANSISTOR::HFECalculationHelper(const std::string &mode, int gatePin, in
         measurement = icalculate->SameOut3ChannelRepeat();
     }
 
-    
     double baseV = (double)((double)3.3 * (double)((double)baseVoltage / (double)UINT16_MAX));
     IbmA = double((baseV - measurement.at(gatePin)) / icalculate->controller->getTotResistor(mode[gatePin] - '0')) * 1000.0;
 
@@ -240,4 +240,33 @@ std::string TRANSISTOR::mergeMode(int gatePin, const std::string &mode, const st
         }
     }
     return tmp;
+}
+
+void TRANSISTOR::inputResistance()
+{
+    std::string mode = "000";
+    double Rin;
+    if (this->mainResult == "npn transistor")
+    {
+        mode[collectorPin] = '2';
+        mode[emmiterPin] = '1';
+        mode[gatePin] = '6';
+    }
+    else
+    {
+        mode[collectorPin] = '1';
+        mode[emmiterPin] = '2';
+        mode[gatePin] = '5';
+    }
+    std::vector<double> measurement = icalculate->SameOut3ChannelRepeat(mode[0] - '0', mode[1] - '0', mode[2] - '0');
+    double Ib = double((double)(3.3 - measurement.at(gatePin)) / (double)RESISTOR_HIGH) * 1000.0;
+    if (this->mainResult == "npn transistor")
+    {
+        Rin = std::abs((measurement.at(gatePin) - measurement.at(emmiterPin)) / Ib);
+    }
+    else
+    {
+        Rin = std::abs((measurement.at(gatePin) - measurement.at(collectorPin)) / Ib);
+    }
+    results["Rin"] = Rin;
 }

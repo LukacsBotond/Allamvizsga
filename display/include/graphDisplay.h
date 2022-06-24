@@ -28,7 +28,7 @@ public:
     @param  y: const std::vector<double>, the measurement array, recommended to have
     over 300 values, won't be visible on the screen anyway
     */
-    void plotArray(const std::vector<double> &y, const std::string &Yscale, const double MaxX = 3.3);
+    void plotArray(const std::vector<double> &y, const std::string &Yscale, const std::string &title, const double MaxX = 3.3);
     /*
     Get the *current* measurements, while the x axys is the 2nd array.
     *Both aray must match in size!

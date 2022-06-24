@@ -27,7 +27,7 @@ private:
     double HFECalculation(const std::string &basemodes, int gatePin, bool npn);
     double HFECalculationHelper(const std::string &mode, int gatePin, int collectorPin);
     std::string mergeMode(int gatePin, const std::string &mode, const std::string &gateMode);
-
+    void inputResistance();
 public:
     explicit TRANSISTOR(ICALCULATE *icalculate);
     ~TRANSISTOR() {}
