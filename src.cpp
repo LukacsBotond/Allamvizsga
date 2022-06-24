@@ -211,13 +211,18 @@ int main()
     try
     {
         CharDiagr ret = dac->characteristicDiagramm(calc);
-        // sleep_ms(1000);
+        sleep_ms(1000);
         driver->plotArray(ret.data, "   ", "kimeneti");
 
-        sleep_ms(5000);
+        sleep_ms(3000);
 
         ret = dac->InputcharacteristicDiagramm(calc);
         driver->plotArray(ret.data, "   ", "bemeneti", 0.8);
+
+        sleep_ms(1000);
+
+        ret = dac->Curent_Transf_Characteristic_Diagramm(calc);
+        driver->plotArray(ret.data, "   ", "atviteli", 0.1);
     }
     catch (NOTSUPPOSEDTOREACHTHIS)
     {

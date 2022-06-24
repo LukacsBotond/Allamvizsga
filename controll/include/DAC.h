@@ -18,7 +18,7 @@ private:
     uint8_t channelSearch(int port);
     double convertToVolt(uint16_t baseVoltage);
     std::string measureMode = "000";
-    void PIDCorrection(ICALCULATE *icalculate, int basePin, float ConstCurrentVal);
+    void PIDCorrection(ICALCULATE *icalculate, int basePin, double ConstCurrentVal);
     double getGatecurrent(ICALCULATE *icalculate, int basePin);
     double getShuntcurrent(ICALCULATE *icalculate, double supplyVoltage, int Pin);
     std::vector<double> NPNLoop(ICALCULATE *icalculate);
@@ -42,4 +42,5 @@ public:
 
     CharDiagr characteristicDiagramm(ICALCULATE *icalculate) override;
     CharDiagr InputcharacteristicDiagramm(ICALCULATE *icalculate) override;
+    CharDiagr Curent_Transf_Characteristic_Diagramm(ICALCULATE *icalculate) override;
 };

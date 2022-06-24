@@ -54,8 +54,8 @@ void GRAPHDISPLAY::plotArray(const std::vector<double> &y, const std::string &Ys
     // last Line
     std::fill_n(row, rowSize, bg_Color);
     insertChar(0, transChartoCharSet('0'));
-    for(int i=3;i<title.size(); i++){
-        insertChar(i, transChartoCharSet(title[i]));
+    for(int i=7;i<title.size()+7; i++){
+        insertChar(i, transChartoCharSet(title[i-7]));
     }
 
     uint8_t countPos = 0;

@@ -167,12 +167,26 @@ kollektor csökkentésével 3.3V-ról a emitter-kollektor feszültség
 0 és 3.3V közt változik, miközben a bázis feszültsége sosem negatív
 a földhöz képest.
 
-A mérés a következőképpen lesz látható a kijelzőn [\ref{fig:CharResults}] 
+A mérés a következőképpen lesz látható a kijelzőn[\ref{fig:OutChar}] 
 
 \begin{figure}[H]
     \centering
-    \includegraphics[scale=0.1, angle=-90]{images/results/CharDiagr.jpg}
+    \includegraphics[scale=0.1, angle=90]{images/results/OutChar.jpg}
     \caption{Kimeneti karakterisztika diagram}
-    \label{fig:CharResults}
+    \label{fig:OutChar}
+\end{figure}
+
+\subsection{bemeneti karakterisztika}
+
+Ebben az esetben a kollektor és az emitter a földre van kötve,
+miközben a bázis feszültség növekedik. A kapcsoló ellenálláson eső feszültségből
+kiszámítható az áram. A diagram a dióda karakterisztikához hasonló eredményt
+ad.[\ref{fig:InChar}] 
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.1, angle=90]{images/results/InChar.jpg}
+    \caption{Bemeneti karakterisztika diagram}
+    \label{fig:InChar}
 \end{figure}
 

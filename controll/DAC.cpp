@@ -72,8 +72,8 @@ CharDiagr DAC::InputcharacteristicDiagramm(ICALCULATE *icalculate)
 {
     CharDiagr ret;
     std::vector<double> tmp;
-        measureMode[CollectorPin] = '1';
-        measureMode[EmitterPin] = '1';
+    measureMode[CollectorPin] = '1';
+    measureMode[EmitterPin] = '1';
     if (STATE::mainResult == "npn transistor")
     {
         measureMode[BasePin] = '6';
@@ -82,17 +82,57 @@ CharDiagr DAC::InputcharacteristicDiagramm(ICALCULATE *icalculate)
     {
         measureMode[BasePin] = '5';
     }
+    icalculate->controller->prepareSwitchSetting(measureMode[0] - '0', measureMode[1] - '0', measureMode[2] - '0');
+    icalculate->controller->setSwithcSetting(measureMode[0] - '0', measureMode[1] - '0', measureMode[2] - '0');
+    uint8_t IbChannel = channelSearch(BasePin);
+    for (uint32_t IbVolt = 0; IbVolt < UINT16_MAX / 3; IbVolt += (UINT16_MAX / 3) / 200)
+    {
+        setVoltageOnChannel((uint16_t)IbVolt, IbChannel);
+        // PIDCorrection(icalculate, BasePin, IbConst);
+        double IbmA = getShuntcurrent(icalculate, convertToVolt((uint16_t)IbVolt), BasePin);
+        tmp.push_back(IbmA);
+    }
+    ret.data = tmp;
+    ret.yScale = -1;
+    return ret;
+}
 
+CharDiagr DAC::Curent_Transf_Characteristic_Diagramm(ICALCULATE *icalculate)
+{
+    CharDiagr ret;
+    std::vector<double> tmp;
+    if (STATE::mainResult == "npn transistor")
+    {
+        measureMode[BasePin] = '6';
+        measureMode[CollectorPin] = '2';
+        measureMode[EmitterPin] = '1';
+    }
+    else
+    {
+        measureMode[BasePin] = '5';
+        measureMode[CollectorPin] = '1';
+        measureMode[EmitterPin] = '2';
+    }
 
     icalculate->controller->prepareSwitchSetting(measureMode[0] - '0', measureMode[1] - '0', measureMode[2] - '0');
     icalculate->controller->setSwithcSetting(measureMode[0] - '0', measureMode[1] - '0', measureMode[2] - '0');
     uint8_t IbChannel = channelSearch(BasePin);
-    for (uint32_t IbVolt = 0; IbVolt < UINT16_MAX/3; IbVolt += (UINT16_MAX/3) / 200)
+    if (STATE::mainResult == "npn transistor")
     {
-        setVoltageOnChannel((uint16_t)IbVolt, IbChannel);
-        //PIDCorrection(icalculate, BasePin, IbConst);
-        double IbmA = getShuntcurrent(icalculate, convertToVolt((uint16_t)IbVolt), BasePin);
-        tmp.push_back(IbmA);
+        baseVoltage = ((double)UINT16_MAX / 3.3) * 2.4;
+    }
+    else
+    {
+        baseVoltage = ((double)UINT16_MAX / 3.3) * 0.7;
+    }
+    setVoltageOnChannel(baseVoltage, IbChannel);
+    double IbCurrMax = getShuntcurrent(icalculate, convertToVolt(baseVoltage), BasePin);
+    for (double IbCurr = 0; IbCurr < IbCurrMax; IbCurr += (IbCurrMax) / 200)
+    {
+        // setVoltageOnChannel((uint16_t)IbVolt, IbChannel);
+        PIDCorrection(icalculate, BasePin, IbCurr);
+        double IcmA = getShuntcurrent(icalculate, 3.3, CollectorPin);
+        tmp.push_back(IcmA);
     }
 
     ret.data = tmp;
@@ -202,7 +242,7 @@ double DAC::getShuntcurrent(ICALCULATE *icalculate, double supplyVoltage, int Pi
     return double((double)(supplyVoltage - measurement.at(Pin)) / (double)RESISTOR_LOW) * 1000.0;
 }
 
-void DAC::PIDCorrection(ICALCULATE *icalculate, int basePin, float ConstCurrentVal)
+void DAC::PIDCorrection(ICALCULATE *icalculate, int basePin, double ConstCurrentVal)
 {
     pid = new PID(0.01);
     double currentBasemA;
@@ -228,7 +268,7 @@ void DAC::PIDCorrection(ICALCULATE *icalculate, int basePin, float ConstCurrentV
             reqVolt = 0;
         baseVoltage = (int)((reqVolt / 3.3) * UINT16_MAX);
         setVoltageOnChannel(baseVoltage, baseCommand);
-        // std::cout << "error: " << error << " baseVoltage " << baseVoltage << " currentBasemA " << currentBasemA << std::endl;
+        //std::cout << "error: " << error << " baseVoltage " << baseVoltage << " currentBasemA " << currentBasemA << " ref:" << ConstCurrentVal << std::endl;
     }
 }
 
