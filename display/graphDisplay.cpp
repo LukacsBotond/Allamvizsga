@@ -9,7 +9,7 @@ GRAPHDISPLAY::~GRAPHDISPLAY()
     delete spi;
 }
 
-void GRAPHDISPLAY::plotArray(const std::vector<double> &y, const std::string &Yscale, const double MaxX)
+void GRAPHDISPLAY::plotArray(const std::vector<double> &y, const std::string &Yscale, const std::string &title,const double MaxX)
 {
     if (y.size() == 0)
     { // there is nothing to draw
@@ -29,13 +29,15 @@ void GRAPHDISPLAY::plotArray(const std::vector<double> &y, const std::string &Ys
         {
             insertChar(0, transChartoCharSet(maxYstr[0]));
             insertChar(1, transChartoCharSet(maxYstr[1]));
+            insertChar(1, transChartoCharSet(maxYstr[2]));
         }
         if (currentLine == 1)
         {
             insertChar(0, transChartoCharSet(Yscale[0]));
             insertChar(1, transChartoCharSet(Yscale[1]));
+            insertChar(2, transChartoCharSet(Yscale[2]));
         }
-        insertChar(2, transChartoCharSet('|'));
+        insertChar(3, transChartoCharSet('|'));
         fill_Graph_Row(y);
         writeLine();
         std::fill_n(row, rowSize, bg_Color);
@@ -43,7 +45,7 @@ void GRAPHDISPLAY::plotArray(const std::vector<double> &y, const std::string &Ys
 
     // n-1 lane
     std::fill_n(row, rowSize, bg_Color);
-    for (uint8_t i = 2; i < this->lineWidth / 8; i++)
+    for (uint8_t i = 3; i < this->lineWidth / 8; i++)
     {
         insertChar(i, transChartoCharSet('_'));
     }
@@ -52,6 +54,10 @@ void GRAPHDISPLAY::plotArray(const std::vector<double> &y, const std::string &Ys
     // last Line
     std::fill_n(row, rowSize, bg_Color);
     insertChar(0, transChartoCharSet('0'));
+    for(int i=7;i<title.size()+7; i++){
+        insertChar(i, transChartoCharSet(title[i-7]));
+    }
+
     uint8_t countPos = 0;
     for (uint8_t i = (lineWidth / 8) - 3; i < lineWidth / 8; i++)
     {

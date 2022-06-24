@@ -39,6 +39,8 @@ add_executable(src src.cpp
         controll/spi.cpp
         controll/spiPorts.cpp
         controll/ASwitchController.cpp
+        controll/DAC.cpp
+        controll/PID.cpp
         #controll/Aswitch.cpp
 
         #state

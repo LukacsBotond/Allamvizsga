@@ -12,7 +12,7 @@ színes TFT kijelző, és erre íródnak ki az adatok a felhasználó fele ami S
 keresztül kommunikál a mikrovezérlővel. Ezen kívül  van 2 LED, amely a rendszer 
 státuszát jelzi egyszerű színkódokkal. 
 
-Az teszteléshez  szükséges áramkört a DAC segítségével történik és a mikrovezérlő 
+A teszteléshez  szükséges áramkört a DAC segítségével történik és a mikrovezérlő 
 csak a feszültség értékeket nézi, erre a célra egy DAC8565 chipet használtam amely 
 szintén SPI-n 
 keresztül kommunikál a mikrovezérlővel. 
@@ -29,7 +29,7 @@ konverter) portja közvetlen rá van csatolva egy lábra ahová majd a tesztelni
 komponens kerül. A rendszernek van egy külső referencia feszültsége, ami egy 
 stabil 3.3V-ot biztosít az ADC referenciaként és DAC referenciának.
 
-A pontos részleteket az a következőkben lesznek leírva.
+A pontos részletek az a következőkben lesznek leírva.
 
 \section{Elméleti alapok}
 
@@ -88,11 +88,12 @@ megállapítja, hogy melyik 2 érték közé esik a feszültség szint.
 
 Viszont ez a valóságban nem ilyen egyszerű, mivel a komponensek amik az ADC-t 
 felépítik nem tökéletesek így zajok és csúszások jelenhetnek meg. Ilyen hibák 
-lehetnek az ofszet hibák, ebben az esetben a végértékek nem felelnek meg az elvárt 
+lehetnek az erősítési hibák, ebben az esetben a végértékek nem felelnek meg az elvárt 
 értékeknek, ilyen példa a amikor 0V-os feszültség esetén az ADC nem 0-t térít 
 vissza, hanem egy nagyobb számot, míg $V_{ref}$ esetén egy kisebb értéket.
 
-Az alábbi ábrán egy ilyen eset látható [\ref{fig:ADC_Offset_Error}] , a kék vonal az elvárt érték és a piros 
+Az alábbi ábrán egy ilyen eset látható [\ref{fig:ADC_Offset_Error}] , a kék vonal az elvárt érték 
+és a piros 
 az aktuális érték, amit az ADC térít vissza a mérési tartományban. Ebben az 
 esetben csupán ez a hibája az ADC-nek az átláthatóság kedvéért. 
 
@@ -100,7 +101,7 @@ esetben csupán ez a hibája az ADC-nek az átláthatóság kedvéért.
 \begin{figure}[h]
     \centering
     \includegraphics[scale=0.3]{figures/images/literature/ADC_Offset_Error.png}
-    \caption{ADC ofszet hibája}
+    \caption{ADC erősítési hibája}
     \label{fig:ADC_Offset_Error}
 \end{figure}
 
@@ -110,9 +111,8 @@ kapjuk, mint amit elvártunk amelyet nehezebb korrigálni szoftveresen, mivel am
 az ofszet hibát egyszerűen lehet korrigálni csupán a 0 és $V_{ref}$ feszültség szintek 
 megmérésével, addig ezt a hibát sokkal nehezebb kiküszöbölni, mivel az ADC 
 eredménye nem lineáris, így több ismert mérési pontot kell felvenni és a számítás 
-is sokkal bonyolultabbá válik. Ezen kívül lehetnek kvantálási hibák is, amikor az 
-ADC egy bizonyos értéket sosem ad eredménynek, hanem a nála egyel kisebb/nagyobb 
-értéket. Ez nem okoz nagy gondot azoknál az ADC-nél ahol nagy a felbontás, viszont 
+is sokkal bonyolultabbá válik. Ezen kívül lehetnek kvantálási hibák is.
+Ez nem okoz nagy gondot azoknál az ADC-nél ahol nagy a felbontás, viszont 
 az alacsony felbontású eszközök esetén nagyobb hibát eredményez.
 
 \subsection{Digitál Analóg Konverter}
@@ -144,11 +144,11 @@ ami 0 és $2^{res}$ között kell legyen.
 \subsection{Raspberry pi pico}
 
 Ez a teszter legfontosabb eleme [\ref{fig:Pico_pinout}], ez a vezéreli a teszter többi részét. A Raspberry 
-által kifejlesztve, viszont nem, mint a többi termékük ezen nem fut egy operációs 
+által kifejlesztve \cite{RaspberryPico}, viszont nem, mint a többi termékük ezen nem fut egy operációs 
 rendszer és használható, mint egy számítógép, hanem mint egy hagyományos 
 mikrovezérlő. A mikrovezérlő magját egy Dual-core ARM Cortex M0+ processzor, 
 aminek a frekvenciáját dinamikusan változtatható 16Mhz és akár 280Mhz közt. A 
-memóriája is elegendő 264KB of SRAM a változók tárolására a program futása során 
+memóriája is elegendő 264KB SRAM a változók tárolására a program futása során 
 és 2MB Flash memória a program kód tárolására. Lehetőség van csak RAM-ból futtatni 
 is a kódot, ilyenkor nagyobb órajel is elérhető ami elérheti a 450Mhz-et is.
 
@@ -175,7 +175,7 @@ lehet létrehozni, ha valami egyedi kell egy különleges komponens vezérlésé
 \end{figure}
 
 
-\subsection{ILI9341 kijelző}
+\subsection{ILI9341 kijelző}\cite{ILI9341}
 
 Az adatok kijelzésére egy ILI9341 [\ref{fig:ILI9341 kijelző}] kijelzőt használtam.
 Egy egyszerűbb kijelző is megfelelne a célra, akár csupán egy karaktereket megjelenítő
@@ -230,7 +230,7 @@ arra is van lehetőség, hogy csak az adatot elmentse és egyszerre frissítse a
 összes kimenetet. Erre lehetőség van szoftveresen is, amit az SPI parancs
 részében lehet kódolni, ebben a projekt esetében is ez van alkalmazva. 
 
-\subsection{Analóg kapcsoló}
+\subsection{Analóg kapcsoló}\cite{AnalogSwitch}
 
 Mindegyik analóg jelet egyszerre 1 ellenálláson keresztül rá kell kapcsolni a komponensre,
 viszont az ellenállás váltható kell legyen mérés közben, nagy sebességgel, így a manuális
@@ -255,7 +255,7 @@ se legyen kapcsolva. A kimenet kiválasztása a következő táblázattal lehets
 
 \subsection{SPI}
 
-A kommunikációs protokoll amit a kijelző és a DAC használ. A mikrovezérlőnek vannak
+A kommunikációs protokoll \cite{SPIprotokol} amit a kijelző és a DAC használ. A mikrovezérlőnek vannak
 beépített függvényei és specifikus pinei amellyel képes hardver szinten kommunikálni
 külső eszközökkel. Ez egy full duplex protokoll, vagyis képes egyszerre mindkét eszköz
 adatot küldeni, anélkül, hogy egymást zavarnák. Ez 2 külön vezetéken

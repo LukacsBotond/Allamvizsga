@@ -2,16 +2,16 @@
 
 \subsection{Funkcionális követelmények}
 
-A rendszer elvár egy 2 vagy 3 lábbal renddelkező alkatsész csatlakoztatását a 
+A rendszer elvár egy 2 vagy 3 lábbal rendelkező alkatrész csatlakoztatását a 
 teszter sockethez, olyan módon, hogy elektronikusan is csatolva legyen. 
-Az alkatrész lehet ellenállás, kondenzátok, dióda vagy tranzisztor, viszont a 
-rendszer csak maximális feszültsége 3.3V, így amennyiben nagyobb nyitó
-feszültség szükséges az alkatrésznel akkor abban az esetben nem képes
+Az alkatrész lehet ellenállás, kondenzátor, dióda vagy tranzisztor, viszont a 
+rendszer maximális feszültsége 3.3V, így amennyiben nagyobb nyitó
+feszültség szükséges az alkatrésznél akkor abban az esetben nem képes
 detektálni azt.
 
-A rendszer fő követelménye a tesztelés leegyszerősítése, így egy átlagos,
-elektronikai imeretekkel nem rendelkező felhasználó is egy rövid 2 perces 
-bemutató után is magabiztosan tudja használni. Ezt a felháló által élérhető
+A rendszer fő követelménye a tesztelés leegyszerűsítése, így egy átlagos,
+elektronikai ismeretekkel nem rendelkező felhasználó is egy rövid 2 perces 
+bemutató után is magabiztosan tudja használni. Ezt a felhasználó által elérhető
 bemenetek csökkentésével lett elérve, mivel a felhasználó könnyebben 
 tud egy olyan eszközt használni ahol a bemenetek száma minimális.
 
@@ -34,7 +34,7 @@ A rendszer egyedülálló módon is alkalmazható akár egy külső
 akkumulátorról is táplálva, így nincs operációs rendszer követelménye
 az alapszintű működéshez.
 
-Hordozhatóség is elengedhetetlen, hogy könnyedén mindig kéznél legyen.
+Hordozhatóság is elengedhetetlen, hogy könnyedén mindig kéznél legyen.
 Ezért esett a választás az USB-n keresztül való táplálásra, mivel ez 
 manapság sokkal elterjedtebb, mint az eredeti tranzisztor teszter ami egy
 9V-os elemet használ ami kevésbé gyakori és elem lévén le tud merülni, pont 
@@ -86,14 +86,14 @@ a generált .uf2 fájlt, amint ez megtörtént lecsatlakozik és futtatni kezdi 
 
 \section{A rendszer Blokk váza}
 
-Az alábbi árbán [\ref{fig:blockDiagramm}] látható a rendszer blokk Diagramja, a fő vezérlő jelekkel.
+Alább [\ref{fig:blockDiagramm}] látható a rendszer blokk Diagramja, a fő vezérlő jelekkel.
 A rendszer 2 SPI perifériával kommunikál, ezek a kijelző és a DAC, az analóg kapcsoló vezérlő jelei 
 egyszerű digitális jelek, mint ahogyan a LED vezérlő jelei. A teszter socket mindhárom lába egy-egy ADC
 csatornához van csatlakoztatva, ezen méri a mikrovezérlő a tesztelés során a feszültség szinteket.
 A kapcsoló a RUN bemenetre van kapcsolva, ez engedélyezi a mikrovezérlő futását amíg feszültség érték 
-található rajta vagy nincs bekötve. Amennyiben ez földre kerül akkor a mikrovezérlő leáll és restellődik.
+található rajta vagy nincs bekötve. Amennyiben ez földre kerül akkor a mikrovezérlő leáll és resetelődik.
 
-A rendszerhez működéséhez szükséges egy 5V-os feszültség forrás, ez lehet egy általános USB
+A rendszer működéséhez szükséges egy 5V-os feszültség forrás, ez lehet egy általános USB
 tápforrás, vagy lehetséges direkt 5V csatlakoztatása is. Az áramerősség alacsony, így nem közelíti
 meg az 500mA-es áramerősség határt amit egy átlagos USB képes leadni. Külső akkumulátorról
 is táplálható. Amennyiben egy számítógéphez, vagy egy olyan eszközhöz van csatolva ami képes 
@@ -117,7 +117,7 @@ Ez a rendszer többi részétől elszigetelt rész, amely csupán
 megkapja az eredményeket a mérések után és megjeleníti azt.
 
 
-\begin{figure}[h]
+\begin{figure}[H]
     \centering
     \includegraphics[scale=0.4]{images/diagrams/displayClassDiagram.png}
     \caption{A kijelző osztály diagramja}
@@ -125,11 +125,11 @@ megkapja az eredményeket a mérések után és megjeleníti azt.
 \end{figure}
 
 Az ILI9341 osztály az alapszintű vezérlésért felelős, itt csak az 
-adat küldési funkcionalitás és a képernyő inicializásása van
+adat küldési funkcionalitás és a képernyő inicializálása van
 implementálva. A CHARACTERDISPLAY osztály kibővíti ezt és lehetővé
 teszi egyszerű szöveg megjelenítését a kijelzőn.
 A GRAPHDISPLAY kibővítve ezt képes megjeleníteni grafikont
-a kijelzőre beépített skálázással, hogy lehetőleg az egész kijelzőt kihasznélja.
+a kijelzőre beépített skálázással, hogy lehetőleg az egész kijelzőt kihasználja.
 
 
 \subsection{Mérő áramkör osztály diagrammja}
@@ -210,9 +210,9 @@ látható. [\ref{fig:ownTesterConnection}]
 
 Ebben az esetben szükséges analóg kapcsolók használata, mivel az eredeti
 teszter csak digitális jeleket használ amit direkt a GPIO-ról voltak kivezetve,
-így az ellenállások közti váltásokért belsőleg a mikrovezérlő felt. Viszont ebben
-az esetben a jelek analóg jellek amit egy külső DAC generál, így a mikrovezérlő nem
-képes belsőleg kapcsolni ezeket ezért egy 3 kimenetes analóg kapcsoló van alaklmazva
+így az ellenállások közti váltásokért belsőleg a mikrovezérlő felel. Viszont ebben
+az esetben a jelek analóg jelek amit egy külső DAC generál, így a mikrovezérlő nem
+képes belsőleg kapcsolni ezeket ezért egy 3 kimenetes analóg kapcsoló van alkalmazva
 erre a célra.
 
 Mivel csak egy kapcsolón csak egy kimenet aktív egy időben, így az ellenállások után
@@ -227,9 +227,9 @@ kapcsolható így a maximális áramerősség 33mA-nél nem lehet nagyobb semmil
 
 A rendszer átlagolva nézi a feszültséget a komponens lábán, mellyel nagyobb pontosság
 érhető el, mivel a zajok kevésbé befolyásolják a jelet. Viszont képes időben is mérni
-a feszültséget, hogy hogyan változik a feszültség ahogy telik az idő. Az ADC 500.000 mérést
-tud végezni másodpercenként, viszont ez lelassítható egy belső késleltetővel. Ami segítségével
-a lassan változó jelek is megfigyelhetőek, mint például egy nagy kondenzátor töltödése.
+a feszültséget, hogy hogyan változik a feszültség ahogy telik az idő. Az ADC mintavételezési sebessége 500ksps, 
+viszont ez lelassítható egy belső késleltetővel. Ami segítségével
+a lassan változó jelek is megfigyelhetőek, mint például egy nagy kondenzátor töltődése.
 
 \section{A mérés menete a felhasználó által}
 
@@ -238,7 +238,7 @@ teszter socket ahová a komponenst kell helyezni. A kapcsoló egy kétállású
 kapcsoló mely a mikrovezérlőt leállítja, vagy elindítja ami által a mérés
 automatikusan elindul.
 
-A rendszer tartalmaz 2 LED-et ami a látható a következő fényképen is az
+A rendszer tartalmaz 2 LED-et ami látható a következő fényképen is az
 áramkörről is a kijelző jobb felső sarka fölött [\ref{fig:Aramkor}]. 
 Amennyiben egyik LED sem világít, és a kijelző sem egy fehér hátteret
 mutat abban az esetben a mikrovezérlő nem kap áramot, ilyenkor ellenőrizni
@@ -248,7 +248,7 @@ Amennyiben a kijelző egy fehér képet mutat, viszont egyik LED sem világít a
 a vezérlő reset állapotban van, ezt a vezérlő alatt levő kapcsoló ON 
 pozícióba való állításával lehet orvosolni.
 
-A mérés kezdetekor a piros LED felkapcsol, majd mérés befelyeztekor a Zöld 
+A mérés kezdetekor a piros LED felkapcsol, majd mérés befejeztekor a Zöld 
 LED is felkapcsol, ebben az esetben a mérés sikeres volt és az eredmény meg 
 kell jelenjen a kijelzőn és az USB-n keresztül elküldve a számítógéphez.
 

@@ -139,3 +139,4 @@ void ADC::setCaptureBuff(uint16_t *buff, const uint16_t buffSize)
     memcpy(this->capture_buf, buff, (CAPTURE_DEPTH + 1) * sizeof(uint16_t));
 }
 
+

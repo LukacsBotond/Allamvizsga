@@ -40,29 +40,35 @@ bool CAPACITOR::check()
 
 void CAPACITOR::calculate()
 {
-    std::string modes[] = {"610", "210", "160", "120", "016", "012"};
-    int div[] = {96, 96 * 10, 96 * 100, 96 * 1000, 96 * 10000, 96 * 100000};
-
+    std::string modes[] = {"610", "210", /**/ "160", "061", /**/ "016", "012"};
+    int div[] = {96, 96 * 10, 96 * 100, 96 * 1000/*, 96 * 10000, 96 * 100000*/};
+    drainCapacitor();
     for (int8_t i = 0; i < 6; i++)
     {
-        for (int8_t j = 0; j < 6; j++)
+        for (int8_t j = 0; j < 4; j++)
         {
-            // std::cout << "Current mode: " << modes[i] << " " << (int)div[j] << std::endl;
+            drainCapacitor();
+            //std::cout << "Current mode: " << modes[i] << " " << (int)div[j] << std::endl;
             adc->set_clkDiv(div[j]);
             try
             {
                 double result = this->icalculate->CalcCapacitance_nF(this->icalculate->ChannelMeasure(modes[i][0] - '0', modes[i][1] - '0', modes[i][2] - '0', i / 2, false), adc->getCaptureDepth(), adc->get_clkHz(), modes[i][2 - i / 2] - '0');
-                if (result > 10)
+                //std::cout << result << std::endl;
+                if (result > 55)
                 { // less than 10nF is just too small
+                    drainCapacitor();
                     this->results.clear();
                     this->mainResult = "Capacitor";
-                    results["Capacitance" + std::to_string(i / 2) + " nF"] = result;
-                    setUsedPins(modes[i],'C');
+                    results["Capacitance nF"] = result;
+                    setUsedPins(modes[i], 'C');
+                    return;
                 }
-                return;
             }
             catch (CAPACITORSLOWCHARGE &e)
             {
+            }
+            catch(NOTHINGCONNECTED &e){
+                break;
             }
             // sleep_ms(500);
             drainCapacitor();

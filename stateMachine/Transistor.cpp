@@ -18,9 +18,10 @@ bool TRANSISTOR::check()
 
         if (npn || pnp)
         {
+            HFE_fw = HFECalculation("12", gatePin, npn);
+            HFE_bw = HFECalculation("21", gatePin, npn);
             if (HFE_fw > HFE_bw)
             {
-
                 if (gatePin == 0)
                 {
                     collectorPin = 1;
@@ -35,7 +36,6 @@ bool TRANSISTOR::check()
             }
             else
             {
-
                 if (gatePin == 0)
                 {
                     collectorPin = 2;
@@ -48,6 +48,7 @@ bool TRANSISTOR::check()
                 }
                 setResults(npn, HFE_bw);
             }
+            inputResistance();
             return true;
         }
     }
@@ -96,21 +97,7 @@ bool TRANSISTOR::transTest(const std::string &gateMode, int gatePin, const std::
     std::string modes[2];
     for (int i = 0; i < 2; i++)
     {
-        int baseIndex = 0;
-        std::string tmp;
-        for (int j = 0; j < 3; j++)
-        {
-            if (gatePin == j)
-            {
-                tmp += gateMode;
-            }
-            else
-            {
-                tmp += basemodes[i][baseIndex];
-                baseIndex++;
-            }
-        }
-        modes[i] = tmp;
+        modes[i] = mergeMode(gatePin, basemodes[i], gateMode);
     }
     for (int i = 0; i < 2; i++)
     {
@@ -120,8 +107,6 @@ bool TRANSISTOR::transTest(const std::string &gateMode, int gatePin, const std::
             return false;
         }
     }
-
-    HFE = HFECalculation(modes[0], gatePin);
     return true;
 }
 
@@ -154,9 +139,21 @@ bool TRANSISTOR::checkIfTransistorIsOnHelper(double volt1, double volt2, int vol
     return true;
 }
 
-double TRANSISTOR::HFECalculation(const std::string &mode, int gatePin)
+double TRANSISTOR::HFECalculation(const std::string &basemodes, int gatePin, bool npn)
 {
     double HFE = 0;
+    // const std::string basemodes = "12";
+    std::string gateMode;
+    if (npn)
+    {
+        gateMode = "6";
+    }
+    else
+    {
+        gateMode = "5";
+    }
+    std::string mode = mergeMode(gatePin, basemodes, gateMode);
+
     if (gatePin == 0)
         HFE = HFECalculationHelper(mode, gatePin, 1);
     if (gatePin == 1)
@@ -168,8 +165,49 @@ double TRANSISTOR::HFECalculationHelper(const std::string &mode, int gatePin, in
 {
     double IbmA = 0;
     double IcmA = 0;
-    std::vector<double> measurement = icalculate->getMeasurement(mode);
-    IbmA = double((3.3 - measurement.at(gatePin)) / icalculate->controller->getTotResistor(mode[gatePin] - '0')) * 1000.0;
+    int EmitterPin = 0;
+    uint16_t baseVoltage = 0xffff;
+    uint8_t baseCommand;
+    for (int i = 0; i < 3; i++)
+    {
+        if (i != gatePin && i != collectorPin)
+            EmitterPin = i;
+    }
+    switch (gatePin)
+    {
+    case 0:
+        baseCommand = DAC_COMM_WRITE_BUFF_LOAD_ALL_B;
+        break;
+    case 1:
+        baseCommand = DAC_COMM_WRITE_BUFF_LOAD_ALL_C;
+        break;
+    case 2:
+        baseCommand = DAC_COMM_WRITE_BUFF_LOAD_ALL_D;
+        break;
+    default:
+        break;
+    }
+
+    // double refCurrent;
+    std::vector<double> measurement = icalculate->SameOut3ChannelRepeat(mode[0] - '0', mode[1] - '0', mode[2] - '0');
+    icalculate->controller->prepareSwitchSetting(mode[0] - '0', mode[1] - '0', mode[2] - '0');
+    icalculate->controller->setSwithcSetting(mode[0] - '0', mode[1] - '0', mode[2] - '0');
+
+    while (std::abs(measurement[collectorPin] - measurement[EmitterPin]) < 2)
+    {
+        // std::cout << "voltDif: " << std::abs(measurement[collectorPin] - measurement[EmitterPin]) << " collector " << measurement[collectorPin] << " emitter: " << measurement[EmitterPin] << " baseVolt:" << baseVoltage << std::endl;
+        if ((mode[gatePin] - '0') % 2 == 0)
+            baseVoltage -= 200;
+        else
+            baseVoltage += 200;
+
+        this->icalculate->controller->setVoltage(baseVoltage, baseCommand);
+        measurement = icalculate->SameOut3ChannelRepeat();
+    }
+
+    double baseV = (double)((double)3.3 * (double)((double)baseVoltage / (double)UINT16_MAX));
+    IbmA = double((baseV - measurement.at(gatePin)) / icalculate->controller->getTotResistor(mode[gatePin] - '0')) * 1000.0;
+
     if ((mode[collectorPin] - '0') % 2 == 0) // pin is in collector mode
         IcmA = double((3.3 - measurement.at(collectorPin)) / icalculate->controller->getTotResistor(mode[collectorPin] - '0')) * 1000.0;
     else // collector is actually the emmiter
@@ -183,4 +221,52 @@ double TRANSISTOR::HFECalculationHelper(const std::string &mode, int gatePin, in
         IcmA = double((3.3 - measurement.at(truecollectorPin)) / icalculate->controller->getTotResistor(mode[truecollectorPin] - '0')) * 1000.0;
     }
     return std::abs(IcmA / IbmA);
+}
+
+std::string TRANSISTOR::mergeMode(int gatePin, const std::string &mode, const std::string &gateMode)
+{
+    int baseIndex = 0;
+    std::string tmp = "";
+    for (int j = 0; j < 3; j++)
+    {
+        if (gatePin == j)
+        {
+            tmp += gateMode;
+        }
+        else
+        {
+            tmp += mode[baseIndex];
+            baseIndex++;
+        }
+    }
+    return tmp;
+}
+
+void TRANSISTOR::inputResistance()
+{
+    std::string mode = "000";
+    double Rin;
+    if (this->mainResult == "npn transistor")
+    {
+        mode[collectorPin] = '2';
+        mode[emmiterPin] = '1';
+        mode[gatePin] = '6';
+    }
+    else
+    {
+        mode[collectorPin] = '1';
+        mode[emmiterPin] = '2';
+        mode[gatePin] = '5';
+    }
+    std::vector<double> measurement = icalculate->SameOut3ChannelRepeat(mode[0] - '0', mode[1] - '0', mode[2] - '0');
+    double Ib = double((double)(3.3 - measurement.at(gatePin)) / (double)RESISTOR_HIGH) * 1000.0;
+    if (this->mainResult == "npn transistor")
+    {
+        Rin = std::abs((measurement.at(gatePin) - measurement.at(emmiterPin)) / Ib);
+    }
+    else
+    {
+        Rin = std::abs((measurement.at(gatePin) - measurement.at(collectorPin)) / Ib);
+    }
+    results["Rin"] = Rin;
 }

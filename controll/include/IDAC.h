@@ -25,7 +25,8 @@
 #define DAC_COMM_WRITE_LOAD_ALL 0b00110000
 #define DAC_COMM_WRITE_LOAD_ALLCHANNEL 0b00110100 // write the same value to all channel and load it
 
-struct CharDiagr{
+struct CharDiagr
+{
     std::vector<double> data;
     double yScale;
 };
@@ -48,4 +49,7 @@ public:
     virtual void reset(bool resetLvl) = 0;
 
     virtual CharDiagr characteristicDiagramm(ICALCULATE *icalculate) = 0;
+    virtual CharDiagr InputcharacteristicDiagramm(ICALCULATE *icalculate) = 0;
+
+    virtual CharDiagr Curent_Transf_Characteristic_Diagramm(ICALCULATE *icalculate) = 0;
 };

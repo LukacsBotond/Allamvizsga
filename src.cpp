@@ -76,23 +76,65 @@ void core1_entry()
 void printResult(const std::map<std::string, double> &ret, const std::string &mainResult, GRAPHDISPLAY *driver)
 {
     std::cout << "Print Results\n";
-    gpio_put(GREEN_LED_PIN, LOW);
 
     std::cout << mainResult << std::endl;
     driver->printLine(mainResult);
-
+    driver->printLine(" ");
     for (auto it : ret)
     {
         std::cout << it.first << " " << it.second << std::endl;
         driver->printLine(it.first + " " + std::to_string(it.second));
+        driver->printLine(" ");
     }
 
     for (auto it : STATE::usedPins)
     {
         std::cout << it.first << " " << it.second << std::endl;
         driver->printLine(std::to_string(it.first) + " " + it.second);
+        driver->printLine(" ");
     }
     driver->fillRestScreen(0x0000);
+}
+
+void testing(GRAPHDISPLAY *driver, ICALCULATE *calc, MACHINE *machine)
+{
+    try
+    {
+        machine->setState(new RESISTOR(calc));
+        machine->calculate();
+
+        machine->setState(new CAPACITOR(calc));
+        machine->calculate();
+        if (STATE::mainResult == "Capacitor")
+        {
+            return;
+        }
+    }
+    catch (POSSIBLYDIODE &e) // diode path
+    {
+        // std::cout << e.what() << std::endl;
+        machine->setState(new DIODE(calc));
+        machine->calculate();
+        // check if 2 inverse diode
+        if (STATE::usedPins.at(0).size() > 1 || STATE::usedPins.at(1).size() > 1)
+        {
+            return;
+        }
+        machine->setState(new TRANSISTOR(calc));
+        machine->calculate();
+    }
+    catch (NOTARESISTOR &e) // nothing found
+    {
+        // std::cout << e.what() << std::endl;
+    }
+    catch (NOTHINGCONNECTED &e)
+    {
+        // std::cout << e.what() << std::endl;
+    }
+    catch (const std::exception &e)
+    {
+        // std::cout << e.what() << std::endl;
+    }
 }
 
 #ifndef TESTS
@@ -157,55 +199,30 @@ int main()
 
     SPIPORTS *displ_spi_ports = new SPIPORTS(DISP_SPI_CHANNEL, DISP_CS, DISP_SCK, DISP_MOSI);
     SPI *spidispl = new SPI(DISP_FREQ, displ_spi_ports);
-    GRAPHDISPLAY *driver = new GRAPHDISPLAY(spidispl, 0x0000, commonClass->swap_bytes(0x081F));
+    GRAPHDISPLAY *driver = new GRAPHDISPLAY(spidispl, 0x0000, commonClass->swap_bytes(0xFFFF));
 
     STATE::usedPins[0] = "";
     STATE::usedPins[1] = "";
     STATE::usedPins[2] = "";
 
-    try
-    {
-        machine->setState(new RESISTOR(calc));
-        machine->calculate();
-
-        machine->setState(new CAPACITOR(calc));
-        machine->calculate();
-    }
-    catch (POSSIBLYDIODE &e) // diode path
-    {
-
-        // std::cout << e.what() << std::endl;
-        machine->setState(new DIODE(calc));
-        machine->calculate();
-        // check if 2 inverse diode
-        if (STATE::usedPins.at(0).size() > 1 || STATE::usedPins.at(1).size() > 1)
-        {
-            printResult(machine->getResult(), machine->getMainResult(), driver);
-        }
-        machine->setState(new TRANSISTOR(calc));
-        machine->calculate();
-    }
-    catch (NOTARESISTOR &e) // nothing found
-    {
-        machine->setState(new CAPACITOR(calc));
-        machine->calculate();
-    }
-    catch (NOTHINGCONNECTED &e)
-    {
-        machine->setState(new CAPACITOR(calc));
-        machine->calculate();
-    }
-    catch (const std::exception &e)
-    {
-        std::cout << e.what() << std::endl;
-    }
+    testing(driver, calc, machine);
 
     printResult(machine->getResult(), machine->getMainResult(), driver);
     try
     {
         CharDiagr ret = dac->characteristicDiagramm(calc);
         sleep_ms(1000);
-        driver->plotArray(ret.data, "mA");
+        driver->plotArray(ret.data, "   ", "kimeneti");
+
+        sleep_ms(3000);
+
+        ret = dac->InputcharacteristicDiagramm(calc);
+        driver->plotArray(ret.data, "   ", "bemeneti", 0.8);
+
+        sleep_ms(1000);
+
+        ret = dac->Curent_Transf_Characteristic_Diagramm(calc);
+        driver->plotArray(ret.data, "   ", "atviteli", 0.1);
     }
     catch (NOTSUPPOSEDTOREACHTHIS)
     {

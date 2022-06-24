@@ -58,3 +58,4 @@ void BASEVALUES::printMeasurements()
         std::cout << it.first << " " << it.second.at(0) << " " << it.second.at(1) << " " << it.second.at(2) << std::endl;
     }
 }
+

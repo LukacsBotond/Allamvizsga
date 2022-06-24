@@ -1,6 +1,7 @@
 #pragma once
 #include "./IValues.h"
 #include "../../Exceptions/include/NoSuchMeasurement.h"
+#include "../../Exceptions/include/NothingConnected.h"
 #include "../../ADC/include/ADCCorrecter.h"
 #include "./ICleanInput.h"
 #include "../../ADC/include/IADC.h"
