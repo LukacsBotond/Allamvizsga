@@ -78,19 +78,24 @@ void printResult(const std::map<std::string, double> &ret, const std::string &ma
     std::cout << "Print Results\n";
 
     std::cout << mainResult << std::endl;
-    driver->printLine(mainResult);
+    driver->printLine(" ");
+    driver->printLine(" ");
+    driver->printLine(" ");
+    driver->printLine(" ");
+    driver->printLine(" ");
+    driver->printLine("     " + mainResult);
     driver->printLine(" ");
     for (auto it : ret)
     {
         std::cout << it.first << " " << it.second << std::endl;
-        driver->printLine(it.first + " " + std::to_string(it.second));
+        driver->printLine("     " + it.first + " " + std::to_string(it.second));
         driver->printLine(" ");
     }
 
     for (auto it : STATE::usedPins)
     {
         std::cout << it.first << " " << it.second << std::endl;
-        driver->printLine(std::to_string(it.first) + " " + it.second);
+        driver->printLine("     " + std::to_string(it.first) + " " + it.second);
         driver->printLine(" ");
     }
     driver->fillRestScreen(0x0000);
@@ -100,15 +105,15 @@ void testing(GRAPHDISPLAY *driver, ICALCULATE *calc, MACHINE *machine)
 {
     try
     {
-        machine->setState(new RESISTOR(calc));
-        machine->calculate();
-
         machine->setState(new CAPACITOR(calc));
         machine->calculate();
         if (STATE::mainResult == "Capacitor")
         {
             return;
         }
+
+        machine->setState(new RESISTOR(calc));
+        machine->calculate();
     }
     catch (POSSIBLYDIODE &e) // diode path
     {
