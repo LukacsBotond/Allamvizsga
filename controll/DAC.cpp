@@ -47,7 +47,7 @@ CharDiagr DAC::characteristicDiagramm(ICALCULATE *icalculate)
 {
     if (STATE::mainResult != "npn transistor" && STATE::mainResult != "pnp transistor")
     {
-        std::cout << "DAC characteristicDiagramm is only for transistors\n";
+        //std::cout << "DAC characteristicDiagramm is only for transistors\n";
         throw NOTSUPPOSEDTOREACHTHIS("DAC characteristicDiagramm is only for transistors");
     }
     CharDiagr ret;
