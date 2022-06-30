@@ -2,6 +2,38 @@ A teszter elkészítése után a rendszer tesztelése következett.
 A rendszer nem fektetett nagy hangsúlyt a pontosságra, viszont egy 
 megközelítő értéket meg kell tudjon határozni.
 
+\section{Mérések kijelzése a kijelzőn}
+
+Az azonosítás eredménye és a lábkiosztás minden tesztelés során
+elsőnek jelenik meg a kijelzőn. Ami a hasonlóképpen lesz majd látható.
+[\ref{fig:displayOutput}]
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.1]{images/results/displayOutput.jpg}
+    \caption{Eredmények kijelzése a kijelzőre}
+    \label{fig:displayOutput}
+\end{figure}
+
+\section{Mérések eredményei a Serial porton keresztül}
+
+A mérések eredményeit a Serial porton is el lehet küldeni, mivel a 
+vezérlő nem vár válaszra és gyors így egy olyan Serial port olvasó program
+szükség ami folyton figyel még akkor is ha le van csatlakoztatva.
+Erre a Linux alatt elérhető Minicom-ot használtam, viszont itt csak 
+szöveges adatok jelenhetnek meg így a diagramok nem jelenhetnek meg.
+Így csak az azonosítás eredményei jelennek meg.[\ref{fig:SerialRes}]
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=1.2]{images/results/SerialResult.png}
+    \caption{Serial porton megjelenő adat}
+    \label{fig:SerialRes}
+\end{figure}
+
+
 \section{Ellenállás mérés}
 
 Amennyiben az elkatrész egy ellenállás akkor meghatározza ennek az ellenállását.
@@ -210,24 +242,6 @@ Ebben az x tengelyen a bázis áram látható és a Y tengelyen a kollektor ára
     \includegraphics[scale=0.1, angle=90]{images/results/TransfChar.jpg}
     \caption{Átviteli karakterisztika diagram}
     \label{fig:transfChar}
-\end{figure}
-
-
-\subsection{Mérések eredményei a Serial porton keresztül}
-
-A mérések eredményeit a Serial porton is el lehet küldeni, mivel a 
-vezérlő nem vár válaszra és gyors így egy olyan Serial port olvasó program
-szükség ami folyton figyel még akkor is ha le van csatlakoztatva.
-Erre a Linux alatt elérhető Minicom-ot használtam, viszont itt csak 
-szöveges adatok jelenhetnek meg így a diagramok nem jelenhetnek meg.
-Így csak az azonosítás eredményei jelennek meg.[\ref{fig:SerialRes}]
-
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[scale=0.9]{images/results/SerialResult.png}
-    \caption{Serial porton megjelenő adat}
-    \label{fig:SerialRes}
 \end{figure}
 
 

@@ -77,7 +77,7 @@ nincs leterhelve ezzel a feladattal.
 \subsection{Analóg Digitál Konverter}
 
 Az Analóg Digitál Konverter (ADC) feladata, hogy egy analóg jelet digitális jellé
-alakítson át, mivel a processzor csak digitális jeleket képes feldolgozni. Viszont 
+alakítson át, mivel a processzor csak digitális jeleket képes feldolgozni\cite{VillamosElektronikusEsVirtualisMeresek}. Viszont 
 1 bitben nem használható, mivel szinte az összes adat elveszne, ezért az ADC több 
 biten tárolja el az analóg mérés eredményét. Ez legtöbbször 8-16 bit közti értékek 
 közt található. A maximális érték amit az ADC eredménynek kiad az akkor történik, 
@@ -118,7 +118,7 @@ az alacsony felbontású eszközök esetén nagyobb hibát eredményez.
 \subsection{Digitál Analóg Konverter}
 
 A Digitál Analóg Konverter feladata, hogy a processzor által értelmezhető digitális
-értékeket analóg jelekké konvertálja amik a külső perifériáknak szükségesek.
+értékeket analóg jelekké konvertálja amik a külső perifériáknak szükségesek\cite{VillamosElektronikusEsVirtualisMeresek}.
 Gyakran használják ahol pontos analóg jeleket kell vezérelni, ilyen egy VGA jel
 vagy zene lejátszása, viszont bármire felhasználhatóak ahol az egyszerű digitális
 jelek nem elegendőek. Ebben a projektben az alkatrészek azonosítására és a 
@@ -175,9 +175,9 @@ lehet létrehozni, ha valami egyedi kell egy különleges komponens vezérlésé
 \end{figure}
 
 
-\subsection{ILI9341 kijelző}\cite{ILI9341}
+\subsection{ILI9341 kijelző}
 
-Az adatok kijelzésére egy ILI9341 [\ref{fig:ILI9341 kijelző}] kijelzőt használtam.
+Az adatok kijelzésére egy ILI9341 [\ref{fig:ILI9341 kijelző}] kijelzőt használtam\cite{ILI9341}.
 Egy egyszerűbb kijelző is megfelelne a célra, akár csupán egy karaktereket megjelenítő
 kijelző is elegendő lenne a célra, ha nem kellene a karakterisztika diagram. A 
 célra megfelelne egy egyszerű OLED kijelző is. Viszont ez a kijelző már a rendelkezésre
@@ -230,12 +230,12 @@ arra is van lehetőség, hogy csak az adatot elmentse és egyszerre frissítse a
 összes kimenetet. Erre lehetőség van szoftveresen is, amit az SPI parancs
 részében lehet kódolni, ebben a projekt esetében is ez van alkalmazva. 
 
-\subsection{Analóg kapcsoló}\cite{AnalogSwitch}
+\subsection{Analóg kapcsoló}
 
 Mindegyik analóg jelet egyszerre 1 ellenálláson keresztül rá kell kapcsolni a komponensre,
 viszont az ellenállás váltható kell legyen mérés közben, nagy sebességgel, így a manuális
 kapcsolás nem lehetséges. Erre a célra egy analóg kapcsoló van alkalmazva amely egy közös
-bemenetet 3 különböző kimenetre képes kapcsolni, melyeken az ellenállások találhatóak.
+bemenetet 3 különböző kimenetre képes kapcsolni, melyeken az ellenállások találhatóak\cite{AnalogSwitch}.
 A kimenet kiválasztása nem használ kommunikációs protokollt, csak a "IN" portokra érkező
 digitális jelek segítségével történik. Minden esetben maximálisan 1 kimenet aktív a többi
 a nyílt áramkörben van és arra is van lehetőség, hogy a bemenet 1 kimenetre 
