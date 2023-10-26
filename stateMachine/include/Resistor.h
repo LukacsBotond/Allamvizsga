@@ -62,7 +62,7 @@ bool RESISTOR::check()
         }
         catch (NOTHINGCONNECTED &e)
         {
-            std::cout << e.what() << std::endl;
+            //std::cout << e.what() << std::endl;
         }
     }
 

@@ -95,7 +95,7 @@ double ACALCULATE::calcResistance(std::vector<std::string> &measurements)
 {
     if (measurements.size() == 0)
     {
-        std::cout << "no measurements were given\n";
+        //std::cout << "no measurements were given\n";
         throw NOSUCHMEASUREMENT("ACALCULATE calcResistance empty measurements vector");
     }
     std::vector<double> measurementData;

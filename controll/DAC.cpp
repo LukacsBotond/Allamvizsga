@@ -47,11 +47,10 @@ CharDiagr DAC::characteristicDiagramm(ICALCULATE *icalculate)
 {
     if (STATE::mainResult != "npn transistor" && STATE::mainResult != "pnp transistor")
     {
-        std::cout << "DAC characteristicDiagramm is only for transistors\n";
+        //std::cout << "DAC characteristicDiagramm is only for transistors\n";
         throw NOTSUPPOSEDTOREACHTHIS("DAC characteristicDiagramm is only for transistors");
     }
     CharDiagr ret;
-    std::vector<double> tmp;
     adc->set_clkDiv(0);
     TRANSISTOR transistor(icalculate);
     std::vector<int> res = transistor.usedPinsFindByValue("B");

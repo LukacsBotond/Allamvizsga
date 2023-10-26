@@ -2,6 +2,38 @@ A teszter elkészítése után a rendszer tesztelése következett.
 A rendszer nem fektetett nagy hangsúlyt a pontosságra, viszont egy 
 megközelítő értéket meg kell tudjon határozni.
 
+\section{Mérések kijelzése a kijelzőn}
+
+Az azonosítás eredménye és a lábkiosztás minden tesztelés során
+elsőnek jelenik meg a kijelzőn. Ami a hasonlóképpen lesz majd látható.
+[\ref{fig:displayOutput}]
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.1, angle=90]{images/results/displayOutput.jpg}
+    \caption{Eredmények kijelzése a kijelzőre}
+    \label{fig:displayOutput}
+\end{figure}
+
+\section{Mérések eredményei a Serial porton keresztül}
+
+A mérések eredményeit a Serial porton is el lehet küldeni, mivel a 
+vezérlő nem vár válaszra és gyors így egy olyan Serial port olvasó program
+szükség ami folyton figyel még akkor is ha le van csatlakoztatva.
+Erre a Linux alatt elérhető Minicom-ot használtam, viszont itt csak 
+szöveges adatok jelenhetnek meg így a diagramok nem jelenhetnek meg.
+Így csak az azonosítás eredményei jelennek meg.[\ref{fig:SerialRes}]
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=1.2]{images/results/SerialResult.png}
+    \caption{Serial porton megjelenő adat}
+    \label{fig:SerialRes}
+\end{figure}
+
+
 \section{Ellenállás mérés}
 
 Amennyiben az elkatrész egy ellenállás akkor meghatározza ennek az ellenállását.
@@ -167,7 +199,9 @@ kollektor csökkentésével 3.3V-ról a emitter-kollektor feszültség
 0 és 3.3V közt változik, miközben a bázis feszültsége sosem negatív
 a földhöz képest.
 
-A mérés a következőképpen lesz látható a kijelzőn[\ref{fig:OutChar}] 
+A mérés a következőképpen lesz látható a kijelzőn[\ref{fig:OutChar}],
+az X tengelyen kollektor-emitter feszültség látható, míg a Y tengellyen
+a kollektor áramerősség. Miközben a bázis áram állandó.
 
 \begin{figure}[H]
     \centering
@@ -181,7 +215,8 @@ A mérés a következőképpen lesz látható a kijelzőn[\ref{fig:OutChar}]
 Ebben az esetben a kollektor és az emitter a földre van kötve,
 miközben a bázis feszültség növekedik. A kapcsoló ellenálláson eső feszültségből
 kiszámítható az áram. A diagram a dióda karakterisztikához hasonló eredményt
-ad.[\ref{fig:InChar}] 
+ad[\ref{fig:InChar}]. Az x tengelyen a bázis emitter feszültség látható és
+a Y tengelyen abázis áram. Miközben a kollektor-emitter feszültség állandó.
 
 \begin{figure}[H]
     \centering
@@ -200,9 +235,14 @@ vezérelni. Ebben az esetben az erősítés növekedik amíg a bázis
 üzemmódba. Ekkor a kollektor áram állandó, vagy csökken a bázis áram
 növelésével.
 
+Ebben az x tengelyen a bázis áram látható és a Y tengelyen a kollektor áram.
+
 \begin{figure}[H]
     \centering
     \includegraphics[scale=0.1, angle=90]{images/results/TransfChar.jpg}
     \caption{Átviteli karakterisztika diagram}
     \label{fig:transfChar}
 \end{figure}
+
+
+

@@ -11,9 +11,7 @@ void ADCCORRECTER::init()
     }
     catch (CELL &e)
     {
-        std::cout << "Cell found \n";
     }
-    //std::cout << "gnd offset: " << gndOffset << "VCCoffset: " << VCCOffset << std::endl;
 }
 
 uint16_t *ADCCORRECTER::offsetCorrection(uint16_t *samples, const uint16_t samplesSize)
